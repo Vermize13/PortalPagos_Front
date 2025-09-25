@@ -1,0 +1,39 @@
+    <div
+      class="card flex justify-content-center align-items-center bg-img"
+      [style]="{ height: '100vh' }"
+    >
+      <p-card
+        header="Autenticación"
+        subheader="Hemos enviado un código de confirmación de 6 dígitos, al correo electrónico que está registrado y al cual recibirá el código de confirmación en {{ user ? (user.unique_name.slice(0, 3) + '****' + user.unique_name.split('@')[1]) : 'su correo electrónico'}} no olvides ingresar el código lo antes posible."
+        [style]="{ width: '600px' }"
+        >
+        <ng-template pTemplate="header">
+          <div
+            class="flex justify-content-center align-items-center flex-column"
+          >
+            <img
+              src="../../../assets/img/findeterLogo.png"
+              alt="FindeterLogo"
+              [style]="{ width: '25%' }"
+            />
+          </div>
+        </ng-template>
+
+        <form [formGroup]="codigoForm">
+        <div class="card flex justify-content-center align-items-center flex-column gap-3">
+          <p-inputOtp [mask]="true" formControlName="codigo" [length]="6" [integerOnly]="true" />
+        </div>
+        @if(!timeDone){
+        <small class="flex justify-content-end align-items-center">Solicite nuevamente en {{time}} segundos </small>
+        }@else{
+        <small class="flex justify-content-end align-items-center">No recibiste el codigo? <a (click)="solicitarNuevamente()" [style]="{color: 'blue', cursor: 'pointer'}"> Solicita nuevamente</a></small>
+        }
+        </form>
+        <ng-template pTemplate="footer">
+          <div class="flex flex-column gap-3 mt-1">
+            <p-button label="Aceptar" class="w-full" styleClass="w-full" [disabled]="codigoForm.invalid" (onClick)="onSubmit()" />
+          </div>
+        </ng-template>
+      </p-card>
+
+</div>

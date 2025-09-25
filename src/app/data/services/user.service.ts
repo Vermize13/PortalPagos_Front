@@ -1,0 +1,73 @@
+import { Injectable } from '@angular/core';
+import { User, UserStateService } from '../states/userState.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { Observable, tap } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UserService {
+
+  constructor(private userState: UserStateService, private http: HttpClient) { }
+  urlAuth = `${environment.url}api/Auth/`;
+  urlPass = `${environment.url}api/Password/`;
+
+  isLoggedIn(): boolean {
+    // Implementa la lógica para verificar si el usuario está autenticado
+    return !!localStorage.getItem('token'); //
+  }
+  login(username: string, password: string): Observable<any> {
+    return this.http.post<User>(`${this.urlAuth}login`, { username, password })
+    .pipe(
+      tap( (user: User) => {
+        this.userState.setUser(user.token);
+         this.enable2fa();
+      })
+    );
+  }
+
+  enable2fa(): Observable<any> {
+    const userId = this.userState?.getUser()?.nameid;
+    return this.http.post(`${this.urlAuth}enable-2fa?userId=${userId}`, {}, {
+      responseType: 'text'
+    });
+
+  }
+
+  verify2fa(code: string): Observable<string> {
+    const userId = this.userState?.getUser()?.nameid;
+    return this.http.post(`${this.urlAuth}verify-2fa?userId=${userId}&otp=${code}`, {}, {
+      responseType: 'text'
+    });
+  }
+
+  passWordRecovery(email: string): Observable<string> {
+    return this.http.post(`${this.urlPass}recover`, {email}, {
+      responseType: 'text'
+    });
+  }
+
+  passwordReset(newPassword:string): Observable<string> {
+    const userId = 20//this.userState?.getUser()?.nameid;
+    return this.http.post(`${this.urlPass}reset`, {
+      userId,
+      newPassword
+    }, {
+      responseType: 'text'
+    });
+  }
+
+  passwordChange(currentPassword:string, newPassword:string): Observable<string>{
+    const userId = 20//this.userState?.getUser()?.nameid;
+    return this.http.post(`${this.urlPass}change`, {
+      userId,
+      currentPassword,
+      newPassword
+    }, {
+      responseType: 'text'
+    });
+
+  }
+
+}

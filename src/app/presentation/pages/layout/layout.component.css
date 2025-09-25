@@ -1,0 +1,15 @@
+/* layout.component.css */
+.layout-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  app-sidenav {
+    width: 250px; /* Ajusta el ancho del sidebar según lo que necesites */
+  }
+  
+  .content-container {
+    flex-grow: 1;
+    overflow: auto;
+  }
+  

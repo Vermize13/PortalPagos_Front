@@ -1,0 +1,54 @@
+// bootstrap style toast
+// or import a bootstrap 4 alert styled design (SASS ONLY)
+// should be after your bootstrap imports, it uses bs4 variables, mixins, functions
+
+
+/* Otros estilos globales */
+html {
+  font-size: 14px;
+}
+
+body {
+  font-family: var(--font-family);
+  font-weight: normal;
+  background: var(--surface-ground);
+  color: var(--text-color);
+  padding: 1rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100vh;
+}
+
+.card {
+  background: var(--surface-card);
+  padding: 2rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.titleStandard {
+  color: #001120;
+  font: 700 27px/1.2 Lato, sans-serif;
+  margin: 0;
+}
+
+.subTitleStandard {
+  color: #001120;
+  font: 700 18px/1.2 Lato, sans-serif;
+  margin: 0;
+}
+
+.p-card-title  {
+  text-align: center;
+  font-size: 2.5rem;
+}
+
+
+.p-card-subtitle {
+  text-align: center;
+  font-size: 1rem;
+}
+
+.p-inputgroup-addon{
+  background: transparent;
+}

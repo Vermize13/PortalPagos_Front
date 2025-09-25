@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+a {
+  text-decoration: none;
+  /* Elimina el subrayado */
+}
+
+.colorStandard {
+  color: #005ca8;
+}
+

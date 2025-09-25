@@ -1,0 +1,299 @@
+<p-sidebar #sidebarRef [visible]="true">
+  <ng-template pTemplate="headless">
+    <div class="flex flex-column h-full">
+      <div class="flex align-items-center justify-content-between px-4 pt-3 flex-shrink-0">
+        <span class="inline-flex align-items-center gap-2">
+          <span class="font-semibold text-2xl text-primary"><img src="../../../assets/img/findeterLogo.png" alt=""
+              width="100px"></span>
+        </span>
+        <span>
+          <p-button type="button" (onClick)="closeCallback($event)" icon="pi pi-angle-double-left" rounded="true"
+            outlined="true" styleClass="h-2rem w-2rem"></p-button>
+        </span>
+      </div>
+      <div class="overflow-y-auto">
+        <ul class="list-none p-3 m-0">
+          <li>
+            <div pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown" leaveToClass="hidden"
+              leaveActiveClass="slideup"
+              class="p-3 flex align-items-center justify-content-between text-600 cursor-pointer p-ripple">
+              <span class="font-medium"><b>Dashboard</b></span>
+              <i class="pi pi-chevron-down"></i>
+            </div>
+            <ul class="list-none p-0 m-0 overflow-hidden">
+              <li>
+                <a pRipple
+                  class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                  <i class="pi pi-home mr-2"></i>
+                  <span class="font-medium">Home</span>
+                </a>
+              </li>
+              <li>
+                <a pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown" leaveToClass="hidden"
+                  leaveActiveClass="slideup"
+                  class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                  <i class="pi pi-chart-bar mr-2"></i>
+                  <span class="font-medium">Reports</span>
+                  <i class="pi pi-chevron-down ml-auto"></i>
+                </a>
+                <ul
+                  class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                  <li>
+                    <a pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown"
+                      leaveToClass="hidden" leaveActiveClass="slideup"
+                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                      <i class="pi pi-chart-line mr-2"></i>
+                      <span class="font-medium">Revenue</span>
+                      <i class="pi pi-chevron-down ml-auto"></i>
+                    </a>
+                    <ul
+                      class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                      <li>
+                        <a pRipple
+                          class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                          <i class="pi pi-table mr-2"></i>
+                          <span class="font-medium">View</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                          class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                          <i class="pi pi-search mr-2"></i>
+                          <span class="font-medium">Search</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a pRipple
+                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                      <i class="pi pi-chart-line mr-2"></i>
+                      <span class="font-medium">Expenses</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown" leaveToClass="hidden"
+                  leaveActiveClass="slideup"
+                  class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                  <i class="pi pi-chart-pie mr-2"></i>
+                  <span class="font-medium">Analytics</span>
+                  <i class="pi pi-chevron-down ml-auto"></i>
+                </a>
+                <ul
+                  class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                  <li>
+                    <a pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown"
+                      leaveToClass="hidden" leaveActiveClass="slideup"
+                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                      <i class="pi pi-chart-line mr-2"></i>
+                      <span class="font-medium">Revenue</span>
+                      <i class="pi pi-chevron-down ml-auto"></i>
+                    </a>
+                    <ul
+                      class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                      <li>
+                        <a pRipple
+                          class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                          <i class="pi pi-table mr-2"></i>
+                          <span class="font-medium">View</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                          class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                          <i class="pi pi-search mr-2"></i>
+                          <span class="font-medium">Search</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a pRipple
+                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                      <i class="pi pi-chart-line mr-2"></i>
+                      <span class="font-medium">Expenses</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="list-none p-3 m-0">
+          <li>
+            <div pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown" leaveToClass="hidden"
+              leaveActiveClass="slideup"
+              class="p-3 flex align-items-center justify-content-between text-600 cursor-pointer p-ripple">
+              <span class="font-medium"><b>Aplicación</b></span>
+              <i class="pi pi-chevron-down"></i>
+            </div>
+            <ul class="list-none p-0 m-0 overflow-hidden">
+              <li>
+                <a pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown" leaveToClass="hidden"
+                  leaveActiveClass="slideup"
+                  class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                  <i class="pi pi-file mr-2"></i>
+                  <span class="font-medium">Registro</span>
+                  <i class="pi pi-chevron-down ml-auto"></i>
+                </a>
+                <ul
+                  class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                  <li>
+                    <a pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown"
+                      leaveToClass="hidden" leaveActiveClass="slideup"
+                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                      <i class="pi pi-chart-line mr-2"></i>
+                      <span class="font-medium">Revenue</span>
+                      <i class="pi pi-chevron-down ml-auto"></i>
+                    </a>
+                    <ul
+                      class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                      <li>
+                        <a pRipple
+                          class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                          <i class="pi pi-table mr-2"></i>
+                          <span class="font-medium">View</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                          class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                          <i class="pi pi-search mr-2"></i>
+                          <span class="font-medium">Search</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a pRipple
+                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                      <i class="pi pi-chart-line mr-2"></i>
+                      <span class="font-medium">Expenses</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown" leaveToClass="hidden"
+                  leaveActiveClass="slideup"
+                  class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                  <i class="pi pi-file-arrow-up mr-2"></i>
+                  <span class="font-medium">Radicación</span>
+                  <i class="pi pi-chevron-down ml-auto"></i>
+                </a>
+                <ul
+                  class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                  <li>
+                    <a pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown"
+                      leaveToClass="hidden" leaveActiveClass="slideup"
+                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                      <i class="pi pi-chart-line mr-2"></i>
+                      <span class="font-medium">Revenue</span>
+                      <i class="pi pi-chevron-down ml-auto"></i>
+                    </a>
+                    <ul
+                      class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                      <li>
+                        <a pRipple
+                          class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                          <i class="pi pi-table mr-2"></i>
+                          <span class="font-medium">View</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                          class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                          <i class="pi pi-search mr-2"></i>
+                          <span class="font-medium">Search</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a pRipple
+                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                      <i class="pi pi-chart-line mr-2"></i>
+                      <span class="font-medium">Expenses</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown" leaveToClass="hidden"
+                  leaveActiveClass="slideup"
+                  class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                  <i class="pi pi-users mr-2"></i>
+                  <span class="font-medium">Administración</span>
+                  <i class="pi pi-chevron-down ml-auto"></i>
+                </a>
+                <ul
+                  class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                  <li>
+                    <a pRipple [routerLink]="['crearPerfil']"
+                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                      <span class="font-medium">Crear perfil</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a pRipple [routerLink]="['asociarPermisos']"
+                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                      <span class="font-medium">Asignar permisos a perfil</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              <li>
+                <a pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown" leaveToClass="hidden"
+                  leaveActiveClass="slideup"
+                  class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                  <i class="pi pi-file-check mr-2"></i>
+                  <span class="font-medium">Certificación</span>
+                  <i class="pi pi-chevron-down ml-auto"></i>
+                </a>
+                <ul
+                  class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                  <li>
+                    <a pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown"
+                      leaveToClass="hidden" leaveActiveClass="slideup"
+                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                      <i class="pi pi-chart-line mr-2"></i>
+                      <span class="font-medium">Revenue</span>
+                      <i class="pi pi-chevron-down ml-auto"></i>
+                    </a>
+                    <ul
+                      class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                      <li>
+                        <a pRipple
+                          class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                          <i class="pi pi-table mr-2"></i>
+                          <span class="font-medium">View</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                          class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                          <i class="pi pi-search mr-2"></i>
+                          <span class="font-medium">Search</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a pRipple
+                      class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+                      <i class="pi pi-chart-line mr-2"></i>
+                      <span class="font-medium">Expenses</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </ng-template>
+</p-sidebar>
