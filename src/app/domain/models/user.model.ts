@@ -1,40 +1,45 @@
-export enum UserRole {
-  Admin = 'Admin',
-  ProductOwner = 'ProductOwner',
-  Developer = 'Developer',
-  Tester = 'Tester'
-}
-
-export enum UserStatus {
-  Active = 'Active',
-  Inactive = 'Inactive',
-  Suspended = 'Suspended'
+// Enum for common role codes - matches C# backend roles
+export enum RoleCode {
+  Admin = 'admin',
+  ProductOwner = 'product_owner',
+  Developer = 'developer',
+  Tester = 'tester'
 }
 
 export interface User {
-  id: number;
-  username: string;
+  id: string; // Guid
+  name: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  globalRole: UserRole;
-  status: UserStatus;
+  username: string;
+  passwordHash: string;
+  isActive: boolean;
   createdAt: Date;
-  updatedAt?: Date;
-  lastLogin?: Date;
-  profilePictureUrl?: string;
+  updatedAt: Date;
+  userRoles: UserRole[];
 }
 
-export interface ProjectMember {
-  userId: number;
-  projectId: number;
-  roleInProject: UserRole;
+export interface Role {
+  id: string; // Guid
+  code: string;
+  name: string;
+  description?: string;
+}
+
+export interface UserRole {
+  userId: string; // Guid
+  user: User;
+  roleId: string; // Guid
+  role: Role;
   assignedAt: Date;
 }
 
-export interface UserProfile {
-  userId: number;
-  phone?: string;
-  location?: string;
-  bio?: string;
+// Helper interface for displaying users with simplified role info
+export interface UserDisplay {
+  id: string;
+  name: string;
+  email: string;
+  username: string;
+  isActive: boolean;
+  primaryRole?: string; // Primary role name for display
+  createdAt: Date;
 }

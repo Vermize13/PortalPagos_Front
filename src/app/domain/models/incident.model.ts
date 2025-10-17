@@ -1,55 +1,73 @@
 export enum IncidentStatus {
-  New = 'New',
+  Open = 'Open',
   InProgress = 'InProgress',
-  InReview = 'InReview',
   Resolved = 'Resolved',
   Closed = 'Closed',
-  Reopened = 'Reopened'
+  Rejected = 'Rejected',
+  Duplicated = 'Duplicated'
 }
 
-export enum IncidentPriority {
+export enum IncidentSeverity {
   Low = 'Low',
   Medium = 'Medium',
   High = 'High',
   Critical = 'Critical'
 }
 
-export enum IncidentSeverity {
-  Minor = 'Minor',
-  Moderate = 'Moderate',
-  Major = 'Major',
-  Blocker = 'Blocker'
+export enum IncidentPriority {
+  Wont = 'Wont',
+  Could = 'Could',
+  Should = 'Should',
+  Must = 'Must'
 }
 
 export interface Incident {
-  id: number;
-  projectId: number;
-  sprintId?: number;
+  id: string; // Guid
+  projectId: string; // Guid
+  project: any; // Project reference
+  sprintId?: string; // Guid
+  sprint?: any; // Sprint reference
+  code: string;
   title: string;
-  description: string;
-  status: IncidentStatus;
-  priority: IncidentPriority;
+  description?: string;
   severity: IncidentSeverity;
-  reportedById: number;
-  assignedToId?: number;
+  priority: IncidentPriority;
+  status: IncidentStatus;
+  reporterId: string; // Guid
+  reporter: any; // User reference
+  assigneeId?: string; // Guid
+  assignee?: any; // User reference
+  storyPoints?: number;
+  dueDate?: string; // DateOnly in C# - use ISO string format
   createdAt: Date;
-  updatedAt?: Date;
-  resolvedAt?: Date;
+  updatedAt: Date;
   closedAt?: Date;
+  labels: IncidentLabel[];
+  comments: IncidentComment[];
 }
 
-export interface IncidentWithDetails extends Incident {
-  projectName: string;
-  sprintName?: string;
-  reportedByName: string;
-  assignedToName?: string;
-  tags: string[];
-  attachmentCount: number;
-  commentCount: number;
+export interface Label {
+  id: string; // Guid
+  projectId: string; // Guid
+  project: any; // Project reference
+  name: string;
+  colorHex?: string;
 }
 
-export interface IncidentTag {
-  id: number;
-  incidentId: number;
-  tag: string;
+export interface IncidentLabel {
+  incidentId: string; // Guid
+  incident: any; // Incident reference
+  labelId: string; // Guid
+  label: any; // Label reference
+}
+
+export interface IncidentComment {
+  id: string; // Guid
+  incidentId: string; // Guid
+  incident: any; // Incident reference
+  authorId: string; // Guid
+  author: any; // User reference
+  body: string;
+  createdAt: Date;
+  editedAt?: Date;
 }

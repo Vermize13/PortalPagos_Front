@@ -1,7 +1,8 @@
+// This file is kept for backward compatibility but IncidentComment is now defined in incident.model.ts
 export interface Comment {
-  id: number;
-  incidentId: number;
-  userId: number;
+  id: string; // Guid
+  incidentId: string; // Guid
+  userId: string; // Guid
   content: string;
   createdAt: Date;
   updatedAt?: Date;

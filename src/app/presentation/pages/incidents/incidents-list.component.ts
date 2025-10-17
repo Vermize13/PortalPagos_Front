@@ -7,11 +7,19 @@ import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import { 
-  IncidentWithDetails, 
+  Incident, 
   IncidentStatus, 
   IncidentPriority, 
   IncidentSeverity 
 } from '../../../domain/models';
+
+// Helper interface for displaying incidents with additional info
+interface IncidentDisplay extends Incident {
+  projectName?: string;
+  sprintName?: string;
+  reporterName?: string;
+  assigneeName?: string;
+}
 
 @Component({
   selector: 'app-incidents-list',
@@ -21,7 +29,7 @@ import {
   styleUrls: ['./incidents-list.component.css']
 })
 export class IncidentsListComponent implements OnInit {
-  incidents: IncidentWithDetails[] = [];
+  incidents: IncidentDisplay[] = [];
   loading: boolean = false;
   
   statuses = Object.values(IncidentStatus);
@@ -34,66 +42,80 @@ export class IncidentsListComponent implements OnInit {
 
   loadIncidents() {
     this.loading = true;
-    // Mock data for demonstration
+    // Mock data for demonstration - using Guid format
     this.incidents = [
       {
-        id: 1,
-        projectId: 1,
+        id: '750e8400-e29b-41d4-a716-446655440001',
+        projectId: '650e8400-e29b-41d4-a716-446655440001',
+        project: null,
         projectName: 'Portal de Pagos',
-        sprintId: 1,
+        sprintId: '850e8400-e29b-41d4-a716-446655440001',
+        sprint: null,
         sprintName: 'Sprint 1',
+        code: 'PP-1',
         title: 'Error en el formulario de login',
         description: 'El usuario no puede iniciar sesión',
-        status: IncidentStatus.New,
-        priority: IncidentPriority.High,
-        severity: IncidentSeverity.Major,
-        reportedById: 2,
-        reportedByName: 'John Developer',
-        assignedToId: 3,
-        assignedToName: 'Jane Tester',
+        status: IncidentStatus.Open,
+        priority: IncidentPriority.Must,
+        severity: IncidentSeverity.High,
+        reporterId: '550e8400-e29b-41d4-a716-446655440002',
+        reporter: null,
+        reporterName: 'John Developer',
+        assigneeId: '550e8400-e29b-41d4-a716-446655440003',
+        assignee: null,
+        assigneeName: 'Jane Tester',
         createdAt: new Date('2024-03-01'),
-        tags: ['bug', 'frontend'],
-        attachmentCount: 2,
-        commentCount: 5
+        updatedAt: new Date('2024-03-01'),
+        labels: [],
+        comments: []
       },
       {
-        id: 2,
-        projectId: 1,
+        id: '750e8400-e29b-41d4-a716-446655440002',
+        projectId: '650e8400-e29b-41d4-a716-446655440001',
+        project: null,
         projectName: 'Portal de Pagos',
+        code: 'PP-2',
         title: 'Optimizar consulta de base de datos',
         description: 'Las consultas son muy lentas',
         status: IncidentStatus.InProgress,
-        priority: IncidentPriority.Medium,
-        severity: IncidentSeverity.Moderate,
-        reportedById: 1,
-        reportedByName: 'Admin User',
-        assignedToId: 2,
-        assignedToName: 'John Developer',
+        priority: IncidentPriority.Should,
+        severity: IncidentSeverity.Medium,
+        reporterId: '550e8400-e29b-41d4-a716-446655440001',
+        reporter: null,
+        reporterName: 'Admin User',
+        assigneeId: '550e8400-e29b-41d4-a716-446655440002',
+        assignee: null,
+        assigneeName: 'John Developer',
         createdAt: new Date('2024-03-05'),
-        tags: ['performance', 'backend'],
-        attachmentCount: 0,
-        commentCount: 3
+        updatedAt: new Date('2024-03-05'),
+        labels: [],
+        comments: []
       },
       {
-        id: 3,
-        projectId: 2,
+        id: '750e8400-e29b-41d4-a716-446655440003',
+        projectId: '650e8400-e29b-41d4-a716-446655440002',
+        project: null,
         projectName: 'Sistema de Incidencias',
-        sprintId: 2,
+        sprintId: '850e8400-e29b-41d4-a716-446655440002',
+        sprint: null,
         sprintName: 'Sprint 2',
+        code: 'SI-1',
         title: 'Implementar filtros avanzados',
         description: 'Añadir filtros por múltiples criterios',
         status: IncidentStatus.Resolved,
-        priority: IncidentPriority.Low,
-        severity: IncidentSeverity.Minor,
-        reportedById: 1,
-        reportedByName: 'Admin User',
-        assignedToId: 2,
-        assignedToName: 'John Developer',
+        priority: IncidentPriority.Could,
+        severity: IncidentSeverity.Low,
+        reporterId: '550e8400-e29b-41d4-a716-446655440001',
+        reporter: null,
+        reporterName: 'Admin User',
+        assigneeId: '550e8400-e29b-41d4-a716-446655440002',
+        assignee: null,
+        assigneeName: 'John Developer',
         createdAt: new Date('2024-02-20'),
-        resolvedAt: new Date('2024-03-10'),
-        tags: ['feature', 'frontend'],
-        attachmentCount: 1,
-        commentCount: 8
+        updatedAt: new Date('2024-03-10'),
+        closedAt: new Date('2024-03-10'),
+        labels: [],
+        comments: []
       }
     ];
     this.loading = false;
@@ -101,31 +123,31 @@ export class IncidentsListComponent implements OnInit {
 
   getStatusSeverity(status: IncidentStatus): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
     switch (status) {
-      case IncidentStatus.New: return 'info';
+      case IncidentStatus.Open: return 'info';
       case IncidentStatus.InProgress: return 'warning';
-      case IncidentStatus.InReview: return 'secondary';
       case IncidentStatus.Resolved: return 'success';
       case IncidentStatus.Closed: return 'secondary';
-      case IncidentStatus.Reopened: return 'danger';
+      case IncidentStatus.Rejected: return 'danger';
+      case IncidentStatus.Duplicated: return 'secondary';
       default: return 'info';
     }
   }
 
   getPrioritySeverity(priority: IncidentPriority): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
     switch (priority) {
-      case IncidentPriority.Low: return 'success';
-      case IncidentPriority.Medium: return 'info';
-      case IncidentPriority.High: return 'warning';
-      case IncidentPriority.Critical: return 'danger';
+      case IncidentPriority.Wont: return 'secondary';
+      case IncidentPriority.Could: return 'success';
+      case IncidentPriority.Should: return 'info';
+      case IncidentPriority.Must: return 'danger';
       default: return 'info';
     }
   }
 
-  onEdit(incident: IncidentWithDetails) {
+  onEdit(incident: IncidentDisplay) {
     console.log('Edit incident:', incident);
   }
 
-  onDelete(incident: IncidentWithDetails) {
+  onDelete(incident: IncidentDisplay) {
     console.log('Delete incident:', incident);
   }
 
@@ -133,7 +155,7 @@ export class IncidentsListComponent implements OnInit {
     console.log('Create new incident');
   }
 
-  onViewDetails(incident: IncidentWithDetails) {
+  onViewDetails(incident: IncidentDisplay) {
     console.log('View incident details:', incident);
   }
 

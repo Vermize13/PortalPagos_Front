@@ -6,4 +6,6 @@ export * from './incident.model';
 export * from './comment.model';
 export * from './attachment.model';
 export * from './audit-log.model';
+export * from './notification.model';
+export * from './backup.model';
 export * from './perfil.model';

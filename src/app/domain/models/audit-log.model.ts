@@ -1,36 +1,28 @@
 export enum AuditAction {
-  Login = 'Login',
-  Logout = 'Logout',
   Create = 'Create',
   Update = 'Update',
   Delete = 'Delete',
+  Login = 'Login',
+  Logout = 'Logout',
   Assign = 'Assign',
-  StatusChange = 'StatusChange',
-  FileUpload = 'FileUpload',
-  FileDownload = 'FileDownload',
-  Export = 'Export'
-}
-
-export enum AuditEntityType {
-  User = 'User',
-  Project = 'Project',
-  Sprint = 'Sprint',
-  Incident = 'Incident',
-  Comment = 'Comment',
-  Attachment = 'Attachment',
-  System = 'System'
+  Transition = 'Transition',
+  Backup = 'Backup',
+  Restore = 'Restore',
+  Upload = 'Upload',
+  Download = 'Download'
 }
 
 export interface AuditLog {
-  id: number;
-  userId: number;
+  id: string; // Guid
   action: AuditAction;
-  entityType: AuditEntityType;
-  entityId?: number;
-  description: string;
-  metadata?: string;
+  actorId?: string; // Guid
+  actor?: any; // User reference
+  entityName?: string;
+  entityId?: string; // Guid
+  requestId?: string; // Guid
   ipAddress?: string;
   userAgent?: string;
+  detailsJson?: string;
   createdAt: Date;
 }
 

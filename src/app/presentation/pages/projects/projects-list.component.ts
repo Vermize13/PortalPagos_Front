@@ -4,7 +4,7 @@ import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
-import { Project, ProjectStatus } from '../../../domain/models';
+import { Project } from '../../../domain/models';
 
 @Component({
   selector: 'app-projects-list',
@@ -23,48 +23,50 @@ export class ProjectsListComponent implements OnInit {
 
   loadProjects() {
     this.loading = true;
-    // Mock data for demonstration
+    // Mock data for demonstration - using Guid format
     this.projects = [
       {
-        id: 1,
+        id: '650e8400-e29b-41d4-a716-446655440001',
         name: 'Portal de Pagos',
+        code: 'PP',
         description: 'Sistema de gestión de pagos',
-        status: ProjectStatus.Active,
-        startDate: new Date('2024-01-01'),
+        isActive: true,
+        createdBy: '550e8400-e29b-41d4-a716-446655440001',
+        creator: null,
         createdAt: new Date('2024-01-01'),
-        ownerId: 1
+        updatedAt: new Date('2024-01-01'),
+        members: []
       },
       {
-        id: 2,
+        id: '650e8400-e29b-41d4-a716-446655440002',
         name: 'Sistema de Incidencias',
+        code: 'SI',
         description: 'Bug tracking y gestión de incidencias',
-        status: ProjectStatus.Active,
-        startDate: new Date('2024-02-01'),
+        isActive: true,
+        createdBy: '550e8400-e29b-41d4-a716-446655440001',
+        creator: null,
         createdAt: new Date('2024-02-01'),
-        ownerId: 1
+        updatedAt: new Date('2024-02-01'),
+        members: []
       },
       {
-        id: 3,
+        id: '650e8400-e29b-41d4-a716-446655440003',
         name: 'Portal Web',
+        code: 'PW',
         description: 'Sitio web corporativo',
-        status: ProjectStatus.Completed,
-        startDate: new Date('2023-06-01'),
-        endDate: new Date('2023-12-31'),
+        isActive: false,
+        createdBy: '550e8400-e29b-41d4-a716-446655440002',
+        creator: null,
         createdAt: new Date('2023-06-01'),
-        ownerId: 2
+        updatedAt: new Date('2023-12-31'),
+        members: []
       }
     ];
     this.loading = false;
   }
 
-  getStatusSeverity(status: ProjectStatus): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
-    switch (status) {
-      case ProjectStatus.Active: return 'success';
-      case ProjectStatus.OnHold: return 'warning';
-      case ProjectStatus.Completed: return 'info';
-      case ProjectStatus.Archived: return 'secondary';
-      default: return 'info';
-    }
+  getStatusSeverity(isActive: boolean): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
+    return isActive ? 'success' : 'secondary';
   }
 
   onEdit(project: Project) {

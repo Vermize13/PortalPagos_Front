@@ -20,9 +20,8 @@
           <th>Fecha/Hora</th>
           <th>Usuario</th>
           <th>Acción</th>
-          <th>Tipo Entidad</th>
-          <th>ID Entidad</th>
-          <th>Descripción</th>
+          <th>Entidad</th>
+          <th>Detalles</th>
         </tr>
       </ng-template>
       
@@ -36,9 +35,8 @@
           <td>
             <p-tag [value]="log.action" [severity]="getActionSeverity(log.action)"></p-tag>
           </td>
-          <td>{{ log.entityType }}</td>
-          <td>{{ log.entityId || '-' }}</td>
-          <td>{{ log.description }}</td>
+          <td>{{ log.entityName || '-' }}</td>
+          <td>{{ log.detailsJson || '-' }}</td>
         </tr>
       </ng-template>
       

@@ -1,19 +1,14 @@
-export enum AttachmentType {
-  Image = 'Image',
-  Document = 'Document',
-  Log = 'Log',
-  Other = 'Other'
-}
-
 export interface Attachment {
-  id: number;
-  incidentId: number;
+  id: string; // Guid
+  incidentId: string; // Guid
+  incident: any; // Incident reference
+  uploadedBy: string; // Guid
+  uploader: any; // User reference
   fileName: string;
-  filePath: string;
-  fileSize: number;
-  fileType: AttachmentType;
+  storagePath: string;
   mimeType: string;
-  uploadedById: number;
+  fileSizeBytes: number;
+  sha256Checksum?: string;
   uploadedAt: Date;
 }
 

@@ -1,22 +1,11 @@
-export enum SprintStatus {
-  Planned = 'Planned',
-  Active = 'Active',
-  Completed = 'Completed',
-  Cancelled = 'Cancelled'
-}
-
 export interface Sprint {
-  id: number;
-  projectId: number;
+  id: string; // Guid
+  projectId: string; // Guid
+  project: any; // Project reference
   name: string;
-  description?: string;
-  startDate: Date;
-  endDate: Date;
-  status: SprintStatus;
+  goal?: string;
+  startDate: string; // DateOnly in C# - use ISO string format
+  endDate: string; // DateOnly in C# - use ISO string format
+  isClosed: boolean;
   createdAt: Date;
-  updatedAt?: Date;
-}
-
-export interface SprintWithProject extends Sprint {
-  projectName: string;
 }

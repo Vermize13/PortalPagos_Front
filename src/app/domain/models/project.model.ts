@@ -1,30 +1,23 @@
-export enum ProjectStatus {
-  Active = 'Active',
-  OnHold = 'OnHold',
-  Completed = 'Completed',
-  Archived = 'Archived'
-}
-
 export interface Project {
-  id: number;
+  id: string; // Guid
   name: string;
-  description: string;
-  status: ProjectStatus;
-  startDate: Date;
-  endDate?: Date;
+  code: string;
+  description?: string;
+  isActive: boolean;
+  createdBy: string; // Guid
+  creator: any; // User reference
   createdAt: Date;
-  updatedAt?: Date;
-  ownerId: number;
+  updatedAt: Date;
+  members: ProjectMember[];
 }
 
-export interface ProjectWithMembers extends Project {
-  members: ProjectMemberDetail[];
-}
-
-export interface ProjectMemberDetail {
-  userId: number;
-  userName: string;
-  userEmail: string;
-  roleInProject: string;
-  assignedAt: Date;
+export interface ProjectMember {
+  projectId: string; // Guid
+  project: any; // Project reference
+  userId: string; // Guid
+  user: any; // User reference
+  roleId: string; // Guid
+  role: any; // Role reference
+  joinedAt: Date;
+  isActive: boolean;
 }

@@ -18,9 +18,9 @@
       <ng-template pTemplate="header">
         <tr>
           <th>Usuario</th>
-          <th>Nombre Completo</th>
+          <th>Nombre</th>
           <th>Email</th>
-          <th>Rol Global</th>
+          <th>Rol</th>
           <th>Estado</th>
           <th>Fecha Creación</th>
           <th>Acciones</th>
@@ -30,13 +30,13 @@
       <ng-template pTemplate="body" let-user>
         <tr>
           <td>{{ user.username }}</td>
-          <td>{{ user.firstName }} {{ user.lastName }}</td>
+          <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
           <td>
-            <p-tag [value]="user.globalRole" [severity]="getRoleSeverity(user.globalRole)"></p-tag>
+            <p-tag [value]="user.primaryRole || 'Sin rol'" [severity]="getRoleSeverity(user.primaryRole)"></p-tag>
           </td>
           <td>
-            <p-tag [value]="user.status" [severity]="getStatusSeverity(user.status)"></p-tag>
+            <p-tag [value]="user.isActive ? 'Activo' : 'Inactivo'" [severity]="getStatusSeverity(user.isActive)"></p-tag>
           </td>
           <td>{{ user.createdAt | date:'short' }}</td>
           <td>

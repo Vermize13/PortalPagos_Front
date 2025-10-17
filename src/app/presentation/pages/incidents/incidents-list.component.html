@@ -40,7 +40,7 @@
       
       <ng-template pTemplate="body" let-incident>
         <tr>
-          <td>#{{ incident.id }}</td>
+          <td>{{ incident.code }}</td>
           <td>
             <div class="font-semibold">{{ incident.title }}</div>
             <div class="text-sm text-gray-500">{{ incident.description | slice:0:50 }}...</div>
@@ -52,7 +52,7 @@
           <td>
             <p-tag [value]="incident.priority" [severity]="getPrioritySeverity(incident.priority)"></p-tag>
           </td>
-          <td>{{ incident.assignedToName || 'Sin asignar' }}</td>
+          <td>{{ incident.assigneeName || 'Sin asignar' }}</td>
           <td>{{ incident.createdAt | date:'short' }}</td>
           <td>
             <p-button 
