@@ -34,35 +34,9 @@ Manages backup and restore operations:
 - `POST /api/Backup/restore`
 - `GET /api/Backup/restore/{id}`
 
-### 3. Test Service (`test.service.ts`)
-**Location:** `src/app/data/services/test.service.ts`
-
-Provides test endpoints for different authorization levels:
-- `getPublic(): Observable<any>` - Public endpoint accessible without authentication
-- `getProtected(): Observable<any>` - Protected endpoint requiring authentication
-- `getAdminOnly(): Observable<any>` - Admin-only endpoint
-- `getManagement(): Observable<any>` - Management level endpoint
-- `getDevelopers(): Observable<any>` - Developers level endpoint
-
-**Endpoints:**
-- `GET /api/Test/public`
-- `GET /api/Test/protected`
-- `GET /api/Test/admin-only`
-- `GET /api/Test/management`
-- `GET /api/Test/developers`
-
-### 4. Weather Forecast Service (`weather-forecast.service.ts`)
-**Location:** `src/app/data/services/weather-forecast.service.ts`
-
-Retrieves weather forecast data:
-- `getWeatherForecast(): Observable<WeatherForecast[]>` - Get weather forecast list
-
-**Endpoints:**
-- `GET /WeatherForecast`
-
 ## Updated Services
 
-### 5. Incident Service (`incident.service.ts`)
+### 3. Incident Service (`incident.service.ts`)
 **Location:** `src/app/data/services/incident.service.ts`
 
 Updated to align with OpenAPI spec using UUIDs and new endpoints:
@@ -91,7 +65,7 @@ Updated to align with OpenAPI spec using UUIDs and new endpoints:
 - `POST /api/Incidents/{id}/labels/{labelId}`
 - `DELETE /api/Incidents/{id}/labels/{labelId}`
 
-### 6. Project Service (`project.service.ts`)
+### 4. Project Service (`project.service.ts`)
 **Location:** `src/app/data/services/project.service.ts`
 
 Updated to use UUIDs and added new endpoints:
@@ -118,7 +92,7 @@ Updated to use UUIDs and added new endpoints:
 - `DELETE /api/Projects/{id}/members/{userId}`
 - `GET /api/Projects/{id}/progress`
 
-### 7. Sprint Service (`sprint.service.ts`)
+### 5. Sprint Service (`sprint.service.ts`)
 **Location:** `src/app/data/services/sprint.service.ts`
 
 Updated to align with OpenAPI spec:
@@ -135,7 +109,7 @@ Updated to align with OpenAPI spec:
 - `DELETE /api/Sprints/{id}`
 - `PATCH /api/Sprints/{id}/close`
 
-### 8. Attachment Service (`attachment.service.ts`)
+### 6. Attachment Service (`attachment.service.ts`)
 **Location:** `src/app/data/services/attachment.service.ts`
 
 Updated to nest under incidents endpoint:
@@ -152,7 +126,7 @@ Updated to nest under incidents endpoint:
 - `GET /api/incidents/{incidentId}/attachments/{id}/download`
 - `DELETE /api/incidents/{incidentId}/attachments/{id}`
 
-### 9. User Service (`user.service.ts`)
+### 7. User Service (`user.service.ts`)
 **Location:** `src/app/data/services/user.service.ts`
 
 Added OpenAPI endpoints while preserving existing authentication logic:

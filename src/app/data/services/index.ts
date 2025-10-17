@@ -9,5 +9,3 @@ export * from './audit.service';
 export * from './toast.service';
 export * from './auth.service';
 export * from './backup.service';
-export * from './test.service';
-export * from './weather-forecast.service';
