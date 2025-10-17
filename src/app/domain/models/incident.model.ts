@@ -71,3 +71,10 @@ export interface IncidentComment {
   createdAt: Date;
   editedAt?: Date;
 }
+
+export interface IncidentWithDetails extends Incident {
+  reporterName?: string;
+  assigneeName?: string;
+  commentCount?: number;
+  attachmentCount?: number;
+}

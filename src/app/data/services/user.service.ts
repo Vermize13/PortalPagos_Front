@@ -12,6 +12,7 @@ export class UserService {
   constructor(private userState: UserStateService, private http: HttpClient) { }
   urlAuth = `${environment.url}api/Auth/`;
   urlPass = `${environment.url}api/Password/`;
+  urlUsers = `${environment.url}api/Users`;
 
   isLoggedIn(): boolean {
     // Implementa la lógica para verificar si el usuario está autenticado
@@ -68,6 +69,19 @@ export class UserService {
       responseType: 'text'
     });
 
+  }
+
+  // Users API endpoints from OpenAPI spec
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<User[]>(this.urlUsers);
+  }
+
+  getUserById(id: string): Observable<User> {
+    return this.http.get<User>(`${this.urlUsers}/${id}`);
+  }
+
+  getUserByEmail(email: string): Observable<User> {
+    return this.http.get<User>(`${this.urlUsers}/by-email/${email}`);
   }
 
 }

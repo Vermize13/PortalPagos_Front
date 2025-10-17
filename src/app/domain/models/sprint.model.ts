@@ -9,3 +9,8 @@ export interface Sprint {
   isClosed: boolean;
   createdAt: Date;
 }
+
+export interface SprintWithProject extends Sprint {
+  projectName?: string;
+  projectCode?: string;
+}
