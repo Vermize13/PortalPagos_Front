@@ -31,6 +31,10 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: 'dashboard', loadComponent: () => import('./presentation/pages/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+      { path: 'users', loadComponent: () => import('./presentation/pages/users/users-list.component').then(m => m.UsersListComponent) },
+      { path: 'projects', loadComponent: () => import('./presentation/pages/projects/projects-list.component').then(m => m.ProjectsListComponent) },
+      { path: 'incidents', loadComponent: () => import('./presentation/pages/incidents/incidents-list.component').then(m => m.IncidentsListComponent) },
+      { path: 'audit', loadComponent: () => import('./presentation/pages/audit/audit-list.component').then(m => m.AuditListComponent) },
       
       // Redirect empty path to dashboard
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
