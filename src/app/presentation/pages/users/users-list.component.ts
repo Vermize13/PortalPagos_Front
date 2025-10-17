@@ -4,7 +4,8 @@ import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
-import { UserDisplay, RoleCode, User } from '../../../domain/models';
+import { UserDisplay, RoleCode } from '../../../domain/models';
+import { User as DomainUser } from '../../../domain/models/user.model';
 import { UserService } from '../../../data/services/user.service';
 import { ToastService } from '../../../data/services/toast.service';
 
@@ -31,7 +32,7 @@ export class UsersListComponent implements OnInit {
   loadUsers() {
     this.loading = true;
     this.userService.getAllUsers().subscribe({
-      next: (users: User[]) => {
+      next: (users: DomainUser[]) => {
         // Transform User[] to UserDisplay[]
         this.users = users.map(user => ({
           id: user.id,
