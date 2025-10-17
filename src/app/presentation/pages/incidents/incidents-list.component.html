@@ -1,0 +1,87 @@
+<div class="container-fluid p-4">
+  <p-card>
+    <div class="flex justify-content-between align-items-center mb-4">
+      <h2 class="m-0">Gestión de Incidencias</h2>
+      <p-button label="Nueva Incidencia" icon="pi pi-plus" (onClick)="onCreate()"></p-button>
+    </div>
+
+    <div class="mb-3">
+      <p-dropdown 
+        [options]="statuses" 
+        [(ngModel)]="selectedStatus" 
+        placeholder="Filtrar por estado"
+        [showClear]="true"
+        (onChange)="onFilterByStatus()">
+      </p-dropdown>
+    </div>
+
+    <p-table 
+      [value]="incidents" 
+      [loading]="loading"
+      [paginator]="true" 
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} incidencias"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      styleClass="p-datatable-striped">
+      
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Proyecto</th>
+          <th>Estado</th>
+          <th>Prioridad</th>
+          <th>Asignado a</th>
+          <th>Creado</th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-incident>
+        <tr>
+          <td>{{ incident.code }}</td>
+          <td>
+            <div class="font-semibold">{{ incident.title }}</div>
+            <div class="text-sm text-gray-500">{{ incident.description | slice:0:50 }}...</div>
+          </td>
+          <td>{{ incident.projectName }}</td>
+          <td>
+            <p-tag [value]="incident.status" [severity]="getStatusSeverity(incident.status)"></p-tag>
+          </td>
+          <td>
+            <p-tag [value]="incident.priority" [severity]="getPrioritySeverity(incident.priority)"></p-tag>
+          </td>
+          <td>{{ incident.assigneeName || 'Sin asignar' }}</td>
+          <td>{{ incident.createdAt | date:'short' }}</td>
+          <td>
+            <p-button 
+              icon="pi pi-eye" 
+              [rounded]="true" 
+              [text]="true" 
+              severity="secondary"
+              (onClick)="onViewDetails(incident)"></p-button>
+            <p-button 
+              icon="pi pi-pencil" 
+              [rounded]="true" 
+              [text]="true" 
+              severity="info"
+              (onClick)="onEdit(incident)"></p-button>
+            <p-button 
+              icon="pi pi-trash" 
+              [rounded]="true" 
+              [text]="true" 
+              severity="danger"
+              (onClick)="onDelete(incident)"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center">No se encontraron incidencias.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+</div>

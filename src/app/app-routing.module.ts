@@ -30,12 +30,13 @@ export const routes: Routes = [
     loadComponent: () => import('../app/presentation/pages/layout/layout.component').then(m => m.LayoutComponent),
     canActivate: [AuthGuard],
     children: [
-      { path: 'pdfCertification', loadComponent: () => import('./presentation/components/pdfCertification/pdfCertification.component').then(m => m.PdfCertificationComponent) },
-      { path: 'contratista', loadComponent: () => import('./presentation/components/contratista/consultarContratista/consultarContratista.component').then(m => m.ConsultarContratistaComponent) },
-      { path: 'crearPerfil', loadComponent: () => import('./presentation/components/crearPerfil/crearPerfil.component').then(m => m.CrearPerfilComponent) },
-      { path: 'asociarPermisos', loadComponent: () => import('./presentation/components/asociarPermisos/asociarPermisos.component').then(m => m.AsociarPermisosComponent) },
+      { path: 'dashboard', loadComponent: () => import('./presentation/pages/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+      { path: 'users', loadComponent: () => import('./presentation/pages/users/users-list.component').then(m => m.UsersListComponent) },
+      { path: 'projects', loadComponent: () => import('./presentation/pages/projects/projects-list.component').then(m => m.ProjectsListComponent) },
+      { path: 'incidents', loadComponent: () => import('./presentation/pages/incidents/incidents-list.component').then(m => m.IncidentsListComponent) },
+      { path: 'audit', loadComponent: () => import('./presentation/pages/audit/audit-list.component').then(m => m.AuditListComponent) },
       
-      // Redirect empty path to a default dashboard or home component
+      // Redirect empty path to dashboard
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ]
   },

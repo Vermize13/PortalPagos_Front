@@ -1,20 +1,57 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Sistema de Gestión de Incidencias - Frontend
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+Sistema web para la gestión de incidencias, proyectos y equipos de desarrollo.
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+## Descripción
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+Aplicación frontend desarrollada en Angular 18 que permite gestionar:
+- **Usuarios**: Gestión de usuarios con diferentes roles (Admin, Product Owner, Developer, Tester)
+- **Proyectos**: Organización de proyectos con sprints y equipos
+- **Incidencias**: Creación, seguimiento y resolución de incidencias (bugs, tareas, mejoras)
+- **Dashboard**: Métricas y visualización de datos del proyecto
+- **Auditoría**: Registro y seguimiento de todas las acciones del sistema
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+## Tecnologías
+
+- Angular 18
+- PrimeNG (UI Components)
+- TypeScript
+- TailwindCSS & Bootstrap
+- RxJS
+
+## Instalación
+
+```bash
+# Clonar el repositorio
+git clone <repository-url>
+
+# Instalar dependencias
+npm install
+
+# Ejecutar en modo desarrollo
+npm start
+
+# Construir para producción
+npm run build:prod
+```
+
+## Estructura del Proyecto
+
+```
+src/
+├── app/
+│   ├── data/              # Servicios y estados
+│   ├── domain/            # Modelos de dominio
+│   ├── guards/            # Guards de autenticación
+│   └── presentation/      # Componentes y páginas
+│       ├── components/    # Componentes reutilizables
+│       └── pages/         # Páginas principales
+```
+
+## Desarrollo
+
+El servidor de desarrollo se ejecuta en `http://localhost:4200/`
+
+## Autenticación
+
+El sistema incluye autenticación JWT con 2FA (doble factor de autenticación)

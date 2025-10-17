@@ -1,0 +1,68 @@
+<div class="container-fluid p-4">
+  <p-card>
+    <div class="flex justify-content-between align-items-center mb-4">
+      <h2 class="m-0">Gestión de Proyectos</h2>
+      <p-button label="Nuevo Proyecto" icon="pi pi-plus" (onClick)="onCreate()"></p-button>
+    </div>
+
+    <p-table 
+      [value]="projects" 
+      [loading]="loading"
+      [paginator]="true" 
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} proyectos"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      styleClass="p-datatable-striped">
+      
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Estado</th>
+          <th>Fecha Creación</th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-project>
+        <tr>
+          <td>{{ project.code }}</td>
+          <td>{{ project.name }}</td>
+          <td>{{ project.description }}</td>
+          <td>
+            <p-tag [value]="project.isActive ? 'Activo' : 'Inactivo'" [severity]="getStatusSeverity(project.isActive)"></p-tag>
+          </td>
+          <td>{{ project.createdAt | date:'short' }}</td>
+          <td>
+            <p-button 
+              icon="pi pi-eye" 
+              [rounded]="true" 
+              [text]="true" 
+              severity="secondary"
+              (onClick)="onViewDetails(project)"></p-button>
+            <p-button 
+              icon="pi pi-pencil" 
+              [rounded]="true" 
+              [text]="true" 
+              severity="info"
+              (onClick)="onEdit(project)"></p-button>
+            <p-button 
+              icon="pi pi-trash" 
+              [rounded]="true" 
+              [text]="true" 
+              severity="danger"
+              (onClick)="onDelete(project)"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center">No se encontraron proyectos.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+</div>
