@@ -30,12 +30,9 @@ export const routes: Routes = [
     loadComponent: () => import('../app/presentation/pages/layout/layout.component').then(m => m.LayoutComponent),
     canActivate: [AuthGuard],
     children: [
-      { path: 'pdfCertification', loadComponent: () => import('./presentation/components/pdfCertification/pdfCertification.component').then(m => m.PdfCertificationComponent) },
-      { path: 'contratista', loadComponent: () => import('./presentation/components/contratista/consultarContratista/consultarContratista.component').then(m => m.ConsultarContratistaComponent) },
-      { path: 'crearPerfil', loadComponent: () => import('./presentation/components/crearPerfil/crearPerfil.component').then(m => m.CrearPerfilComponent) },
-      { path: 'asociarPermisos', loadComponent: () => import('./presentation/components/asociarPermisos/asociarPermisos.component').then(m => m.AsociarPermisosComponent) },
+      { path: 'dashboard', loadComponent: () => import('./presentation/pages/dashboard/dashboard.component').then(m => m.DashboardComponent) },
       
-      // Redirect empty path to a default dashboard or home component
+      // Redirect empty path to dashboard
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ]
   },
