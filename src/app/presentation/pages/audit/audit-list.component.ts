@@ -5,6 +5,8 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { AuditLogWithUser, AuditAction } from '../../../domain/models';
+import { AuditService } from '../../../data/services/audit.service';
+import { ToastService } from '../../../data/services/toast.service';
 
 @Component({
   selector: 'app-audit-list',
@@ -17,12 +19,33 @@ export class AuditListComponent implements OnInit {
   auditLogs: AuditLogWithUser[] = [];
   loading: boolean = false;
 
+  constructor(
+    private auditService: AuditService,
+    private toastService: ToastService
+  ) {}
+
   ngOnInit() {
     this.loadAuditLogs();
   }
 
   loadAuditLogs() {
     this.loading = true;
+    this.auditService.getAll().subscribe({
+      next: (logs) => {
+        this.auditLogs = logs;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading audit logs:', error);
+        this.toastService.showError('Error', 'No se pudieron cargar los registros de auditoría');
+        this.loading = false;
+        // Fallback to mock data on error
+        this.loadMockAuditLogs();
+      }
+    });
+  }
+
+  loadMockAuditLogs() {
     // Mock data for demonstration - using Guid format
     this.auditLogs = [
       {
@@ -72,7 +95,6 @@ export class AuditListComponent implements OnInit {
         createdAt: new Date('2024-03-15T12:00:00')
       }
     ];
-    this.loading = false;
   }
 
   getActionSeverity(action: AuditAction): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {

@@ -10,8 +10,11 @@ import {
   Incident, 
   IncidentStatus, 
   IncidentPriority, 
-  IncidentSeverity 
+  IncidentSeverity,
+  IncidentWithDetails
 } from '../../../domain/models';
+import { IncidentService, IncidentFilter } from '../../../data/services/incident.service';
+import { ToastService } from '../../../data/services/toast.service';
 
 // Helper interface for displaying incidents with additional info
 interface IncidentDisplay extends Incident {
@@ -36,12 +39,45 @@ export class IncidentsListComponent implements OnInit {
   priorities = Object.values(IncidentPriority);
   selectedStatus: string = '';
 
+  constructor(
+    private incidentService: IncidentService,
+    private toastService: ToastService
+  ) {}
+
   ngOnInit() {
     this.loadIncidents();
   }
 
   loadIncidents() {
     this.loading = true;
+    const filter: IncidentFilter = {};
+    if (this.selectedStatus) {
+      filter.status = this.selectedStatus as IncidentStatus;
+    }
+    
+    this.incidentService.getAll(filter).subscribe({
+      next: (incidents: IncidentWithDetails[]) => {
+        // Map to display format
+        this.incidents = incidents.map(inc => ({
+          ...inc,
+          projectName: inc.project?.name,
+          sprintName: inc.sprint?.name,
+          reporterName: inc.reporterName || inc.reporter?.name,
+          assigneeName: inc.assigneeName || inc.assignee?.name
+        }));
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading incidents:', error);
+        this.toastService.showError('Error', 'No se pudieron cargar las incidencias');
+        this.loading = false;
+        // Fallback to mock data on error
+        this.loadMockIncidents();
+      }
+    });
+  }
+
+  loadMockIncidents() {
     // Mock data for demonstration - using Guid format
     this.incidents = [
       {
@@ -118,7 +154,6 @@ export class IncidentsListComponent implements OnInit {
         comments: []
       }
     ];
-    this.loading = false;
   }
 
   getStatusSeverity(status: IncidentStatus): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
@@ -161,5 +196,6 @@ export class IncidentsListComponent implements OnInit {
 
   onFilterByStatus() {
     console.log('Filter by status:', this.selectedStatus);
+    this.loadIncidents();
   }
 }

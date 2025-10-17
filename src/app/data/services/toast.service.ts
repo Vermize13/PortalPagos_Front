@@ -40,6 +40,23 @@ export class ToastService {
       detail: detail,
       life: 3000,
       });
-}
+  }
+
+  // Synchronous convenience methods
+  showSuccess(summary: string, detail: string): void {
+    this.Success(summary, detail);
+  }
+
+  showError(summary: string, detail: string): void {
+    this.Error(summary, detail);
+  }
+
+  showInfo(summary: string, detail: string): void {
+    this.Info(summary, detail);
+  }
+
+  showWarn(summary: string, detail: string): void {
+    this.Warn(summary, detail);
+  }
 
 }

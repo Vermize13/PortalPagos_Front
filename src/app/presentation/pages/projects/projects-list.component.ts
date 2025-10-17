@@ -5,6 +5,8 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { Project } from '../../../domain/models';
+import { ProjectService } from '../../../data/services/project.service';
+import { ToastService } from '../../../data/services/toast.service';
 
 @Component({
   selector: 'app-projects-list',
@@ -17,12 +19,33 @@ export class ProjectsListComponent implements OnInit {
   projects: Project[] = [];
   loading: boolean = false;
 
+  constructor(
+    private projectService: ProjectService,
+    private toastService: ToastService
+  ) {}
+
   ngOnInit() {
     this.loadProjects();
   }
 
   loadProjects() {
     this.loading = true;
+    this.projectService.getAll().subscribe({
+      next: (projects) => {
+        this.projects = projects;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading projects:', error);
+        this.toastService.showError('Error', 'No se pudieron cargar los proyectos');
+        this.loading = false;
+        // Fallback to mock data on error
+        this.loadMockProjects();
+      }
+    });
+  }
+
+  loadMockProjects() {
     // Mock data for demonstration - using Guid format
     this.projects = [
       {
@@ -62,7 +85,6 @@ export class ProjectsListComponent implements OnInit {
         members: []
       }
     ];
-    this.loading = false;
   }
 
   getStatusSeverity(isActive: boolean): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {

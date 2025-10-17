@@ -4,7 +4,9 @@ import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
-import { UserDisplay, RoleCode } from '../../../domain/models';
+import { UserDisplay, RoleCode, User } from '../../../domain/models';
+import { UserService } from '../../../data/services/user.service';
+import { ToastService } from '../../../data/services/toast.service';
 
 @Component({
   selector: 'app-users-list',
@@ -17,12 +19,42 @@ export class UsersListComponent implements OnInit {
   users: UserDisplay[] = [];
   loading: boolean = false;
 
+  constructor(
+    private userService: UserService,
+    private toastService: ToastService
+  ) {}
+
   ngOnInit() {
     this.loadUsers();
   }
 
   loadUsers() {
     this.loading = true;
+    this.userService.getAllUsers().subscribe({
+      next: (users: User[]) => {
+        // Transform User[] to UserDisplay[]
+        this.users = users.map(user => ({
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          name: user.name,
+          primaryRole: user.userRoles?.[0]?.role?.name || 'Sin rol',
+          isActive: user.isActive,
+          createdAt: user.createdAt
+        }));
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading users:', error);
+        this.toastService.showError('Error', 'No se pudieron cargar los usuarios');
+        this.loading = false;
+        // Fallback to mock data on error
+        this.loadMockUsers();
+      }
+    });
+  }
+
+  loadMockUsers() {
     // Mock data for demonstration - using Guid format
     this.users = [
       {
@@ -53,7 +85,6 @@ export class UsersListComponent implements OnInit {
         createdAt: new Date('2024-02-01')
       }
     ];
-    this.loading = false;
   }
 
   getRoleSeverity(role?: string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
