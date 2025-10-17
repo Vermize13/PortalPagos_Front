@@ -12,6 +12,16 @@ export enum AuditAction {
   Download = 'Download'
 }
 
+export enum AuditEntityType {
+  User = 'User',
+  Project = 'Project',
+  Incident = 'Incident',
+  Sprint = 'Sprint',
+  Comment = 'Comment',
+  Attachment = 'Attachment',
+  Backup = 'Backup'
+}
+
 export interface AuditLog {
   id: string; // Guid
   action: AuditAction;

@@ -11,20 +11,49 @@ import {
 } from '../../domain/models';
 
 export interface IncidentFilter {
-  projectId?: number;
-  sprintId?: number;
+  projectId?: string;
+  sprintId?: string;
   status?: IncidentStatus;
   priority?: IncidentPriority;
   severity?: IncidentSeverity;
-  assignedToId?: number;
-  reportedById?: number;
+  assigneeId?: string;
+  reporterId?: string;
+}
+
+export interface CreateIncidentRequest {
+  projectId: string;
+  sprintId?: string;
+  title: string;
+  description?: string;
+  severity: IncidentSeverity;
+  priority: IncidentPriority;
+  assigneeId?: string;
+  storyPoints?: number;
+  dueDate?: string;
+  labelIds?: string[];
+}
+
+export interface UpdateIncidentRequest {
+  title?: string;
+  description?: string;
+  severity?: IncidentSeverity;
+  priority?: IncidentPriority;
+  status?: IncidentStatus;
+  sprintId?: string;
+  assigneeId?: string;
+  storyPoints?: number;
+  dueDate?: string;
+}
+
+export interface AddCommentRequest {
+  body: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class IncidentService {
-  private readonly apiUrl = `${environment.url}api/incidents`;
+  private readonly apiUrl = `${environment.url}api/Incidents`;
 
   constructor(private http: HttpClient) { }
 
@@ -41,39 +70,43 @@ export class IncidentService {
     return this.http.get<IncidentWithDetails[]>(this.apiUrl, { params });
   }
 
-  getById(id: number): Observable<IncidentWithDetails> {
+  getById(id: string): Observable<IncidentWithDetails> {
     return this.http.get<IncidentWithDetails>(`${this.apiUrl}/${id}`);
   }
 
-  create(incident: Partial<Incident>): Observable<Incident> {
-    return this.http.post<Incident>(this.apiUrl, incident);
+  create(request: CreateIncidentRequest): Observable<Incident> {
+    return this.http.post<Incident>(this.apiUrl, request);
   }
 
-  update(id: number, incident: Partial<Incident>): Observable<Incident> {
-    return this.http.put<Incident>(`${this.apiUrl}/${id}`, incident);
+  update(id: string, request: UpdateIncidentRequest): Observable<Incident> {
+    return this.http.put<Incident>(`${this.apiUrl}/${id}`, request);
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  assign(id: string, assigneeId: string): Observable<Incident> {
+    return this.http.post<Incident>(`${this.apiUrl}/${id}/assign/${assigneeId}`, {});
   }
 
-  updateStatus(id: number, status: IncidentStatus): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrl}/${id}/status`, { status });
+  close(id: string): Observable<Incident> {
+    return this.http.post<Incident>(`${this.apiUrl}/${id}/close`, {});
   }
 
-  assign(id: number, userId: number): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrl}/${id}/assign`, { userId });
+  getHistory(id: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${id}/history`);
   }
 
-  addTag(id: number, tag: string): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${id}/tags`, { tag });
+  getComments(id: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${id}/comments`);
   }
 
-  removeTag(id: number, tag: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}/tags/${tag}`);
+  addComment(id: string, request: AddCommentRequest): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${id}/comments`, request);
   }
 
-  getMetrics(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/metrics`);
+  addLabel(id: string, labelId: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${id}/labels/${labelId}`, {});
+  }
+
+  removeLabel(id: string, labelId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}/labels/${labelId}`);
   }
 }

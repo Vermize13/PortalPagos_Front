@@ -4,11 +4,43 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Project, ProjectWithMembers, ProjectMemberDetail } from '../../domain/models';
 
+export interface CreateProjectRequest {
+  name: string;
+  code: string;
+  description?: string;
+}
+
+export interface UpdateProjectRequest {
+  name?: string;
+  description?: string;
+  isActive?: boolean;
+}
+
+export interface AddProjectMemberRequest {
+  userId: string;
+  roleId: string;
+}
+
+export interface ProjectProgressResponse {
+  projectId: string;
+  projectName?: string;
+  totalSprints: number;
+  activeSprints: number;
+  closedSprints: number;
+  totalIncidents: number;
+  openIncidents: number;
+  inProgressIncidents: number;
+  closedIncidents: number;
+  totalMembers: number;
+  activeMembers: number;
+  completionPercentage: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectService {
-  private readonly apiUrl = `${environment.url}api/projects`;
+  private readonly apiUrl = `${environment.url}api/Projects`;
 
   constructor(private http: HttpClient) { }
 
@@ -16,31 +48,39 @@ export class ProjectService {
     return this.http.get<Project[]>(this.apiUrl);
   }
 
-  getById(id: number): Observable<ProjectWithMembers> {
+  getById(id: string): Observable<ProjectWithMembers> {
     return this.http.get<ProjectWithMembers>(`${this.apiUrl}/${id}`);
   }
 
-  create(project: Partial<Project>): Observable<Project> {
-    return this.http.post<Project>(this.apiUrl, project);
+  getByCode(code: string): Observable<Project> {
+    return this.http.get<Project>(`${this.apiUrl}/by-code/${code}`);
   }
 
-  update(id: number, project: Partial<Project>): Observable<Project> {
-    return this.http.put<Project>(`${this.apiUrl}/${id}`, project);
+  create(request: CreateProjectRequest): Observable<Project> {
+    return this.http.post<Project>(this.apiUrl, request);
   }
 
-  delete(id: number): Observable<void> {
+  update(id: string, request: UpdateProjectRequest): Observable<Project> {
+    return this.http.put<Project>(`${this.apiUrl}/${id}`, request);
+  }
+
+  delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getMembers(projectId: number): Observable<ProjectMemberDetail[]> {
+  getMembers(projectId: string): Observable<ProjectMemberDetail[]> {
     return this.http.get<ProjectMemberDetail[]>(`${this.apiUrl}/${projectId}/members`);
   }
 
-  addMember(projectId: number, userId: number, role: string): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${projectId}/members`, { userId, role });
+  addMember(projectId: string, request: AddProjectMemberRequest): Observable<ProjectMemberDetail> {
+    return this.http.post<ProjectMemberDetail>(`${this.apiUrl}/${projectId}/members`, request);
   }
 
-  removeMember(projectId: number, userId: number): Observable<void> {
+  removeMember(projectId: string, userId: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${projectId}/members/${userId}`);
+  }
+
+  getProgress(id: string): Observable<ProjectProgressResponse> {
+    return this.http.get<ProjectProgressResponse>(`${this.apiUrl}/${id}/progress`);
   }
 }

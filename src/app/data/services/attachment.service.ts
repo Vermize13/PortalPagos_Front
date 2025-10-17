@@ -8,29 +8,32 @@ import { Attachment, AttachmentWithUser } from '../../domain/models';
   providedIn: 'root'
 })
 export class AttachmentService {
-  private readonly apiUrl = `${environment.url}api/attachments`;
+  private readonly baseUrl = `${environment.url}api/incidents`;
 
   constructor(private http: HttpClient) { }
 
-  getByIncident(incidentId: number): Observable<AttachmentWithUser[]> {
-    return this.http.get<AttachmentWithUser[]>(`${this.apiUrl}/incident/${incidentId}`);
+  getByIncident(incidentId: string): Observable<AttachmentWithUser[]> {
+    return this.http.get<AttachmentWithUser[]>(`${this.baseUrl}/${incidentId}/attachments`);
   }
 
-  upload(incidentId: number, file: File): Observable<Attachment> {
+  getById(incidentId: string, id: string): Observable<Attachment> {
+    return this.http.get<Attachment>(`${this.baseUrl}/${incidentId}/attachments/${id}`);
+  }
+
+  upload(incidentId: string, file: File): Observable<Attachment> {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('incidentId', incidentId.toString());
     
-    return this.http.post<Attachment>(`${this.apiUrl}/upload`, formData);
+    return this.http.post<Attachment>(`${this.baseUrl}/${incidentId}/attachments`, formData);
   }
 
-  download(id: number): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/${id}/download`, { 
+  download(incidentId: string, id: string): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/${incidentId}/attachments/${id}/download`, { 
       responseType: 'blob' 
     });
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  delete(incidentId: string, id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${incidentId}/attachments/${id}`);
   }
 }

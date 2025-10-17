@@ -21,3 +21,13 @@ export interface ProjectMember {
   joinedAt: Date;
   isActive: boolean;
 }
+
+export interface ProjectWithMembers extends Project {
+  memberDetails?: ProjectMemberDetail[];
+}
+
+export interface ProjectMemberDetail extends ProjectMember {
+  userName?: string;
+  userEmail?: string;
+  roleName?: string;
+}
