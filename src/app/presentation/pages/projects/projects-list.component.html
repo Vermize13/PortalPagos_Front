@@ -65,4 +65,77 @@
       </ng-template>
     </p-table>
   </p-card>
+
+  <!-- Project Create/Edit Dialog -->
+  <p-dialog 
+    [(visible)]="displayDialog" 
+    [header]="isEditMode ? 'Editar Proyecto' : 'Nuevo Proyecto'"
+    [modal]="true"
+    [style]="{width: '600px'}"
+    [closable]="true">
+    
+    <div class="p-fluid">
+      <div class="field mb-3">
+        <label for="code">Código *</label>
+        <input 
+          id="code" 
+          type="text" 
+          pInputText 
+          [(ngModel)]="projectForm.code"
+          [disabled]="isEditMode"
+          placeholder="Ej: PP, SI"
+          maxlength="10" />
+        <small class="text-muted">Código único del proyecto (2-10 caracteres)</small>
+      </div>
+
+      <div class="field mb-3">
+        <label for="name">Nombre *</label>
+        <input 
+          id="name" 
+          type="text" 
+          pInputText 
+          [(ngModel)]="projectForm.name"
+          placeholder="Nombre del proyecto" />
+      </div>
+
+      <div class="field mb-3">
+        <label for="description">Descripción</label>
+        <textarea 
+          id="description" 
+          pInputTextarea 
+          [(ngModel)]="projectForm.description"
+          placeholder="Descripción del proyecto"
+          rows="4">
+        </textarea>
+      </div>
+
+      <div class="field mb-3">
+        <div class="flex align-items-center">
+          <p-checkbox 
+            [(ngModel)]="projectForm.isActive"
+            [binary]="true"
+            inputId="active">
+          </p-checkbox>
+          <label for="active" class="ml-2">Proyecto Activo</label>
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button 
+        label="Cancelar" 
+        icon="pi pi-times" 
+        (onClick)="onCancelDialog()"
+        styleClass="p-button-text">
+      </p-button>
+      <p-button 
+        [label]="isEditMode ? 'Actualizar' : 'Crear'" 
+        icon="pi pi-check" 
+        (onClick)="onSaveProject()">
+      </p-button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Confirmation Dialog -->
+  <p-confirmDialog></p-confirmDialog>
 </div>
