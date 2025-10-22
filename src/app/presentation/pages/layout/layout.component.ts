@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { SidenavComponent } from '../../components/sidenav/sidenav.component';
 import { RouterModule } from '@angular/router';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
     selector: 'app-layout',
@@ -9,7 +10,8 @@ import { RouterModule } from '@angular/router';
     standalone: true,
     imports: [
         SidenavComponent,
-        RouterModule
+        RouterModule,
+        ToastModule
     ],
     providers: []
 })

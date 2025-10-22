@@ -63,4 +63,96 @@
       </ng-template>
     </p-table>
   </p-card>
+
+  <!-- User Create/Edit Dialog -->
+  <p-dialog 
+    [(visible)]="displayDialog" 
+    [header]="isEditMode ? 'Editar Usuario' : 'Nuevo Usuario'"
+    [modal]="true"
+    [style]="{width: '500px'}"
+    [closable]="true">
+    
+    <div class="p-fluid">
+      <div class="field mb-3">
+        <label for="name">Nombre Completo *</label>
+        <input 
+          id="name" 
+          type="text" 
+          pInputText 
+          [(ngModel)]="userForm.name"
+          placeholder="Ingrese el nombre completo" />
+      </div>
+
+      <div class="field mb-3">
+        <label for="username">Usuario *</label>
+        <input 
+          id="username" 
+          type="text" 
+          pInputText 
+          [(ngModel)]="userForm.username"
+          [disabled]="isEditMode"
+          placeholder="Ingrese el nombre de usuario" />
+      </div>
+
+      <div class="field mb-3">
+        <label for="email">Email *</label>
+        <input 
+          id="email" 
+          type="email" 
+          pInputText 
+          [(ngModel)]="userForm.email"
+          placeholder="Ingrese el email" />
+      </div>
+
+      <div class="field mb-3" *ngIf="!isEditMode">
+        <label for="password">Contraseña *</label>
+        <input 
+          id="password" 
+          type="password" 
+          pInputText 
+          [(ngModel)]="userForm.password"
+          placeholder="Ingrese la contraseña" />
+      </div>
+
+      <div class="field mb-3">
+        <label for="role">Rol *</label>
+        <p-dropdown 
+          id="role"
+          [options]="roles"
+          [(ngModel)]="userForm.roleId"
+          placeholder="Seleccione un rol"
+          optionLabel="label"
+          optionValue="value">
+        </p-dropdown>
+      </div>
+
+      <div class="field mb-3">
+        <div class="flex align-items-center">
+          <p-checkbox 
+            [(ngModel)]="userForm.isActive"
+            [binary]="true"
+            inputId="active">
+          </p-checkbox>
+          <label for="active" class="ml-2">Usuario Activo</label>
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button 
+        label="Cancelar" 
+        icon="pi pi-times" 
+        (onClick)="onCancelDialog()"
+        styleClass="p-button-text">
+      </p-button>
+      <p-button 
+        [label]="isEditMode ? 'Actualizar' : 'Guardar'" 
+        icon="pi pi-check" 
+        (onClick)="onSaveUser()">
+      </p-button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Confirmation Dialog -->
+  <p-confirmDialog></p-confirmDialog>
 </div>

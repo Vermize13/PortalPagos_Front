@@ -84,4 +84,126 @@
       </ng-template>
     </p-table>
   </p-card>
+
+  <!-- Incident Create/Edit Dialog -->
+  <p-dialog 
+    [(visible)]="displayDialog" 
+    [header]="isEditMode ? 'Editar Incidencia' : 'Nueva Incidencia'"
+    [modal]="true"
+    [style]="{width: '700px'}"
+    [closable]="true">
+    
+    <div class="p-fluid">
+      <div class="field mb-3">
+        <label for="project">Proyecto *</label>
+        <p-dropdown 
+          id="project"
+          [options]="projects"
+          [(ngModel)]="incidentForm.projectId"
+          placeholder="Seleccione un proyecto"
+          [disabled]="isEditMode"
+          optionLabel="label"
+          optionValue="value">
+        </p-dropdown>
+      </div>
+
+      <div class="field mb-3">
+        <label for="title">Título *</label>
+        <input 
+          id="title" 
+          type="text" 
+          pInputText 
+          [(ngModel)]="incidentForm.title"
+          placeholder="Título de la incidencia" />
+      </div>
+
+      <div class="field mb-3">
+        <label for="description">Descripción</label>
+        <textarea 
+          id="description" 
+          pInputTextarea 
+          [(ngModel)]="incidentForm.description"
+          placeholder="Descripción detallada de la incidencia"
+          rows="4">
+        </textarea>
+      </div>
+
+      <div class="grid">
+        <div class="col-6">
+          <div class="field mb-3">
+            <label for="severity">Severidad *</label>
+            <p-dropdown 
+              id="severity"
+              [options]="severities"
+              [(ngModel)]="incidentForm.severity"
+              placeholder="Seleccione severidad"
+              optionLabel="label"
+              optionValue="value">
+            </p-dropdown>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="field mb-3">
+            <label for="priority">Prioridad *</label>
+            <p-dropdown 
+              id="priority"
+              [options]="priorities"
+              [(ngModel)]="incidentForm.priority"
+              placeholder="Seleccione prioridad"
+              optionLabel="label"
+              optionValue="value">
+            </p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="col-6">
+          <div class="field mb-3">
+            <label for="assignee">Asignado a</label>
+            <p-dropdown 
+              id="assignee"
+              [options]="users"
+              [(ngModel)]="incidentForm.assigneeId"
+              placeholder="Seleccione usuario"
+              [showClear]="true"
+              optionLabel="label"
+              optionValue="value">
+            </p-dropdown>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="field mb-3">
+            <label for="dueDate">Fecha Límite</label>
+            <p-calendar 
+              id="dueDate"
+              [(ngModel)]="incidentForm.dueDate"
+              [showIcon]="true"
+              placeholder="Seleccione fecha"
+              dateFormat="dd/mm/yy">
+            </p-calendar>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button 
+        label="Cancelar" 
+        icon="pi pi-times" 
+        (onClick)="onCancelDialog()"
+        styleClass="p-button-text">
+      </p-button>
+      <p-button 
+        [label]="isEditMode ? 'Actualizar' : 'Crear'" 
+        icon="pi pi-check" 
+        (onClick)="onSaveIncident()">
+      </p-button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Confirmation Dialog -->
+  <p-confirmDialog></p-confirmDialog>
 </div>

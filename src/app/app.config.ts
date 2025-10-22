@@ -5,6 +5,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app-routing.module';
 import { ErrorHandlerInterceptor } from './data/services/interceptors/error-handler.interceptor';
+import { JwtInterceptor } from './data/services/interceptors/jwt.interceptor';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
 
@@ -15,7 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync('noop'),
     provideAnimations(),
-    provideHttpClient(withInterceptors([ErrorHandlerInterceptor])),
+    provideHttpClient(withInterceptors([JwtInterceptor, ErrorHandlerInterceptor])),
     importProvidersFrom([BrowserAnimationsModule]),
     MessageService
   ]

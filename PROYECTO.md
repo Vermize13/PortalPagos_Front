@@ -276,27 +276,35 @@ src/app/
 - Preparado para contenedores Docker
 - Configuración de entornos separada
 
+## Estado Actual de Integración (Actualizado)
+
+### ✅ Completado
+1. **Integración con Backend**: Todos los servicios conectados con API REST del backend C#
+2. **Manejo de errores y loading states**: Implementado en todos los componentes de lista
+3. **Interceptores HTTP**: JWT interceptor agregado para autenticación automática
+4. **Dashboard con métricas**: Mostrando datos reales del backend
+5. **Toast notifications**: Sistema de notificaciones implementado
+6. **Error handling**: Fallback a datos mock cuando el backend no está disponible
+
+### 🔄 En Progreso
+Las funcionalidades base están integradas con el backend. Ver `INTEGRATION_STATUS.md` para detalles completos.
+
 ## Próximos Pasos
 
-### Integración con Backend
-1. Conectar servicios con API REST del backend C#
-2. Implementar manejo de errores y loading states
-3. Añadir interceptores HTTP para tokens
-
 ### Funcionalidades Adicionales
-1. Componentes de formularios para crear/editar entidades
+1. Componentes de formularios para crear/editar entidades (Usuarios, Proyectos, Incidencias)
 2. Vista detalle de incidencias con comentarios y adjuntos
 3. Tablero Kanban para incidencias
-4. Gráficos y métricas en dashboard
+4. Gráficos avanzados en dashboard
 5. Filtros avanzados en todas las listas
 6. Notificaciones en tiempo real
 
 ### Mejoras de UX
 1. Confirmación de eliminaciones
-2. Toasts para feedback de acciones
-3. Validación de formularios
-4. Drag & drop para archivos
-5. Búsqueda global
+2. Validación de formularios
+3. Drag & drop para archivos
+4. Búsqueda global
+5. Exportación de datos
 
 ## Comandos Útiles
 
