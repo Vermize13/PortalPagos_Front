@@ -83,7 +83,7 @@ export class AuditListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading audit logs:', error);
-        this.toastService.Error('Error', 'No se pudieron cargar los registros de auditoría');
+        this.toastService.showError('Error', 'No se pudieron cargar los registros de auditoría');
         this.loading = false;
         // Use mock data on error
         this.loadMockData();
@@ -141,7 +141,6 @@ export class AuditListComponent implements OnInit {
         createdAt: new Date('2024-03-15T12:00:00')
       }
     ];
-    this.loading = false;
   }
 
   // RF5.2: Apply filters
@@ -244,11 +243,11 @@ export class AuditListComponent implements OnInit {
       const fileName = `auditoria_${new Date().toISOString().split('T')[0]}.xlsx`;
       saveAs(blob, fileName);
 
-      this.toastService.Success('Éxito', 'Registros de auditoría exportados correctamente');
+      this.toastService.showSuccess('Éxito', 'Registros de auditoría exportados correctamente');
       this.loading = false;
     } catch (error) {
       console.error('Error exporting audit logs:', error);
-      this.toastService.Error('Error', 'No se pudieron exportar los registros');
+      this.toastService.showError('Error', 'No se pudieron exportar los registros');
       this.loading = false;
     }
   }

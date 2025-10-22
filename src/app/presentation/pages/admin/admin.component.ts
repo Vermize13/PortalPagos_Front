@@ -62,7 +62,7 @@ export class AdminComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading backups:', error);
-        this.toastService.Error('Error', 'No se pudieron cargar las copias de seguridad');
+        this.toastService.showError('Error', 'No se pudieron cargar las copias de seguridad');
         this.loading = false;
       }
     });
@@ -76,20 +76,20 @@ export class AdminComponent implements OnInit {
 
   createBackup() {
     if (!this.backupNotes.trim()) {
-      this.toastService.Warn('Advertencia', 'Por favor, ingrese notas para la copia de seguridad');
+      this.toastService.showWarn('Advertencia', 'Por favor, ingrese notas para la copia de seguridad');
       return;
     }
 
     this.loading = true;
     this.backupService.createBackup({ notes: this.backupNotes }).subscribe({
       next: (backup) => {
-        this.toastService.Success('Éxito', 'Copia de seguridad creada correctamente');
+        this.toastService.showSuccess('Éxito', 'Copia de seguridad creada correctamente');
         this.showCreateDialog = false;
         this.loadBackups();
       },
       error: (error) => {
         console.error('Error creating backup:', error);
-        this.toastService.Error('Error', 'No se pudo crear la copia de seguridad');
+        this.toastService.showError('Error', 'No se pudo crear la copia de seguridad');
         this.loading = false;
       }
     });
@@ -111,13 +111,13 @@ export class AdminComponent implements OnInit {
       notes: this.restoreNotes
     }).subscribe({
       next: (restore) => {
-        this.toastService.Success('Éxito', 'Restauración iniciada correctamente');
+        this.toastService.showSuccess('Éxito', 'Restauración iniciada correctamente');
         this.showRestoreDialog = false;
         this.loading = false;
       },
       error: (error) => {
         console.error('Error restoring backup:', error);
-        this.toastService.Error('Error', 'No se pudo restaurar la copia de seguridad');
+        this.toastService.showError('Error', 'No se pudo restaurar la copia de seguridad');
         this.loading = false;
       }
     });

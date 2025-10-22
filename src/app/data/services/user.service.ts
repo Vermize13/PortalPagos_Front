@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { User, UserStateService } from '../states/userState.service';
+import { User as AuthUser, UserStateService } from '../states/userState.service';
+import { User as DomainUser } from '../../domain/models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable, tap } from 'rxjs';
@@ -19,9 +20,9 @@ export class UserService {
     return !!localStorage.getItem('token'); //
   }
   login(username: string, password: string): Observable<any> {
-    return this.http.post<User>(`${this.urlAuth}login`, { username, password })
+    return this.http.post<AuthUser>(`${this.urlAuth}login`, { username, password })
     .pipe(
-      tap( (user: User) => {
+      tap( (user: AuthUser) => {
         this.userState.setUser(user.token);
          this.enable2fa();
       })
@@ -72,16 +73,16 @@ export class UserService {
   }
 
   // Users API endpoints from OpenAPI spec
-  getAllUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.urlUsers);
+  getAllUsers(): Observable<DomainUser[]> {
+    return this.http.get<DomainUser[]>(this.urlUsers);
   }
 
-  getUserById(id: string): Observable<User> {
-    return this.http.get<User>(`${this.urlUsers}/${id}`);
+  getUserById(id: string): Observable<DomainUser> {
+    return this.http.get<DomainUser>(`${this.urlUsers}/${id}`);
   }
 
-  getUserByEmail(email: string): Observable<User> {
-    return this.http.get<User>(`${this.urlUsers}/by-email/${email}`);
+  getUserByEmail(email: string): Observable<DomainUser> {
+    return this.http.get<DomainUser>(`${this.urlUsers}/by-email/${email}`);
   }
 
 }

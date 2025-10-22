@@ -1,21 +1,69 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { CheckboxModule } from 'primeng/checkbox';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 import { Project } from '../../../domain/models';
+import { ProjectService, CreateProjectRequest, UpdateProjectRequest } from '../../../data/services/project.service';
+import { ToastService } from '../../../data/services/toast.service';
+
+interface ProjectFormData {
+  id?: string;
+  name: string;
+  code: string;
+  description: string;
+  isActive: boolean;
+}
 
 @Component({
   selector: 'app-projects-list',
   standalone: true,
-  imports: [CommonModule, CardModule, TableModule, ButtonModule, TagModule],
+  imports: [
+    CommonModule, 
+    FormsModule,
+    CardModule, 
+    TableModule, 
+    ButtonModule, 
+    TagModule,
+    DialogModule,
+    InputTextModule,
+    InputTextareaModule,
+    CheckboxModule,
+    ConfirmDialogModule
+  ],
+  providers: [ConfirmationService],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.css']
 })
 export class ProjectsListComponent implements OnInit {
   projects: Project[] = [];
   loading: boolean = false;
+  
+  // Dialog state
+  displayDialog: boolean = false;
+  isEditMode: boolean = false;
+  
+  // Form data
+  projectForm: ProjectFormData = {
+    name: '',
+    code: '',
+    description: '',
+    isActive: true
+  };
+
+  constructor(
+    private projectService: ProjectService,
+    private toastService: ToastService,
+    private confirmationService: ConfirmationService
+  ) {}
 
   ngOnInit() {
     this.loadProjects();
@@ -23,6 +71,22 @@ export class ProjectsListComponent implements OnInit {
 
   loadProjects() {
     this.loading = true;
+    this.projectService.getAll().subscribe({
+      next: (projects) => {
+        this.projects = projects;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading projects:', error);
+        this.toastService.showError('Error', 'No se pudieron cargar los proyectos');
+        this.loading = false;
+        // Fallback to mock data on error
+        this.loadMockProjects();
+      }
+    });
+  }
+
+  loadMockProjects() {
     // Mock data for demonstration - using Guid format
     this.projects = [
       {
@@ -62,7 +126,6 @@ export class ProjectsListComponent implements OnInit {
         members: []
       }
     ];
-    this.loading = false;
   }
 
   getStatusSeverity(isActive: boolean): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
@@ -70,18 +133,108 @@ export class ProjectsListComponent implements OnInit {
   }
 
   onEdit(project: Project) {
-    console.log('Edit project:', project);
+    this.isEditMode = true;
+    this.projectForm = {
+      id: project.id,
+      name: project.name,
+      code: project.code,
+      description: project.description || '',
+      isActive: project.isActive
+    };
+    this.displayDialog = true;
   }
 
   onDelete(project: Project) {
-    console.log('Delete project:', project);
+    this.confirmationService.confirm({
+      message: `¿Está seguro de eliminar el proyecto ${project.name}?`,
+      header: 'Confirmar Eliminación',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí',
+      rejectLabel: 'No',
+      accept: () => {
+        this.projectService.delete(project.id).subscribe({
+          next: () => {
+            this.toastService.showSuccess('Éxito', `Proyecto ${project.name} eliminado correctamente`);
+            this.loadProjects();
+          },
+          error: (error) => {
+            console.error('Error deleting project:', error);
+            this.toastService.showError('Error', 'No se pudo eliminar el proyecto');
+          }
+        });
+      }
+    });
   }
 
   onCreate() {
-    console.log('Create new project');
+    this.isEditMode = false;
+    this.projectForm = {
+      name: '',
+      code: '',
+      description: '',
+      isActive: true
+    };
+    this.displayDialog = true;
   }
 
   onViewDetails(project: Project) {
     console.log('View project details:', project);
+    // TODO: Navigate to project details page or show details dialog
+  }
+  
+  onSaveProject() {
+    if (!this.validateForm()) {
+      this.toastService.showError('Error', 'Por favor complete todos los campos requeridos');
+      return;
+    }
+    
+    if (this.isEditMode && this.projectForm.id) {
+      const updateRequest: UpdateProjectRequest = {
+        name: this.projectForm.name,
+        description: this.projectForm.description,
+        isActive: this.projectForm.isActive
+      };
+      
+      this.projectService.update(this.projectForm.id, updateRequest).subscribe({
+        next: () => {
+          this.toastService.showSuccess('Éxito', 'Proyecto actualizado correctamente');
+          this.displayDialog = false;
+          this.loadProjects();
+        },
+        error: (error) => {
+          console.error('Error updating project:', error);
+          this.toastService.showError('Error', 'No se pudo actualizar el proyecto');
+        }
+      });
+    } else {
+      const createRequest: CreateProjectRequest = {
+        name: this.projectForm.name,
+        code: this.projectForm.code,
+        description: this.projectForm.description
+      };
+      
+      this.projectService.create(createRequest).subscribe({
+        next: () => {
+          this.toastService.showSuccess('Éxito', 'Proyecto creado correctamente');
+          this.displayDialog = false;
+          this.loadProjects();
+        },
+        error: (error) => {
+          console.error('Error creating project:', error);
+          this.toastService.showError('Error', 'No se pudo crear el proyecto');
+        }
+      });
+    }
+  }
+  
+  onCancelDialog() {
+    this.displayDialog = false;
+  }
+  
+  validateForm(): boolean {
+    if (!this.projectForm.name || !this.projectForm.code) {
+      return false;
+    }
+    return true;
   }
 }
