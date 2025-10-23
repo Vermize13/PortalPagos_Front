@@ -9,7 +9,8 @@ export enum AuditAction {
   Backup = 'Backup',
   Restore = 'Restore',
   Upload = 'Upload',
-  Download = 'Download'
+  Download = 'Download',
+  Export = 'Export'
 }
 
 export enum AuditEntityType {

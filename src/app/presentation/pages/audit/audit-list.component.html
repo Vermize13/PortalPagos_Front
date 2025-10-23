@@ -2,7 +2,62 @@
   <p-card>
     <div class="flex justify-content-between align-items-center mb-4">
       <h2 class="m-0">Auditoría del Sistema</h2>
-      <p-button label="Exportar" icon="pi pi-download" (onClick)="onExport()"></p-button>
+      <p-button label="Exportar" icon="pi pi-download" (onClick)="onExport()" [disabled]="loading"></p-button>
+    </div>
+
+    <!-- RF5.2: Filter Section -->
+    <div class="grid mb-4 p-3 bg-gray-50 border-round">
+      <div class="col-12">
+        <h4 class="mb-3">RF5.2: Filtros de Auditoría</h4>
+      </div>
+      <div class="col-12 md:col-3">
+        <label class="block mb-2 font-semibold">Acción</label>
+        <p-dropdown 
+          [(ngModel)]="selectedAction" 
+          [options]="actionOptions" 
+          optionLabel="label" 
+          optionValue="value"
+          placeholder="Todas las acciones"
+          [showClear]="true"
+          styleClass="w-full">
+        </p-dropdown>
+      </div>
+      <div class="col-12 md:col-3">
+        <label class="block mb-2 font-semibold">Fecha Inicio</label>
+        <p-calendar 
+          [(ngModel)]="startDate" 
+          [showIcon]="true" 
+          placeholder="Seleccionar fecha"
+          dateFormat="dd/mm/yy"
+          [showButtonBar]="true"
+          styleClass="w-full">
+        </p-calendar>
+      </div>
+      <div class="col-12 md:col-3">
+        <label class="block mb-2 font-semibold">Fecha Fin</label>
+        <p-calendar 
+          [(ngModel)]="endDate" 
+          [showIcon]="true" 
+          placeholder="Seleccionar fecha"
+          dateFormat="dd/mm/yy"
+          [showButtonBar]="true"
+          styleClass="w-full">
+        </p-calendar>
+      </div>
+      <div class="col-12 md:col-3 flex align-items-end">
+        <p-button 
+          label="Aplicar Filtros" 
+          icon="pi pi-filter" 
+          (onClick)="applyFilters()"
+          styleClass="mr-2">
+        </p-button>
+        <p-button 
+          label="Limpiar" 
+          icon="pi pi-filter-slash" 
+          (onClick)="clearFilters()"
+          [outlined]="true">
+        </p-button>
+      </div>
     </div>
 
     <p-table 
@@ -33,7 +88,7 @@
             <div class="text-sm text-gray-500">{{ log.userEmail }}</div>
           </td>
           <td>
-            <p-tag [value]="log.action" [severity]="getActionSeverity(log.action)"></p-tag>
+            <p-tag [value]="getActionLabel(log.action)" [severity]="getActionSeverity(log.action)"></p-tag>
           </td>
           <td>{{ log.entityName || '-' }}</td>
           <td>{{ log.detailsJson || '-' }}</td>
@@ -42,7 +97,7 @@
       
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6" class="text-center">No se encontraron registros de auditoría.</td>
+          <td colspan="5" class="text-center">No se encontraron registros de auditoría.</td>
         </tr>
       </ng-template>
     </p-table>
