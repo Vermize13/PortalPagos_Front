@@ -180,22 +180,22 @@
               <h4 class="mb-3"><i class="pi pi-bell mr-2"></i>Notificaciones</h4>
               
               <div class="field-checkbox mb-3">
-                <input 
-                  type="checkbox" 
-                  id="emailNotifications" 
+                <p-checkbox 
+                  inputId="emailNotifications" 
                   [(ngModel)]="systemConfig.emailNotifications"
                   (ngModelChange)="onConfigChange()"
-                  class="p-checkbox">
+                  [binary]="true">
+                </p-checkbox>
                 <label for="emailNotifications" class="ml-2">Habilitar notificaciones por correo electrónico</label>
               </div>
               
               <div class="field-checkbox">
-                <input 
-                  type="checkbox" 
-                  id="maintenanceMode" 
+                <p-checkbox 
+                  inputId="maintenanceMode" 
                   [(ngModel)]="systemConfig.maintenanceMode"
                   (ngModelChange)="onConfigChange()"
-                  class="p-checkbox">
+                  [binary]="true">
+                </p-checkbox>
                 <label for="maintenanceMode" class="ml-2">Modo de mantenimiento</label>
               </div>
               <small class="text-600">Cuando está activo, solo los administradores pueden acceder al sistema</small>

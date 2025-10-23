@@ -10,6 +10,7 @@ import { TagModule } from 'primeng/tag';
 import { TabViewModule } from 'primeng/tabview';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
+import { CheckboxModule } from 'primeng/checkbox';
 import { BackupService, BackupResponse, RestoreResponse } from '../../../data/services/backup.service';
 import { ToastService } from '../../../data/services/toast.service';
 
@@ -30,7 +31,8 @@ import { ToastService } from '../../../data/services/toast.service';
     TagModule,
     TabViewModule,
     InputTextModule,
-    DropdownModule
+    DropdownModule,
+    CheckboxModule
   ],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.css']
