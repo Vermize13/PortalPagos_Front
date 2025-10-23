@@ -8,11 +8,13 @@ import { CardModule } from 'primeng/card';
 import { PasswordModule } from 'primeng/password';
 import { CheckboxModule } from 'primeng/checkbox';
 import { MessageService } from 'primeng/api';
+import { AuthService, AuthResponse } from '../../../../data/services/auth.service';
+import { UserStateService } from '../../../../data/states/userState.service';
 import { ToastModule } from 'primeng/toast';
 import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
-  selector: 'app-login2',
+  selector: 'app-login',
   standalone: true,
   imports: [
     CommonModule,
@@ -30,7 +32,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
   styleUrl: './login2.component.css',
   providers: [MessageService]
 })
-export class Login2Component implements OnInit {
+export class LoginComponent implements OnInit {
   username: string = '';
   password: string = '';
   loading: boolean = false;
@@ -38,7 +40,9 @@ export class Login2Component implements OnInit {
 
   constructor(
     private router: Router,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private authService: AuthService,
+    private userState: UserStateService
   ) {}
 
   onSubmit() {
@@ -53,33 +57,35 @@ export class Login2Component implements OnInit {
     }
 
     this.loading = true;
-    
-    // Simulate API call
-    setTimeout(() => {
-      try {
-        // TODO: Replace with actual authentication service call
-        console.log('Login attempt with:', this.username);
-        
-        // For demo purposes, consider it a success
-        if (this.rememberMe) {
-          localStorage.setItem('rememberedUser', this.username);
+
+    // Call real authentication service
+    this.authService.login({ username: this.username, password: this.password }).subscribe({
+      next: (res: AuthResponse) => {
+        const token = res?.token;
+        if (token) {
+          // Save token into user state (this sets localStorage token too)
+          this.userState.setUser(token);
+
+          if (this.rememberMe) {
+            localStorage.setItem('rememberedUser', this.username);
+          } else {
+            localStorage.removeItem('rememberedUser');
+          }
+
+          this.messageService.add({ severity: 'success', summary: 'Bienvenido', detail: 'Inicio de sesión exitoso', key: 'global-toast' });
+          this.router.navigate(['/inicio']);
         } else {
-          localStorage.removeItem('rememberedUser');
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Respuesta de autenticación inválida', key: 'global-toast' });
         }
-        
-        // Navigate to home on success
-        this.router.navigate(['/inicio']);
-      } catch (error) {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Credenciales inválidas',
-          key: 'global-toast'
-        });
-      } finally {
+      },
+      error: (err: any) => {
+        console.error('Login error', err);
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Credenciales inválidas o error del servidor', key: 'global-toast' });
+      },
+      complete: () => {
         this.loading = false;
       }
-    }, 1000);
+    });
   }
 
   ngOnInit() {

@@ -54,11 +54,6 @@ export class AuditListComponent implements OnInit {
     }));
   }
 
-  constructor(
-    private auditService: AuditService,
-    private toastService: ToastService
-  ) {}
-
   ngOnInit() {
     this.loadAuditLogs();
   }

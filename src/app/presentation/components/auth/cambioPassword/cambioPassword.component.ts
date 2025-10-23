@@ -9,6 +9,7 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
 import { DividerModule } from 'primeng/divider';
+import { ToastModule } from 'primeng/toast';
 import { UserStateService } from '../../../../data/states/userState.service';
 
 @Component({
@@ -23,63 +24,66 @@ import { UserStateService } from '../../../../data/states/userState.service';
     InputGroupAddonModule,
     InputTextModule,
     DividerModule,
+    ToastModule,
   ],
   providers: [],
   template: `
-    <div
-      class="card flex justify-content-center align-items-center bg-img"
-      [style]="{ height: '100vh' }"
-    >
-      <p-card
-        header="Cambiar contraseña"
-        subheader="Hola {{user?.unique_name?.slice(0, 3)}}****{{user?.unique_name?.split('@')[1]}} por favor diligencie los siguientes campos para cambiar su contraseña."
-        [style]="{ width: '600px' }"
-      >
-        <ng-template pTemplate="header">
-          <div
-            class="flex justify-content-center align-items-center flex-column"
-          >
-            <img
-              src="../../../assets/img/findeterLogo.png"
-              alt="FindeterLogo"
-              [style]="{ width: '25%' }"
-            />
-          </div>
-        </ng-template>
-
-        <form [formGroup]="cambiarPassForm">
-        <div class="card flex flex-column gap-3">
-          <p-inputGroup>
-            <p-inputGroupAddon>
-              <i class="pi pi-lock"></i>
-            </p-inputGroupAddon>
-            <input type="password" pInputText placeholder="Contraseña actual" formControlName="oldPassword" />
-          </p-inputGroup>
-          <small class="p-error block" *ngIf="oldPasswordControl?.errors?.['required'] && oldPasswordControl?.touched">La contraseña actual es requerida</small>
-          <p-inputGroup>
-            <p-inputGroupAddon>
-              <i class="pi pi-lock"></i>
-            </p-inputGroupAddon>
-            <input type="password" pInputText placeholder="Nueva contraseña" formControlName="newPassword" />
-          </p-inputGroup>
-          <small class="p-error block" *ngIf="newPasswordControl?.errors?.['required'] && newPasswordControl?.touched">La contraseña es requerida</small>
-          <small class="p-error block" *ngIf="newPasswordControl?.errors?.['passwordStrength'] && newPasswordControl?.touched">La contraseña debe contener mayúsculas, minúsculas, números y símbolos.</small>
-          <p-inputGroup>
-            <p-inputGroupAddon>
-              <i class="pi pi-lock"></i>
-            </p-inputGroupAddon>
-            <input type="password" pInputText placeholder="Confirmar contraseña" formControlName="confirmPassword" />
-          </p-inputGroup>
-          <small class="p-error block" *ngIf="confirmPasswordControl?.errors?.['required'] && confirmPasswordControl?.touched">La contraseña es requerida</small>
-          <small class="p-error block" *ngIf="hasPasswordMismatch()">Las contraseñas no coinciden</small>
+    <div class="login-container">
+      <div class="login-left">
+        <div class="welcome-message">
+          <h1>Cambiar contraseña</h1>
+          <p>Actualiza tu contraseña para continuar.</p>
         </div>
-        </form>
-        <ng-template pTemplate="footer">
-          <div class="flex flex-column gap-3 mt-1">
-            <p-button label="Cambiar contraseña" class="w-full" styleClass="w-full" [disabled]="cambiarPassForm.invalid" (onClick)="onSubmit()" />
+      </div>
+
+      <div class="login-right">
+        <div class="login-card">
+          <div class="text-center mb-5">
+            <h2>Cambiar contraseña</h2>
           </div>
-        </ng-template>
-      </p-card>
+
+          <p-card
+            header="Cambiar contraseña"
+            subheader="Hola {{user?.unique_name?.slice(0, 3)}}****{{user?.unique_name?.split('@')[1]}} por favor diligencie los siguientes campos para cambiar su contraseña."
+            [style]="{ width: '100%' }"
+          >
+            <form [formGroup]="cambiarPassForm">
+              <div class="card flex flex-column gap-3">
+                <p-inputGroup>
+                  <p-inputGroupAddon>
+                    <i class="pi pi-lock"></i>
+                  </p-inputGroupAddon>
+                  <input type="password" pInputText placeholder="Contraseña actual" formControlName="oldPassword" />
+                </p-inputGroup>
+                <small class="p-error block" *ngIf="oldPasswordControl?.errors?.['required'] && oldPasswordControl?.touched">La contraseña actual es requerida</small>
+                <p-inputGroup>
+                  <p-inputGroupAddon>
+                    <i class="pi pi-lock"></i>
+                  </p-inputGroupAddon>
+                  <input type="password" pInputText placeholder="Nueva contraseña" formControlName="newPassword" />
+                </p-inputGroup>
+                <small class="p-error block" *ngIf="newPasswordControl?.errors?.['required'] && newPasswordControl?.touched">La contraseña es requerida</small>
+                <small class="p-error block" *ngIf="newPasswordControl?.errors?.['passwordStrength'] && newPasswordControl?.touched">La contraseña debe contener mayúsculas, minúsculas, números y símbolos.</small>
+                <p-inputGroup>
+                  <p-inputGroupAddon>
+                    <i class="pi pi-lock"></i>
+                  </p-inputGroupAddon>
+                  <input type="password" pInputText placeholder="Confirmar contraseña" formControlName="confirmPassword" />
+                </p-inputGroup>
+                <small class="p-error block" *ngIf="confirmPasswordControl?.errors?.['required'] && confirmPasswordControl?.touched">La contraseña es requerida</small>
+                <small class="p-error block" *ngIf="hasPasswordMismatch()">Las contraseñas no coinciden</small>
+              </div>
+            </form>
+            <ng-template pTemplate="footer">
+              <div class="flex flex-column gap-3 mt-1">
+                <p-button label="Cambiar contraseña" class="w-full" styleClass="w-full" [disabled]="cambiarPassForm.invalid" (onClick)="onSubmit()" />
+              </div>
+            </ng-template>
+          </p-card>
+        </div>
+      </div>
+
+      <p-toast key="global-toast" position="top-center"></p-toast>
     </div>
   `,
   styleUrl: './cambioPassword.component.css',

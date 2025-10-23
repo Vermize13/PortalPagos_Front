@@ -1,4 +1,6 @@
 export const environment = {
   production: false,
-  url:'http://48.217.72.0/'
+  // Development backend server (use the .NET server running locally)
+  // Change to http://localhost:5046 if you need the non-HTTPS endpoint.
+  url: 'https://localhost:7139/'
 };

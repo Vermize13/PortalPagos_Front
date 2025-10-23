@@ -6,15 +6,13 @@ export const routes: Routes = [
   // Default route - redirect to login2
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   
-  // New login2 route
+  // Login route (new login component)
   {
     path: 'login',
-    loadComponent: () => import('./presentation/components/auth/login2/login2.component').then(m => m.Login2Component)
+    loadComponent: () => import('./presentation/components/auth/login2/login2.component').then(m => m.LoginComponent)
   },
   
-  // Legacy login routes (keep for backward compatibility)
-  { path: 'login2', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'login/legacy', loadComponent: () => import('./presentation/components/auth/inicioSesion/inicioSesion.component').then(m => m.InicioSesionComponent) },
+  // Legacy login routes removed: `login2` redirect and `login/legacy` were deprecated.
   
   // Other auth routes
   { path: 'login/codigo', loadComponent: () => import('./presentation/components/auth/codigoVerificacion/codigoVerificacion.component').then(m => m.CodigoVerificacionComponent) },

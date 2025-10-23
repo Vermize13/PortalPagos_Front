@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { User, UserStateService } from '../../../../data/states/userState.service';
@@ -10,6 +11,7 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
 import { DividerModule } from 'primeng/divider';
 import { InputOtpModule } from 'primeng/inputotp';
+import { ToastModule } from 'primeng/toast';
 import { ToastService } from '../../../../data/services/toast.service';
 @Component({
   selector: 'app-codigoVerificacion',
@@ -17,8 +19,8 @@ import { ToastService } from '../../../../data/services/toast.service';
   styleUrls: ['./codigoVerificacion.component.css'],
   standalone: true,
   imports: [
+    CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     ReactiveFormsModule,
     CardModule,
     ButtonModule,
@@ -26,7 +28,8 @@ import { ToastService } from '../../../../data/services/toast.service';
     InputGroupAddonModule,
     InputTextModule,
     DividerModule,
-    InputOtpModule
+    InputOtpModule,
+    ToastModule
   ],
   providers: [ToastService],
 })

@@ -9,6 +9,7 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
 import { DividerModule } from 'primeng/divider';
+import { ToastModule } from 'primeng/toast';
 import { UserStateService } from '../../../../data/states/userState.service';
 import { ToastService } from '../../../../data/services/toast.service';
 
@@ -27,6 +28,7 @@ import { ToastService } from '../../../../data/services/toast.service';
     InputGroupAddonModule,
     InputTextModule,
     DividerModule,
+    ToastModule,
   ],
   providers: [ToastService]
 })

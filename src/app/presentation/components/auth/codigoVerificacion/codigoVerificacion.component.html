@@ -1,39 +1,44 @@
-    <div
-      class="card flex justify-content-center align-items-center bg-img"
-      [style]="{ height: '100vh' }"
-    >
+<div class="login-container">
+  <div class="login-left">
+    <div class="welcome-message">
+      <h1>Bienvenido</h1>
+      <p>Ingresa el código de verificación para continuar</p>
+    </div>
+  </div>
+
+  <div class="login-right">
+    <div class="login-card">
+      <div class="text-center mb-5">
+        <h2>Autenticación</h2>
+      </div>
+
       <p-card
         header="Autenticación"
-        subheader="Hemos enviado un código de confirmación de 6 dígitos, al correo electrónico que está registrado y al cual recibirá el código de confirmación en {{ user ? (user.unique_name.slice(0, 3) + '****' + user.unique_name.split('@')[1]) : 'su correo electrónico'}} no olvides ingresar el código lo antes posible."
-        [style]="{ width: '600px' }"
-        >
-        <ng-template pTemplate="header">
-          <div
-            class="flex justify-content-center align-items-center flex-column"
-          >
-            <img
-              src="../../../assets/img/findeterLogo.png"
-              alt="FindeterLogo"
-              [style]="{ width: '25%' }"
-            />
-          </div>
-        </ng-template>
-
+        subheader="Hemos enviado un código de confirmación de 6 dígitos al correo registrado {{ user ? (user.unique_name.slice(0, 3) + '****' + user.unique_name.split('@')[1]) : '' }}"
+        [style]="{ width: '100%' }"
+      >
         <form [formGroup]="codigoForm">
-        <div class="card flex justify-content-center align-items-center flex-column gap-3">
-          <p-inputOtp [mask]="true" formControlName="codigo" [length]="6" [integerOnly]="true" />
-        </div>
-        @if(!timeDone){
-        <small class="flex justify-content-end align-items-center">Solicite nuevamente en {{time}} segundos </small>
-        }@else{
-        <small class="flex justify-content-end align-items-center">No recibiste el codigo? <a (click)="solicitarNuevamente()" [style]="{color: 'blue', cursor: 'pointer'}"> Solicita nuevamente</a></small>
-        }
+          <div class="card flex justify-content-center align-items-center flex-column gap-3">
+            <p-inputOtp [mask]="true" formControlName="codigo" [length]="6" [integerOnly]="true" />
+          </div>
+          <div class="mt-2">
+            <ng-container *ngIf="!timeDone">
+              <small class="flex justify-content-end align-items-center">Solicite nuevamente en {{time}} segundos</small>
+            </ng-container>
+            <ng-container *ngIf="timeDone">
+              <small class="flex justify-content-end align-items-center">No recibiste el código? <a (click)="solicitarNuevamente()" [style]="{color: 'blue', cursor: 'pointer'}"> Solicita nuevamente</a></small>
+            </ng-container>
+          </div>
         </form>
+
         <ng-template pTemplate="footer">
           <div class="flex flex-column gap-3 mt-1">
             <p-button label="Aceptar" class="w-full" styleClass="w-full" [disabled]="codigoForm.invalid" (onClick)="onSubmit()" />
           </div>
         </ng-template>
       </p-card>
+    </div>
+  </div>
 
+  <p-toast key="global-toast" position="top-center"></p-toast>
 </div>
