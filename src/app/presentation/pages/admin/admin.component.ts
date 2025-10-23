@@ -7,11 +7,14 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { DialogModule } from 'primeng/dialog';
 import { TagModule } from 'primeng/tag';
+import { TabViewModule } from 'primeng/tabview';
+import { InputTextModule } from 'primeng/inputtext';
+import { DropdownModule } from 'primeng/dropdown';
 import { BackupService, BackupResponse, RestoreResponse } from '../../../data/services/backup.service';
 import { ToastService } from '../../../data/services/toast.service';
 
 /**
- * RF6.1 and RF6.2: Backup and Restore Administration
+ * RF6: System Administration - Backup & Restore and Configuration
  */
 @Component({
   selector: 'app-admin',
@@ -24,12 +27,19 @@ import { ToastService } from '../../../data/services/toast.service';
     ButtonModule,
     InputTextareaModule,
     DialogModule,
-    TagModule
+    TagModule,
+    TabViewModule,
+    InputTextModule,
+    DropdownModule
   ],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.css']
 })
 export class AdminComponent implements OnInit {
+  // Active tab index
+  activeTabIndex: number = 0;
+  
+  // Backup & Restore properties
   backups: BackupResponse[] = [];
   loading: boolean = false;
   
@@ -42,6 +52,41 @@ export class AdminComponent implements OnInit {
   selectedBackup: BackupResponse | null = null;
   restoreNotes: string = '';
 
+  // Configuration properties
+  systemConfig = {
+    systemName: 'Portal de Pagos Findeter',
+    maxUploadSize: '10',
+    sessionTimeout: '30',
+    backupRetentionDays: '30',
+    emailNotifications: true,
+    maintenanceMode: false
+  };
+  
+  uploadSizeOptions = [
+    { label: '5 MB', value: '5' },
+    { label: '10 MB', value: '10' },
+    { label: '25 MB', value: '25' },
+    { label: '50 MB', value: '50' },
+    { label: '100 MB', value: '100' }
+  ];
+  
+  sessionTimeoutOptions = [
+    { label: '15 minutos', value: '15' },
+    { label: '30 minutos', value: '30' },
+    { label: '60 minutos', value: '60' },
+    { label: '120 minutos', value: '120' }
+  ];
+  
+  retentionOptions = [
+    { label: '7 días', value: '7' },
+    { label: '15 días', value: '15' },
+    { label: '30 días', value: '30' },
+    { label: '60 días', value: '60' },
+    { label: '90 días', value: '90' }
+  ];
+  
+  configModified: boolean = false;
+
   constructor(
     private backupService: BackupService,
     private toastService: ToastService
@@ -49,6 +94,7 @@ export class AdminComponent implements OnInit {
 
   ngOnInit() {
     this.loadBackups();
+    this.loadConfiguration();
   }
 
   loadBackups() {
@@ -167,5 +213,39 @@ export class AdminComponent implements OnInit {
     } else {
       return `${seconds}s`;
     }
+  }
+
+  // Configuration methods
+  loadConfiguration() {
+    // Load configuration from localStorage or API
+    const savedConfig = localStorage.getItem('systemConfig');
+    if (savedConfig) {
+      this.systemConfig = JSON.parse(savedConfig);
+    }
+  }
+
+  onConfigChange() {
+    this.configModified = true;
+  }
+
+  saveConfiguration() {
+    // Save configuration to localStorage and/or API
+    localStorage.setItem('systemConfig', JSON.stringify(this.systemConfig));
+    this.toastService.showSuccess('Éxito', 'Configuración guardada correctamente');
+    this.configModified = false;
+  }
+
+  resetConfiguration() {
+    // Reset to default values
+    this.systemConfig = {
+      systemName: 'Portal de Pagos Findeter',
+      maxUploadSize: '10',
+      sessionTimeout: '30',
+      backupRetentionDays: '30',
+      emailNotifications: true,
+      maintenanceMode: false
+    };
+    this.configModified = true;
+    this.toastService.showInfo('Información', 'Configuración restablecida a valores predeterminados');
   }
 }
