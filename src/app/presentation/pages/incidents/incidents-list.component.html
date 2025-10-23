@@ -2,10 +2,25 @@
   <p-card>
     <div class="flex justify-content-between align-items-center mb-4">
       <h2 class="m-0">Gestión de Incidencias</h2>
-      <p-button label="Nueva Incidencia" icon="pi pi-plus" (onClick)="onCreate()"></p-button>
+      <div class="flex gap-2">
+        <p-button 
+          label="Tablero" 
+          icon="pi pi-th-large" 
+          [outlined]="viewMode !== 'board'"
+          (onClick)="toggleView('board')"></p-button>
+        <p-button 
+          label="Tabla" 
+          icon="pi pi-table" 
+          [outlined]="viewMode !== 'table'"
+          (onClick)="toggleView('table')"></p-button>
+        <p-button 
+          label="Nueva Incidencia" 
+          icon="pi pi-plus" 
+          (onClick)="onCreate()"></p-button>
+      </div>
     </div>
 
-    <div class="mb-3">
+    <div class="mb-3" *ngIf="viewMode === 'table'">
       <p-dropdown 
         [options]="statuses" 
         [(ngModel)]="selectedStatus" 
@@ -15,7 +30,65 @@
       </p-dropdown>
     </div>
 
-    <p-table 
+    <!-- Board View -->
+    <div *ngIf="viewMode === 'board'" class="board-container">
+      <div class="board-columns">
+        <div class="board-column" *ngFor="let status of statuses">
+          <div class="column-header">
+            <h3 class="column-title">{{ getStatusLabel(status) }}</h3>
+            <span class="incident-count">{{ getIncidentsByStatus(status).length }}</span>
+          </div>
+          <div class="column-content">
+            <div class="incident-card" *ngFor="let incident of getIncidentsByStatus(status)">
+              <div class="card-header">
+                <span class="incident-code">{{ incident.code }}</span>
+                <p-tag 
+                  [value]="incident.priority" 
+                  [severity]="getPrioritySeverity(incident.priority)"
+                  styleClass="text-xs"></p-tag>
+              </div>
+              <h4 class="card-title">{{ incident.title }}</h4>
+              <p class="card-description">{{ incident.description | slice:0:80 }}{{ incident.description && incident.description.length > 80 ? '...' : '' }}</p>
+              <div class="card-footer">
+                <div class="card-meta">
+                  <div class="assignee" *ngIf="incident.assigneeName">
+                    <i class="pi pi-user"></i>
+                    <span>{{ incident.assigneeName }}</span>
+                  </div>
+                  <div class="project">
+                    <i class="pi pi-briefcase"></i>
+                    <span>{{ incident.projectName }}</span>
+                  </div>
+                </div>
+                <div class="card-actions">
+                  <p-button 
+                    icon="pi pi-eye" 
+                    [rounded]="true" 
+                    [text]="true" 
+                    severity="secondary"
+                    size="small"
+                    (onClick)="onViewDetails(incident)"></p-button>
+                  <p-button 
+                    icon="pi pi-pencil" 
+                    [rounded]="true" 
+                    [text]="true" 
+                    severity="info"
+                    size="small"
+                    (onClick)="onEdit(incident)"></p-button>
+                </div>
+              </div>
+            </div>
+            <div class="empty-column" *ngIf="getIncidentsByStatus(status).length === 0">
+              <i class="pi pi-inbox"></i>
+              <p>No hay incidencias</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table View -->
+    <p-table *ngIf="viewMode === 'table'" 
       [value]="incidents" 
       [loading]="loading"
       [paginator]="true" 
