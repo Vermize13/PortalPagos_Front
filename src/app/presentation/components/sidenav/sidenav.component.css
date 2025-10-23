@@ -1,3 +1,13 @@
 a {
     text-decoration: none; /* Elimina el subrayado */
   }
+
+.active-menu-item {
+  background-color: var(--primary-color) !important;
+  color: var(--primary-color-text) !important;
+}
+
+.active-menu-item i,
+.active-menu-item span {
+  color: var(--primary-color-text) !important;
+}
