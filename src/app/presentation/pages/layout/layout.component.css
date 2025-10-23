@@ -2,14 +2,19 @@
 .layout-container {
     display: flex;
     height: 100vh;
+    overflow: hidden;
   }
   
   app-sidenav {
     width: 250px; /* Ajusta el ancho del sidebar según lo que necesites */
+    height: 100vh;
+    overflow: hidden;
   }
   
   .content-container {
     flex-grow: 1;
-    overflow: auto;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
   
