@@ -1,76 +1,226 @@
 <div class="container-fluid p-4">
   <p-card>
-    <div class="flex justify-content-between align-items-center mb-4">
-      <h2 class="m-0">Administración del Sistema</h2>
-      <p-button 
-        label="RF6.1: Nueva Copia de Seguridad" 
-        icon="pi pi-save" 
-        (onClick)="openCreateDialog()"
-        [disabled]="loading">
-      </p-button>
+    <div class="mb-4">
+      <h2 class="m-0 mb-2">Administración del Sistema</h2>
+      <p class="text-600">Gestión de copias de seguridad, restauración y configuración del sistema</p>
     </div>
 
-    <p-table 
-      [value]="backups" 
-      [loading]="loading"
-      [paginator]="true" 
-      [rows]="10"
-      [showCurrentPageReport]="true"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} copias de seguridad"
-      [rowsPerPageOptions]="[10, 25, 50]"
-      styleClass="p-datatable-striped">
-      
-      <ng-template pTemplate="header">
-        <tr>
-          <th>ID</th>
-          <th>Fecha/Hora</th>
-          <th>Creado Por</th>
-          <th>Estado</th>
-          <th>Tamaño</th>
-          <th>Duración</th>
-          <th>Notas</th>
-          <th>Acciones</th>
-        </tr>
-      </ng-template>
-      
-      <ng-template pTemplate="body" let-backup>
-        <tr>
-          <td>
-            <small class="font-mono">{{ backup.id.substring(0, 8) }}...</small>
-          </td>
-          <td>{{ backup.startedAt | date:'short' }}</td>
-          <td>{{ backup.creatorName || 'Sistema' }}</td>
-          <td>
-            <p-tag 
-              [value]="backup.status || 'Completado'" 
-              [severity]="getStatusSeverity(backup.status)">
-            </p-tag>
-          </td>
-          <td>{{ formatBytes(backup.sizeBytes) }}</td>
-          <td>{{ getDuration(backup.startedAt, backup.finishedAt) }}</td>
-          <td>
-            <span class="text-sm">{{ backup.notes || '-' }}</span>
-          </td>
-          <td>
-            <p-button 
-              label="RF6.2: Restaurar" 
-              icon="pi pi-replay" 
-              [outlined]="true"
-              size="small"
-              severity="warning"
-              (onClick)="openRestoreDialog(backup)"
-              [disabled]="loading">
-            </p-button>
-          </td>
-        </tr>
-      </ng-template>
-      
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="8" class="text-center">No hay copias de seguridad disponibles.</td>
-        </tr>
-      </ng-template>
-    </p-table>
+    <p-tabView [(activeIndex)]="activeTabIndex">
+      <!-- Backup & Restore Tab -->
+      <p-tabPanel header="Backup & Restore">
+        <div class="flex justify-content-between align-items-center mb-4">
+          <h3 class="m-0">Copias de Seguridad</h3>
+          <p-button 
+            label="RF6.1: Nueva Copia de Seguridad" 
+            icon="pi pi-save" 
+            (onClick)="openCreateDialog()"
+            [disabled]="loading">
+          </p-button>
+        </div>
+
+        <p-table 
+          [value]="backups" 
+          [loading]="loading"
+          [paginator]="true" 
+          [rows]="10"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} copias de seguridad"
+          [rowsPerPageOptions]="[10, 25, 50]"
+          styleClass="p-datatable-striped">
+          
+          <ng-template pTemplate="header">
+            <tr>
+              <th>ID</th>
+              <th>Fecha/Hora</th>
+              <th>Creado Por</th>
+              <th>Estado</th>
+              <th>Tamaño</th>
+              <th>Duración</th>
+              <th>Notas</th>
+              <th>Acciones</th>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="body" let-backup>
+            <tr>
+              <td>
+                <small class="font-mono">{{ backup.id.substring(0, 8) }}...</small>
+              </td>
+              <td>{{ backup.startedAt | date:'short' }}</td>
+              <td>{{ backup.creatorName || 'Sistema' }}</td>
+              <td>
+                <p-tag 
+                  [value]="backup.status || 'Completado'" 
+                  [severity]="getStatusSeverity(backup.status)">
+                </p-tag>
+              </td>
+              <td>{{ formatBytes(backup.sizeBytes) }}</td>
+              <td>{{ getDuration(backup.startedAt, backup.finishedAt) }}</td>
+              <td>
+                <span class="text-sm">{{ backup.notes || '-' }}</span>
+              </td>
+              <td>
+                <p-button 
+                  label="RF6.2: Restaurar" 
+                  icon="pi pi-replay" 
+                  [outlined]="true"
+                  size="small"
+                  severity="warning"
+                  (onClick)="openRestoreDialog(backup)"
+                  [disabled]="loading">
+                </p-button>
+              </td>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="8" class="text-center">No hay copias de seguridad disponibles.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-tabPanel>
+
+      <!-- Configuration Tab -->
+      <p-tabPanel header="Configuración">
+        <div class="mb-4">
+          <h3 class="m-0 mb-2">Configuración del Sistema</h3>
+          <p class="text-600">Ajustes generales y parámetros de operación del sistema</p>
+        </div>
+
+        <div class="grid">
+          <!-- System Information Section -->
+          <div class="col-12">
+            <div class="surface-card p-4 border-round mb-3">
+              <h4 class="mb-3"><i class="pi pi-info-circle mr-2"></i>Información General</h4>
+              
+              <div class="field mb-3">
+                <label for="systemName" class="block mb-2 font-semibold">Nombre del Sistema</label>
+                <input 
+                  id="systemName"
+                  type="text" 
+                  pInputText 
+                  [(ngModel)]="systemConfig.systemName" 
+                  (ngModelChange)="onConfigChange()"
+                  class="w-full"
+                  placeholder="Ingrese el nombre del sistema">
+              </div>
+            </div>
+          </div>
+
+          <!-- File Upload Settings -->
+          <div class="col-12 md:col-6">
+            <div class="surface-card p-4 border-round mb-3">
+              <h4 class="mb-3"><i class="pi pi-upload mr-2"></i>Configuración de Archivos</h4>
+              
+              <div class="field mb-3">
+                <label for="maxUploadSize" class="block mb-2 font-semibold">Tamaño Máximo de Carga</label>
+                <p-dropdown 
+                  id="maxUploadSize"
+                  [options]="uploadSizeOptions" 
+                  [(ngModel)]="systemConfig.maxUploadSize"
+                  (ngModelChange)="onConfigChange()"
+                  optionLabel="label" 
+                  optionValue="value"
+                  placeholder="Seleccione tamaño máximo"
+                  [style]="{'width': '100%'}">
+                </p-dropdown>
+                <small class="text-600">Tamaño máximo permitido para archivos adjuntos</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session Settings -->
+          <div class="col-12 md:col-6">
+            <div class="surface-card p-4 border-round mb-3">
+              <h4 class="mb-3"><i class="pi pi-clock mr-2"></i>Configuración de Sesión</h4>
+              
+              <div class="field mb-3">
+                <label for="sessionTimeout" class="block mb-2 font-semibold">Tiempo de Sesión</label>
+                <p-dropdown 
+                  id="sessionTimeout"
+                  [options]="sessionTimeoutOptions" 
+                  [(ngModel)]="systemConfig.sessionTimeout"
+                  (ngModelChange)="onConfigChange()"
+                  optionLabel="label" 
+                  optionValue="value"
+                  placeholder="Seleccione tiempo de sesión"
+                  [style]="{'width': '100%'}">
+                </p-dropdown>
+                <small class="text-600">Tiempo de inactividad antes de cerrar sesión automáticamente</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Backup Settings -->
+          <div class="col-12 md:col-6">
+            <div class="surface-card p-4 border-round mb-3">
+              <h4 class="mb-3"><i class="pi pi-database mr-2"></i>Configuración de Backups</h4>
+              
+              <div class="field mb-3">
+                <label for="backupRetention" class="block mb-2 font-semibold">Retención de Backups</label>
+                <p-dropdown 
+                  id="backupRetention"
+                  [options]="retentionOptions" 
+                  [(ngModel)]="systemConfig.backupRetentionDays"
+                  (ngModelChange)="onConfigChange()"
+                  optionLabel="label" 
+                  optionValue="value"
+                  placeholder="Seleccione período de retención"
+                  [style]="{'width': '100%'}">
+                </p-dropdown>
+                <small class="text-600">Días que se conservarán las copias de seguridad</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notification Settings -->
+          <div class="col-12 md:col-6">
+            <div class="surface-card p-4 border-round mb-3">
+              <h4 class="mb-3"><i class="pi pi-bell mr-2"></i>Notificaciones</h4>
+              
+              <div class="field-checkbox mb-3">
+                <p-checkbox 
+                  inputId="emailNotifications" 
+                  [(ngModel)]="systemConfig.emailNotifications"
+                  (ngModelChange)="onConfigChange()"
+                  [binary]="true">
+                </p-checkbox>
+                <label for="emailNotifications" class="ml-2">Habilitar notificaciones por correo electrónico</label>
+              </div>
+              
+              <div class="field-checkbox">
+                <p-checkbox 
+                  inputId="maintenanceMode" 
+                  [(ngModel)]="systemConfig.maintenanceMode"
+                  (ngModelChange)="onConfigChange()"
+                  [binary]="true">
+                </p-checkbox>
+                <label for="maintenanceMode" class="ml-2">Modo de mantenimiento</label>
+              </div>
+              <small class="text-600">Cuando está activo, solo los administradores pueden acceder al sistema</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-content-end gap-2 mt-4">
+          <p-button 
+            label="Restablecer" 
+            icon="pi pi-refresh" 
+            [outlined]="true"
+            severity="secondary"
+            (onClick)="resetConfiguration()">
+          </p-button>
+          <p-button 
+            label="Guardar Configuración" 
+            icon="pi pi-save" 
+            (onClick)="saveConfiguration()"
+            [disabled]="!configModified">
+          </p-button>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
   </p-card>
 </div>
 
