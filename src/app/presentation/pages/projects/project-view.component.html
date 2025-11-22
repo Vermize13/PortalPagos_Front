@@ -35,102 +35,102 @@
   <div class="grid">
     <!-- Left Column - Project Details -->
     <div class="col-12 lg:col-8">
-      <p-card styleClass="mb-3">
-        <ng-template pTemplate="header">
-          <div class="card-header-custom">
-            <h3 class="m-0">Información del Proyecto</h3>
-          </div>
-        </ng-template>
-        
-        <div class="project-details">
-          <div class="detail-item">
-            <label class="detail-label">Descripción</label>
-            <p class="detail-value">{{ project.description || 'Sin descripción' }}</p>
-          </div>
-
-          <div class="grid">
-            <div class="col-12 md:col-6">
+      <p-tabView>
+        <!-- Overview Tab -->
+        <p-tabPanel header="Información">
+          <p-card styleClass="mb-3">
+            <div class="project-details">
               <div class="detail-item">
-                <label class="detail-label">Fecha de Creación</label>
-                <p class="detail-value">{{ project.createdAt | date:'medium' }}</p>
+                <label class="detail-label">Descripción</label>
+                <p class="detail-value">{{ project.description || 'Sin descripción' }}</p>
               </div>
-            </div>
-            <div class="col-12 md:col-6">
-              <div class="detail-item">
-                <label class="detail-label">Última Actualización</label>
-                <p class="detail-value">{{ project.updatedAt | date:'medium' }}</p>
-              </div>
-            </div>
-          </div>
 
-          <div class="detail-item" *ngIf="project.creator">
-            <label class="detail-label">Creado por</label>
-            <p class="detail-value">{{ project.creator.name }} ({{ project.creator.email }})</p>
-          </div>
-        </div>
-      </p-card>
-
-      <!-- Team Members Section -->
-      <p-card>
-        <ng-template pTemplate="header">
-          <div class="card-header-custom">
-            <h3 class="m-0">Miembros del Equipo</h3>
-          </div>
-        </ng-template>
-
-        <p-table 
-          [value]="members"
-          [loading]="loading"
-          [paginator]="true"
-          [rows]="10"
-          [showCurrentPageReport]="true"
-          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} miembros"
-          styleClass="p-datatable-sm">
-          
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Usuario</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th>Fecha de Ingreso</th>
-              <th>Estado</th>
-            </tr>
-          </ng-template>
-          
-          <ng-template pTemplate="body" let-member>
-            <tr>
-              <td>
-                <div class="flex align-items-center gap-2">
-                  <p-avatar 
-                    [label]="getMemberInitials(member.userName || '')"
-                    shape="circle"
-                    size="normal"
-                    styleClass="avatar-custom">
-                  </p-avatar>
-                  <span>{{ member.userName }}</span>
+              <div class="grid">
+                <div class="col-12 md:col-6">
+                  <div class="detail-item">
+                    <label class="detail-label">Fecha de Creación</label>
+                    <p class="detail-value">{{ project.createdAt | date:'medium' }}</p>
+                  </div>
                 </div>
-              </td>
-              <td>{{ member.userEmail }}</td>
-              <td>
-                <span class="role-badge">{{ member.roleName }}</span>
-              </td>
-              <td>{{ member.joinedAt | date:'short' }}</td>
-              <td>
-                <p-tag 
-                  [value]="member.isActive ? 'Activo' : 'Inactivo'" 
-                  [severity]="getStatusSeverity(member.isActive)">
-                </p-tag>
-              </td>
-            </tr>
-          </ng-template>
-          
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="5" class="text-center">No hay miembros en este proyecto.</td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </p-card>
+                <div class="col-12 md:col-6">
+                  <div class="detail-item">
+                    <label class="detail-label">Última Actualización</label>
+                    <p class="detail-value">{{ project.updatedAt | date:'medium' }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-item" *ngIf="project.creator">
+                <label class="detail-label">Creado por</label>
+                <p class="detail-value">{{ project.creator.name }} ({{ project.creator.email }})</p>
+              </div>
+            </div>
+          </p-card>
+        </p-tabPanel>
+
+        <!-- Team Members Tab -->
+        <p-tabPanel header="Equipo">
+          <p-card>
+            <p-table 
+              [value]="members"
+              [loading]="loading"
+              [paginator]="true"
+              [rows]="10"
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} miembros"
+              styleClass="p-datatable-sm">
+              
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Usuario</th>
+                  <th>Email</th>
+                  <th>Rol</th>
+                  <th>Fecha de Ingreso</th>
+                  <th>Estado</th>
+                </tr>
+              </ng-template>
+              
+              <ng-template pTemplate="body" let-member>
+                <tr>
+                  <td>
+                    <div class="flex align-items-center gap-2">
+                      <p-avatar 
+                        [label]="getMemberInitials(member.userName || '')"
+                        shape="circle"
+                        size="normal"
+                        styleClass="avatar-custom">
+                      </p-avatar>
+                      <span>{{ member.userName }}</span>
+                    </div>
+                  </td>
+                  <td>{{ member.userEmail }}</td>
+                  <td>
+                    <span class="role-badge">{{ member.roleName }}</span>
+                  </td>
+                  <td>{{ member.joinedAt | date:'short' }}</td>
+                  <td>
+                    <p-tag 
+                      [value]="member.isActive ? 'Activo' : 'Inactivo'" 
+                      [severity]="getStatusSeverity(member.isActive)">
+                    </p-tag>
+                  </td>
+                </tr>
+              </ng-template>
+              
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="5" class="text-center">No hay miembros en este proyecto.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </p-card>
+        </p-tabPanel>
+
+        <!-- Sprints Tab -->
+        <p-tabPanel header="Sprints">
+          <app-sprint-list [projectId]="projectId"></app-sprint-list>
+        </p-tabPanel>
+      </p-tabView>
     </div>
 
     <!-- Right Column - Statistics & Activity -->

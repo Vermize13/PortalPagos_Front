@@ -13,6 +13,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ProjectWithMembers, ProjectMemberDetail } from '../../../domain/models';
 import { ProjectService } from '../../../data/services/project.service';
 import { ToastService } from '../../../data/services/toast.service';
+import { SprintListComponent } from '../../components/sprints/sprint-list.component';
 
 @Component({
   selector: 'app-project-view',
@@ -27,7 +28,8 @@ import { ToastService } from '../../../data/services/toast.service';
     AvatarModule,
     AvatarGroupModule,
     ProgressSpinnerModule,
-    TooltipModule
+    TooltipModule,
+    SprintListComponent
   ],
   templateUrl: './project-view.component.html',
   styleUrls: ['./project-view.component.css']
