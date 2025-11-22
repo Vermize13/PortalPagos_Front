@@ -89,7 +89,7 @@
           maxlength="10"
           minlength="2"
           required />
-        <small class="text-muted" *ngIf="!codeField.invalid || (!codeField.dirty && !codeField.touched && !submitted)">Código único del proyecto (2-10 caracteres)</small>
+        <small class="text-muted" *ngIf="!(codeField.invalid && (codeField.dirty || codeField.touched || submitted))">Código único del proyecto (2-10 caracteres)</small>
         <small class="p-error" *ngIf="codeField.invalid && (codeField.dirty || codeField.touched || submitted)">
           <span *ngIf="codeField.errors?.['required']">El código es requerido</span>
           <span *ngIf="codeField.errors?.['minlength']">El código debe tener al menos 2 caracteres</span>
