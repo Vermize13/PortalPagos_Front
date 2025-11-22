@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, ViewChild, forwardRef, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { Sidebar, SidebarModule } from 'primeng/sidebar';
 import { StyleClassModule } from 'primeng/styleclass';
+import { Menu, MenuModule } from 'primeng/menu';
+import { MenuItem } from 'primeng/api';
 import { UserStateService } from '../../../data/states/userState.service';
 
 @Component({
@@ -16,7 +18,7 @@ import { UserStateService } from '../../../data/states/userState.service';
   host: {
     '[class.collapsed]': 'collapsed'
   },
-  imports: [CommonModule, SidebarModule, ButtonModule, RippleModule, AvatarModule, StyleClassModule, RouterModule ],
+  imports: [CommonModule, SidebarModule, ButtonModule, RippleModule, AvatarModule, StyleClassModule, RouterModule, MenuModule ],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -31,6 +33,7 @@ import { UserStateService } from '../../../data/states/userState.service';
 export class SidenavComponent implements ControlValueAccessor {
   
   private userStateService = inject(UserStateService);
+  private router = inject(Router);
   
   get currentUser() {
     return this.userStateService.getUser();
@@ -48,6 +51,23 @@ export class SidenavComponent implements ControlValueAccessor {
   }
 
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
+  @ViewChild('profileMenu') profileMenu!: Menu;
+  
+  profileMenuItems: MenuItem[] = [
+    {
+      label: 'Mi Perfil',
+      icon: 'pi pi-user',
+      command: () => this.goToProfile()
+    },
+    {
+      separator: true
+    },
+    {
+      label: 'Cerrar Sesión',
+      icon: 'pi pi-sign-out',
+      command: () => this.logout()
+    }
+  ];
 
   // When collapsed, show only icons and shrink width. Controlled by layout toggle.
   collapsed: boolean = false;
@@ -79,5 +99,19 @@ export class SidenavComponent implements ControlValueAccessor {
 
   setDisabledState?(isDisabled: boolean): void {
     this.disabled = isDisabled;
+  }
+  
+  toggleProfileMenu(event: Event): void {
+    this.profileMenu.toggle(event);
+  }
+  
+  goToProfile(): void {
+    // Navigate to user profile page
+    this.router.navigate(['/inicio/profile']);
+  }
+  
+  logout(): void {
+    this.userStateService.clearUser();
+    this.router.navigate(['/login']);
   }
 }

@@ -1,0 +1,14 @@
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.profile-content .field {
+  margin-bottom: 1.5rem;
+}
+
+.profile-content .field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}

@@ -85,13 +85,22 @@
       </div>
       <!-- Profile section at bottom -->
       <div class="profile-section border-top-1 border-200 p-3 flex-shrink-0" *ngIf="currentUser as user">
-        <div class="flex align-items-center gap-3">
+        <div class="flex align-items-center gap-3 cursor-pointer p-2 border-round hover:surface-100 transition-duration-150" 
+             (click)="toggleProfileMenu($event)"
+             (keydown.enter)="toggleProfileMenu($event)"
+             (keydown.space)="toggleProfileMenu($event); $event.preventDefault()"
+             tabindex="0"
+             role="button"
+             aria-label="Abrir menú de perfil"
+             pRipple>
           <p-avatar [label]="userInitials" size="large" shape="circle"></p-avatar>
-          <div class="flex flex-column">
+          <div class="flex flex-column flex-1">
             <span class="font-medium text-900">{{ user.unique_name }}</span>
             <span class="text-600 text-sm">{{ user.role }}</span>
           </div>
+          <i class="pi pi-ellipsis-v text-600"></i>
         </div>
+        <p-menu #profileMenu [model]="profileMenuItems" [popup]="true" appendTo="body" [ariaLabel]="'Menú de opciones de perfil'"></p-menu>
       </div>
     </div>
   </ng-template>
@@ -100,40 +109,49 @@
 <!-- Collapsed vertical bar shown when sidebar is collapsed -->
 <div class="collapsed-bar" *ngIf="collapsed" role="navigation" aria-label="Collapsed sidebar">
   <div class="flex flex-column h-full">
-  <ul class="collapsed-list list-none p-0 m-0">
-    <li>
-      <a pRipple [routerLink]="['dashboard']" class="collapsed-item" aria-label="Dashboard">
-        <i class="pi pi-home"></i>
-      </a>
-    </li>
-    <li>
-      <a pRipple [routerLink]="['incidents']" class="collapsed-item" aria-label="Incidencias">
-        <i class="pi pi-exclamation-circle"></i>
-      </a>
-    </li>
-    <li>
-      <a pRipple [routerLink]="['projects']" class="collapsed-item" aria-label="Proyectos">
-        <i class="pi pi-folder"></i>
-      </a>
-    </li>
-    <li>
-      <a pRipple [routerLink]="['users']" class="collapsed-item" aria-label="Usuarios">
-        <i class="pi pi-users"></i>
-      </a>
-    </li>
-    <li>
-      <a pRipple [routerLink]="['audit']" class="collapsed-item" aria-label="Auditoría">
-        <i class="pi pi-history"></i>
-      </a>
-    </li>
-    <li>
-      <a pRipple [routerLink]="['admin']" class="collapsed-item" aria-label="Administración">
-        <i class="pi pi-cog"></i>
-      </a>
-    </li>
-  </ul>
-  <div class="collapsed-profile p-2 flex-shrink-0" *ngIf="currentUser as user">
-      <p-avatar [label]="userInitials" styleClass="mx-auto" size="normal" shape="circle"></p-avatar>
+    <ul class="collapsed-list list-none p-0 m-0 flex-1">
+      <li>
+        <a pRipple [routerLink]="['dashboard']" class="collapsed-item" aria-label="Dashboard">
+          <i class="pi pi-home"></i>
+        </a>
+      </li>
+      <li>
+        <a pRipple [routerLink]="['incidents']" class="collapsed-item" aria-label="Incidencias">
+          <i class="pi pi-exclamation-circle"></i>
+        </a>
+      </li>
+      <li>
+        <a pRipple [routerLink]="['projects']" class="collapsed-item" aria-label="Proyectos">
+          <i class="pi pi-folder"></i>
+        </a>
+      </li>
+      <li>
+        <a pRipple [routerLink]="['users']" class="collapsed-item" aria-label="Usuarios">
+          <i class="pi pi-users"></i>
+        </a>
+      </li>
+      <li>
+        <a pRipple [routerLink]="['audit']" class="collapsed-item" aria-label="Auditoría">
+          <i class="pi pi-history"></i>
+        </a>
+      </li>
+      <li>
+        <a pRipple [routerLink]="['admin']" class="collapsed-item" aria-label="Administración">
+          <i class="pi pi-cog"></i>
+        </a>
+      </li>
+    </ul>
+    
+    <!-- Profile avatar in collapsed state -->
+    <div class="collapsed-profile p-2 flex-shrink-0 cursor-pointer" 
+         *ngIf="currentUser as user"
+         (click)="toggleProfileMenu($event)"
+         (keydown.enter)="toggleProfileMenu($event)"
+         (keydown.space)="toggleProfileMenu($event); $event.preventDefault()"
+         tabindex="0"
+         role="button"
+         aria-label="Abrir menú de perfil">
+      <p-avatar [label]="userInitials" styleClass="mx-auto hover:bg-primary-100" size="normal" shape="circle"></p-avatar>
     </div>
   </div>
 </div>
