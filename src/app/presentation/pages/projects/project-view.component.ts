@@ -17,10 +17,12 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmationService } from 'primeng/api';
-import { ProjectWithMembers, ProjectMemberDetail, Label } from '../../../domain/models';
-import { ProjectService, UpdateProjectRequest } from '../../../data/services/project.service';
+import { ProjectWithMembers, ProjectMemberDetail, Label, User, Role } from '../../../domain/models';
+import { ProjectService, UpdateProjectRequest, AddProjectMemberRequest } from '../../../data/services/project.service';
 import { LabelService, CreateLabelRequest } from '../../../data/services/label.service';
+import { UserService } from '../../../data/services/user.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { SprintListComponent } from '../../components/sprints/sprint-list.component';
 
@@ -45,6 +47,7 @@ import { SprintListComponent } from '../../components/sprints/sprint-list.compon
     ColorPickerModule,
     CheckboxModule,
     ConfirmDialogModule,
+    DropdownModule,
     SprintListComponent
   ],
   providers: [ConfirmationService],
@@ -77,12 +80,24 @@ export class ProjectViewComponent implements OnInit {
     isActive: true
   };
   submittedProject: boolean = false;
+  
+  // Add member
+  displayAddMemberDialog: boolean = false;
+  allUsers: User[] = [];
+  availableRoles: Role[] = [];
+  loadingUsers: boolean = false;
+  addMemberForm = {
+    userId: '',
+    roleId: ''
+  };
+  submittedMember: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private projectService: ProjectService,
     private labelService: LabelService,
+    private userService: UserService,
     private toastService: ToastService,
     private confirmationService: ConfirmationService
   ) {}
@@ -93,6 +108,7 @@ export class ProjectViewComponent implements OnInit {
       if (this.projectId) {
         this.loadProject();
         this.loadLabels();
+        this.loadMembers();
       }
     });
   }
@@ -102,12 +118,6 @@ export class ProjectViewComponent implements OnInit {
     this.projectService.getById(this.projectId).subscribe({
       next: (project) => {
         this.project = project;
-        this.members = Array.isArray(project.memberDetails) ? project.memberDetails.map(m => ({
-          ...m,
-          userName: m.userName || m.user?.name || 'Unknown',
-          userEmail: m.userEmail || m.user?.email || '',
-          roleName: m.roleName || m.role?.name || 'Member'
-        })) : [];
         this.loading = false;
       },
       error: (error) => {
@@ -116,6 +126,23 @@ export class ProjectViewComponent implements OnInit {
         this.loading = false;
         // Fallback to mock data for demonstration
         this.loadMockProject();
+      }
+    });
+  }
+  
+  loadMembers() {
+    this.projectService.getMembers(this.projectId).subscribe({
+      next: (members) => {
+        this.members = members.map(m => ({
+          ...m,
+          userName: m.userName || m.user?.name || 'Unknown',
+          userEmail: m.userEmail || m.user?.email || '',
+          roleName: m.roleName || m.role?.name || 'Member'
+        }));
+      },
+      error: (error) => {
+        console.error('Error loading members:', error);
+        this.toastService.showError('Error', 'No se pudieron cargar los miembros del proyecto');
       }
     });
   }
@@ -352,5 +379,97 @@ export class ProjectViewComponent implements OnInit {
 
   getActiveMembersCount(): number {
     return this.members.filter(m => m.isActive).length;
+  }
+  
+  // Member management methods
+  onAddMember() {
+    this.loadingUsers = true;
+    this.displayAddMemberDialog = true;
+    this.addMemberForm = {
+      userId: '',
+      roleId: ''
+    };
+    this.submittedMember = false;
+    
+    // Load all users
+    this.userService.getAllUsers().subscribe({
+      next: (users) => {
+        // Filter out users who are already members
+        const memberUserIds = this.members.map(m => m.userId);
+        this.allUsers = users.filter(u => !memberUserIds.includes(u.id) && u.isActive);
+        
+        // Extract unique roles from all users
+        const rolesMap = new Map<string, Role>();
+        users.forEach(user => {
+          if (user.roles) {
+            user.roles.forEach(role => {
+              if (!rolesMap.has(role.id)) {
+                rolesMap.set(role.id, role);
+              }
+            });
+          }
+        });
+        this.availableRoles = Array.from(rolesMap.values());
+        
+        this.loadingUsers = false;
+      },
+      error: (error) => {
+        console.error('Error loading users:', error);
+        this.toastService.showError('Error', 'No se pudieron cargar los usuarios');
+        this.loadingUsers = false;
+      }
+    });
+  }
+  
+  onSaveMember() {
+    this.submittedMember = true;
+    
+    if (!this.addMemberForm.userId || !this.addMemberForm.roleId) {
+      return;
+    }
+    
+    const request: AddProjectMemberRequest = {
+      userId: this.addMemberForm.userId,
+      roleId: this.addMemberForm.roleId
+    };
+    
+    this.projectService.addMember(this.projectId, request).subscribe({
+      next: () => {
+        this.toastService.showSuccess('Éxito', 'Miembro agregado correctamente');
+        this.displayAddMemberDialog = false;
+        this.loadMembers();
+      },
+      error: (error) => {
+        console.error('Error adding member:', error);
+        this.toastService.showError('Error', 'No se pudo agregar el miembro');
+      }
+    });
+  }
+  
+  onCancelMember() {
+    this.displayAddMemberDialog = false;
+    this.submittedMember = false;
+  }
+  
+  onRemoveMember(member: ProjectMemberDetail) {
+    this.confirmationService.confirm({
+      message: `¿Está seguro de eliminar a "${member.userName}" del proyecto?`,
+      header: 'Confirmar Eliminación',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí',
+      rejectLabel: 'No',
+      accept: () => {
+        this.projectService.removeMember(this.projectId, member.userId).subscribe({
+          next: () => {
+            this.toastService.showSuccess('Éxito', 'Miembro eliminado correctamente');
+            this.loadMembers();
+          },
+          error: (error) => {
+            console.error('Error removing member:', error);
+            this.toastService.showError('Error', 'No se pudo eliminar el miembro');
+          }
+        });
+      }
+    });
   }
 }
