@@ -85,12 +85,12 @@
       </div>
       
       <!-- Profile section at bottom -->
-      <div class="profile-section border-top-1 border-200 p-3 flex-shrink-0" *ngIf="currentUser">
+      <div class="profile-section border-top-1 border-200 p-3 flex-shrink-0" *ngIf="currentUser as user">
         <div class="flex align-items-center gap-3">
           <p-avatar [label]="userInitials" size="large" shape="circle"></p-avatar>
           <div class="flex flex-column">
-            <span class="font-medium text-900">{{ currentUser.unique_name }}</span>
-            <span class="text-600 text-sm">{{ currentUser.role }}</span>
+            <span class="font-medium text-900">{{ user.unique_name }}</span>
+            <span class="text-600 text-sm">{{ user.role }}</span>
           </div>
         </div>
       </div>
@@ -135,7 +135,7 @@
     </ul>
     
     <!-- Profile avatar in collapsed state -->
-    <div class="collapsed-profile p-2 flex-shrink-0" *ngIf="currentUser">
+    <div class="collapsed-profile p-2 flex-shrink-0" *ngIf="currentUser as user">
       <p-avatar [label]="userInitials" styleClass="mx-auto" size="normal" shape="circle"></p-avatar>
     </div>
   </div>
