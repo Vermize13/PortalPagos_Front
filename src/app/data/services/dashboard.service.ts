@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { IncidentStatus, IncidentPriority, IncidentSeverity } from '../../domain/models';
+import { IncidentStatusMapping, IncidentPriorityMapping, IncidentSeverityMapping } from '../../domain/models/enum-mappings';
 
 export interface DashboardMetrics {
   totalIncidents: number;
@@ -20,19 +21,19 @@ export interface DashboardMetrics {
 }
 
 export interface StatusMetric {
-  status: IncidentStatus;
+  status: string;
   count: number;
   percentage: number;
 }
 
 export interface PriorityMetric {
-  priority: IncidentPriority;
+  priority: string;
   count: number;
   percentage: number;
 }
 
 export interface SeverityMetric {
-  severity: IncidentSeverity;
+  severity: string;
   count: number;
   percentage: number;
 }
@@ -58,6 +59,10 @@ export interface IncidentEvolutionMetric {
 export class DashboardService {
   private readonly apiUrl = `${environment.url}api/Dashboard`;
 
+  // Status constants for better readability
+  private readonly OPEN_STATUSES = [IncidentStatus.Abierto, IncidentStatus.EnProgreso]; // 0, 1
+  private readonly CLOSED_STATUSES = [IncidentStatus.Resuelto, IncidentStatus.Cerrado]; // 2, 3
+
   constructor(private http: HttpClient) { }
 
   /**
@@ -79,27 +84,39 @@ export class DashboardService {
     
     // Calculate status metrics
     const statusGroups = this.groupBy(incidents, 'status');
-    const incidentsByStatus: StatusMetric[] = Object.keys(statusGroups).map(status => ({
-      status: status as unknown as IncidentStatus,
-      count: statusGroups[status].length,
-      percentage: total > 0 ? (statusGroups[status].length / total) * 100 : 0
-    }));
+    const incidentsByStatus: StatusMetric[] = Object.keys(statusGroups).map(statusValue => {
+      const statusInt = parseInt(statusValue);
+      const statusLabel = IncidentStatusMapping.find(m => m.value === statusInt)?.label || statusValue;
+      return {
+        status: statusLabel,
+        count: statusGroups[statusValue].length,
+        percentage: total > 0 ? (statusGroups[statusValue].length / total) * 100 : 0
+      };
+    });
 
     // Calculate priority metrics
     const priorityGroups = this.groupBy(incidents, 'priority');
-    const incidentsByPriority: PriorityMetric[] = Object.keys(priorityGroups).map(priority => ({
-      priority: priority as unknown as IncidentPriority,
-      count: priorityGroups[priority].length,
-      percentage: total > 0 ? (priorityGroups[priority].length / total) * 100 : 0
-    }));
+    const incidentsByPriority: PriorityMetric[] = Object.keys(priorityGroups).map(priorityValue => {
+      const priorityInt = parseInt(priorityValue);
+      const priorityLabel = IncidentPriorityMapping.find(m => m.value === priorityInt)?.label || priorityValue;
+      return {
+        priority: priorityLabel,
+        count: priorityGroups[priorityValue].length,
+        percentage: total > 0 ? (priorityGroups[priorityValue].length / total) * 100 : 0
+      };
+    });
 
     // Calculate severity metrics
     const severityGroups = this.groupBy(incidents, 'severity');
-    const incidentsBySeverity: SeverityMetric[] = Object.keys(severityGroups).map(severity => ({
-      severity: severity as unknown as IncidentSeverity,
-      count: severityGroups[severity].length,
-      percentage: total > 0 ? (severityGroups[severity].length / total) * 100 : 0
-    }));
+    const incidentsBySeverity: SeverityMetric[] = Object.keys(severityGroups).map(severityValue => {
+      const severityInt = parseInt(severityValue);
+      const severityLabel = IncidentSeverityMapping.find(m => m.value === severityInt)?.label || severityValue;
+      return {
+        severity: severityLabel,
+        count: severityGroups[severityValue].length,
+        percentage: total > 0 ? (severityGroups[severityValue].length / total) * 100 : 0
+      };
+    });
 
     // Calculate sprint metrics
     const sprintGroups = this.groupBy(incidents.filter(i => i.sprintId), 'sprintId');
@@ -108,8 +125,8 @@ export class DashboardService {
       return {
         sprintId,
         sprintName: sprintIncidents[0]?.sprint?.name || `Sprint ${sprintId}`,
-        openCount: sprintIncidents.filter(i => i.status === IncidentStatus.Abierto || i.status === IncidentStatus.EnProgreso).length,
-        closedCount: sprintIncidents.filter(i => i.status === IncidentStatus.Cerrado || i.status === IncidentStatus.Resuelto).length,
+        openCount: sprintIncidents.filter(i => this.OPEN_STATUSES.includes(i.status)).length,
+        closedCount: sprintIncidents.filter(i => this.CLOSED_STATUSES.includes(i.status)).length,
         totalCount: sprintIncidents.length
       };
     });
@@ -124,7 +141,7 @@ export class DashboardService {
     return {
       totalIncidents: total,
       openIncidents: incidents.filter(i => i.status === IncidentStatus.Abierto).length,
-      closedIncidents: incidents.filter(i => i.status === IncidentStatus.Cerrado || i.status === IncidentStatus.Resuelto).length,
+      closedIncidents: incidents.filter(i => this.CLOSED_STATUSES.includes(i.status)).length,
       inProgressIncidents: incidents.filter(i => i.status === IncidentStatus.EnProgreso).length,
       activeProjects: 0, // Will be populated from projects API
       activeUsers: 0, // Will be populated from users API

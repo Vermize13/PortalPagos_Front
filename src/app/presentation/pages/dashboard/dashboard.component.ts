@@ -124,7 +124,7 @@ export class DashboardComponent implements OnInit {
       labels: this.metrics.incidentEvolution.map(e => e.date),
       datasets: [
         {
-          label: 'Opened',
+          label: 'Abierto',
           data: this.metrics.incidentEvolution.map(e => e.opened),
           borderColor: '#3B82F6',
           backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -132,7 +132,7 @@ export class DashboardComponent implements OnInit {
           tension: 0.4
         },
         {
-          label: 'Closed',
+          label: 'Cerrado',
           data: this.metrics.incidentEvolution.map(e => e.closed),
           borderColor: '#10B981',
           backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -140,7 +140,7 @@ export class DashboardComponent implements OnInit {
           tension: 0.4
         },
         {
-          label: 'Total Active',
+          label: 'Total Activo',
           data: this.metrics.incidentEvolution.map(e => e.total),
           borderColor: '#F59E0B',
           backgroundColor: 'rgba(245, 158, 11, 0.1)',
