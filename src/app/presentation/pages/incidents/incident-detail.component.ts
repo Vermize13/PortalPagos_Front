@@ -350,53 +350,70 @@ export class IncidentDetailComponent implements OnInit {
 
     // Handle Status enum
     if (fieldName === 'Status') {
+      // Try parsing as numeric value first
       const statusValue = parseInt(value, 10);
       if (!isNaN(statusValue)) {
         const statusMapping = IncidentStatusMapping.find(s => s.value === statusValue);
         return statusMapping?.label || value;
       }
-      // Handle string values like "Open", "InProgress"
+      // Handle string values - backend may return C# enum names in English
       const statusStringMappings: { [key: string]: string } = {
         'Open': 'Abierto',
+        'Abierto': 'Abierto',
         'InProgress': 'En Progreso',
+        'EnProgreso': 'En Progreso',
         'Resolved': 'Resuelto',
+        'Resuelto': 'Resuelto',
         'Closed': 'Cerrado',
+        'Cerrado': 'Cerrado',
         'Rejected': 'Rechazado',
-        'Duplicate': 'Duplicado'
+        'Rechazado': 'Rechazado',
+        'Duplicate': 'Duplicado',
+        'Duplicado': 'Duplicado'
       };
       return statusStringMappings[value] || value;
     }
 
     // Handle Priority enum
     if (fieldName === 'Priority') {
+      // Try parsing as numeric value first
       const priorityValue = parseInt(value, 10);
       if (!isNaN(priorityValue)) {
         const priorityMapping = IncidentPriorityMapping.find(p => p.value === priorityValue);
         return priorityMapping?.label || value;
       }
-      // Handle string values
+      // Handle string values - backend may return C# enum names
       const priorityStringMappings: { [key: string]: string } = {
         'NoHacer': 'No necesario',
+        'MustNotHave': 'No necesario',
         'PodríaHacer': 'Podría tener',
+        'CouldHave': 'Podría tener',
         'DeberíaHacer': 'Debería tener',
-        'DebeHacer': 'Debe tener'
+        'ShouldHave': 'Debería tener',
+        'DebeHacer': 'Debe tener',
+        'MustHave': 'Debe tener'
       };
       return priorityStringMappings[value] || value;
     }
 
     // Handle Severity enum
     if (fieldName === 'Severity') {
+      // Try parsing as numeric value first
       const severityValue = parseInt(value, 10);
       if (!isNaN(severityValue)) {
         const severityMapping = IncidentSeverityMapping.find(s => s.value === severityValue);
         return severityMapping?.label || value;
       }
-      // Handle string values
+      // Handle string values - backend may return C# enum names
       const severityStringMappings: { [key: string]: string } = {
         'Low': 'Baja',
+        'Bajo': 'Baja',
         'Medium': 'Media',
+        'Medio': 'Media',
         'High': 'Alta',
-        'Critical': 'Crítica'
+        'Alto': 'Alta',
+        'Critical': 'Crítica',
+        'Crítico': 'Crítica'
       };
       return severityStringMappings[value] || value;
     }
