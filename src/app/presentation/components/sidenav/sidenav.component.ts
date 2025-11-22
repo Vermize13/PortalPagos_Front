@@ -32,17 +32,19 @@ export class SidenavComponent implements OnInit, ControlValueAccessor {
   private userStateService = inject(UserStateService);
   
   ngOnInit(): void {
-    console.log("llego aqui");
   }
   
   get currentUser() {
     return this.userStateService.getUser();
   }
   
-  getUserInitials(): string {
+  get userInitials(): string {
     const user = this.currentUser;
     if (!user || !user.unique_name) return 'U';
-    const names = user.unique_name.trim().split(' ');
+    const trimmedName = user.unique_name.trim();
+    if (!trimmedName) return 'U';
+    const names = trimmedName.split(' ').filter(name => name.length > 0);
+    if (names.length === 0) return 'U';
     if (names.length === 1) return names[0].charAt(0).toUpperCase();
     return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
   }
