@@ -71,6 +71,15 @@
         <!-- Team Members Tab -->
         <p-tabPanel header="Equipo">
           <p-card>
+            <div class="flex justify-content-between align-items-center mb-3">
+              <h3 class="m-0">Miembros del Proyecto</h3>
+              <p-button 
+                label="Agregar Miembro" 
+                icon="pi pi-user-plus" 
+                (onClick)="onAddMember()">
+              </p-button>
+            </div>
+            
             <p-table 
               [value]="members"
               [loading]="loading"
@@ -87,6 +96,7 @@
                   <th>Rol</th>
                   <th>Fecha de Ingreso</th>
                   <th>Estado</th>
+                  <th style="width: 100px">Acciones</th>
                 </tr>
               </ng-template>
               
@@ -114,12 +124,28 @@
                       [severity]="getStatusSeverity(member.isActive)">
                     </p-tag>
                   </td>
+                  <td>
+                    <p-button 
+                      icon="pi pi-trash" 
+                      [rounded]="true" 
+                      [text]="true" 
+                      severity="danger"
+                      (onClick)="onRemoveMember(member)"
+                      pTooltip="Eliminar miembro">
+                    </p-button>
+                  </td>
                 </tr>
               </ng-template>
               
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="5" class="text-center">No hay miembros en este proyecto.</td>
+                  <td colspan="6" class="text-center">
+                    <div class="py-4">
+                      <i class="pi pi-users" style="font-size: 2rem; color: #adb5bd;"></i>
+                      <p class="mt-2 text-gray-500">No hay miembros en este proyecto.</p>
+                      <p class="text-sm text-gray-400">Agrega miembros para comenzar a colaborar.</p>
+                    </div>
+                  </td>
                 </tr>
               </ng-template>
             </p-table>
@@ -444,6 +470,92 @@
       [label]="isEditingLabel ? 'Actualizar' : 'Crear'" 
       icon="pi pi-check" 
       (onClick)="onSaveLabel()">
+    </p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Add Member Dialog -->
+<p-dialog 
+  [(visible)]="displayAddMemberDialog" 
+  header="Agregar Miembro al Proyecto"
+  [modal]="true"
+  [style]="{width: '600px'}"
+  [baseZIndex]="10"
+  [closable]="true">
+  
+  <form #memberFormRef="ngForm" class="p-fluid">
+    <div class="field mb-3">
+      <label for="memberUser">Usuario *</label>
+      <p-dropdown 
+        id="memberUser" 
+        name="memberUser"
+        #memberUserField="ngModel"
+        [(ngModel)]="addMemberForm.userId"
+        [options]="allUsers"
+        optionLabel="name"
+        optionValue="id"
+        [filter]="true"
+        filterBy="name,email"
+        placeholder="Seleccione un usuario"
+        [showClear]="true"
+        [loading]="loadingUsers"
+        required>
+        <ng-template let-user pTemplate="item">
+          <div class="flex align-items-center gap-2">
+            <p-avatar 
+              [label]="getMemberInitials(user.name)"
+              size="small"
+              shape="circle">
+            </p-avatar>
+            <div>
+              <div>{{ user.name }}</div>
+              <small class="text-gray-500">{{ user.email }}</small>
+            </div>
+          </div>
+        </ng-template>
+      </p-dropdown>
+      <small class="p-error" *ngIf="memberUserField.invalid && (memberUserField.dirty || memberUserField.touched || submittedMember)">
+        Debe seleccionar un usuario
+      </small>
+    </div>
+
+    <div class="field mb-3">
+      <label for="memberRole">Rol en el Proyecto *</label>
+      <p-dropdown 
+        id="memberRole" 
+        name="memberRole"
+        #memberRoleField="ngModel"
+        [(ngModel)]="addMemberForm.roleId"
+        [options]="availableRoles"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Seleccione un rol"
+        [showClear]="true"
+        required>
+        <ng-template let-role pTemplate="item">
+          <div>
+            <div>{{ role.name }}</div>
+            <small class="text-gray-500" *ngIf="role.description">{{ role.description }}</small>
+          </div>
+        </ng-template>
+      </p-dropdown>
+      <small class="p-error" *ngIf="memberRoleField.invalid && (memberRoleField.dirty || memberRoleField.touched || submittedMember)">
+        Debe seleccionar un rol
+      </small>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button 
+      label="Cancelar" 
+      icon="pi pi-times" 
+      (onClick)="onCancelMember()"
+      styleClass="p-button-text">
+    </p-button>
+    <p-button 
+      label="Agregar" 
+      icon="pi pi-check" 
+      (onClick)="onSaveMember()">
     </p-button>
   </ng-template>
 </p-dialog>
