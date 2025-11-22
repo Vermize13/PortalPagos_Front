@@ -36,73 +36,187 @@
 
       <div class="grid">
         <div class="col-12 md:col-8">
-          <div class="mb-4">
-            <h3 class="text-lg font-semibold mb-2">Descripción</h3>
-            <p class="text-gray-700 line-height-3">
-              {{ incident.description || 'Sin descripción' }}
-            </p>
-          </div>
-
-          <p-divider></p-divider>
-
-          <!-- Comments Section -->
-          <div class="mt-4">
-            <h3 class="text-lg font-semibold mb-3">Comentarios ({{ comments.length }})</h3>
-            
-            <!-- Add Comment Form -->
-            <div class="mb-4">
-              <textarea 
-                pInputTextarea 
-                [(ngModel)]="newCommentBody"
-                placeholder="Agregar un comentario..."
-                rows="3"
-                class="w-full"></textarea>
-              <div class="flex justify-content-end mt-2">
-                <p-button 
-                  label="Comentar" 
-                  icon="pi pi-send"
-                  [disabled]="!newCommentBody.trim() || submittingComment"
-                  [loading]="submittingComment"
-                  (onClick)="onAddComment()">
-                </p-button>
+          <p-tabView>
+            <!-- Details Tab -->
+            <p-tabPanel header="Detalles">
+              <div class="mb-4">
+                <h3 class="text-lg font-semibold mb-2">Descripción</h3>
+                <p class="text-gray-700 line-height-3">
+                  {{ incident.description || 'Sin descripción' }}
+                </p>
               </div>
-            </div>
 
-            <!-- Comments List -->
-            <div *ngIf="loadingComments" class="text-center py-3">
-              <i class="pi pi-spinner pi-spin"></i>
-            </div>
+              <p-divider></p-divider>
 
-            <div *ngIf="!loadingComments && comments.length === 0" class="text-center py-4 text-gray-500">
-              <i class="pi pi-comments" style="font-size: 2rem"></i>
-              <p class="mt-2">No hay comentarios todavía</p>
-            </div>
+              <!-- Comments Section -->
+              <div class="mt-4">
+                <h3 class="text-lg font-semibold mb-3">Comentarios ({{ comments.length }})</h3>
+                
+                <!-- Add Comment Form -->
+                <div class="mb-4">
+                  <textarea 
+                    pInputTextarea 
+                    [(ngModel)]="newCommentBody"
+                    placeholder="Agregar un comentario..."
+                    rows="3"
+                    class="w-full"></textarea>
+                  <div class="flex justify-content-end mt-2">
+                    <p-button 
+                      label="Comentar" 
+                      icon="pi pi-send"
+                      [disabled]="!newCommentBody.trim() || submittingComment"
+                      [loading]="submittingComment"
+                      (onClick)="onAddComment()">
+                    </p-button>
+                  </div>
+                </div>
 
-            <div *ngIf="!loadingComments" class="comments-list">
-              <div *ngFor="let comment of comments" class="comment-item">
-                <div class="flex gap-3">
-                  <p-avatar 
-                    [label]="getAuthorInitials(comment.author?.name || 'Usuario')" 
-                    size="large"
-                    shape="circle"
-                    styleClass="bg-primary-500">
-                  </p-avatar>
-                  <div class="flex-1">
-                    <div class="flex justify-content-between align-items-start mb-2">
-                      <div>
-                        <strong>{{ comment.author?.name || 'Usuario' }}</strong>
-                        <span class="text-sm text-gray-500 ml-2">
-                          {{ comment.createdAt | date:'short' }}
-                        </span>
-                        <span *ngIf="comment.editedAt" class="text-sm text-gray-400 ml-1">(editado)</span>
+                <!-- Comments List -->
+                <div *ngIf="loadingComments" class="text-center py-3">
+                  <i class="pi pi-spinner pi-spin"></i>
+                </div>
+
+                <div *ngIf="!loadingComments && comments.length === 0" class="text-center py-4 text-gray-500">
+                  <i class="pi pi-comments" style="font-size: 2rem"></i>
+                  <p class="mt-2">No hay comentarios todavía</p>
+                </div>
+
+                <div *ngIf="!loadingComments" class="comments-list">
+                  <div *ngFor="let comment of comments" class="comment-item">
+                    <div class="flex gap-3">
+                      <p-avatar 
+                        [label]="getAuthorInitials(comment.author?.name || 'Usuario')" 
+                        size="large"
+                        shape="circle"
+                        styleClass="bg-primary-500">
+                      </p-avatar>
+                      <div class="flex-1">
+                        <div class="flex justify-content-between align-items-start mb-2">
+                          <div>
+                            <strong>{{ comment.author?.name || 'Usuario' }}</strong>
+                            <span class="text-sm text-gray-500 ml-2">
+                              {{ comment.createdAt | date:'short' }}
+                            </span>
+                            <span *ngIf="comment.editedAt" class="text-sm text-gray-400 ml-1">(editado)</span>
+                          </div>
+                        </div>
+                        <p class="comment-body m-0">{{ comment.body }}</p>
                       </div>
                     </div>
-                    <p class="comment-body m-0">{{ comment.body }}</p>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </p-tabPanel>
+
+            <!-- History Tab -->
+            <p-tabPanel header="Historial">
+              <div *ngIf="loadingHistory" class="text-center py-5">
+                <i class="pi pi-spinner pi-spin" style="font-size: 2rem"></i>
+                <p class="mt-3">Cargando historial...</p>
+              </div>
+
+              <div *ngIf="!loadingHistory && history.length === 0" class="text-center py-5 text-gray-500">
+                <i class="pi pi-history" style="font-size: 2rem"></i>
+                <p class="mt-2">No hay cambios registrados</p>
+              </div>
+
+              <div *ngIf="!loadingHistory && history.length > 0">
+                <p-table [value]="history" [tableStyle]="{'min-width': '50rem'}">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Campo</th>
+                      <th>Valor Anterior</th>
+                      <th>Valor Nuevo</th>
+                      <th>Modificado Por</th>
+                      <th>Fecha</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-change>
+                    <tr>
+                      <td>{{ change.fieldName }}</td>
+                      <td>{{ change.oldValue || '-' }}</td>
+                      <td>{{ change.newValue || '-' }}</td>
+                      <td>{{ change.changedByUser?.name || 'Usuario' }}</td>
+                      <td>{{ change.changedAt | date:'short' }}</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </p-tabPanel>
+
+            <!-- Attachments Tab -->
+            <p-tabPanel header="Adjuntos">
+              <div class="mb-4">
+                <p-fileUpload
+                  mode="basic"
+                  name="file"
+                  [auto]="true"
+                  chooseLabel="Subir Archivo"
+                  [maxFileSize]="getMaxFileSizeMB() * 1024 * 1024"
+                  [disabled]="uploadingAttachment"
+                  (onSelect)="onFileSelect($event)">
+                </p-fileUpload>
+                <small class="text-gray-500 ml-2">
+                  Tamaño máximo: {{ getMaxFileSizeMB() }}MB
+                </small>
+              </div>
+
+              <div *ngIf="loadingAttachments" class="text-center py-5">
+                <i class="pi pi-spinner pi-spin" style="font-size: 2rem"></i>
+                <p class="mt-3">Cargando adjuntos...</p>
+              </div>
+
+              <div *ngIf="!loadingAttachments && attachments.length === 0" class="text-center py-5 text-gray-500">
+                <i class="pi pi-paperclip" style="font-size: 2rem"></i>
+                <p class="mt-2">No hay archivos adjuntos</p>
+              </div>
+
+              <div *ngIf="!loadingAttachments && attachments.length > 0">
+                <p-table [value]="attachments" [tableStyle]="{'min-width': '50rem'}">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Nombre del Archivo</th>
+                      <th>Tamaño</th>
+                      <th>Subido Por</th>
+                      <th>Fecha</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-attachment>
+                    <tr>
+                      <td>
+                        <i class="pi pi-file mr-2"></i>
+                        {{ attachment.fileName }}
+                      </td>
+                      <td>{{ formatFileSize(attachment.fileSizeBytes) }}</td>
+                      <td>{{ attachment.uploaderName || 'Usuario' }}</td>
+                      <td>{{ attachment.uploadedAt | date:'short' }}</td>
+                      <td>
+                        <div class="flex gap-2">
+                          <p-button 
+                            icon="pi pi-download" 
+                            [text]="true"
+                            [rounded]="true"
+                            severity="info"
+                            (onClick)="onDownloadAttachment(attachment)"
+                            pTooltip="Descargar">
+                          </p-button>
+                          <p-button 
+                            icon="pi pi-trash" 
+                            [text]="true"
+                            [rounded]="true"
+                            severity="danger"
+                            (onClick)="onDeleteAttachment(attachment)"
+                            pTooltip="Eliminar">
+                          </p-button>
+                        </div>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </p-tabPanel>
+          </p-tabView>
         </div>
 
         <div class="col-12 md:col-4">
