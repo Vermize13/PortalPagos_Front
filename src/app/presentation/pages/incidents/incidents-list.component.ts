@@ -454,21 +454,21 @@ export class IncidentsListComponent implements OnInit {
     this.sprints = [];
     this.projectMembers = [];
     
+    if (!projectId) {
+      return;
+    }
+    
     // Clear assignee if current assignee is not a member of the new project
-    if (this.incidentForm.assigneeId && projectId) {
+    if (this.incidentForm.assigneeId) {
       // We'll validate after loading members
       const currentAssignee = this.incidentForm.assigneeId;
       this.incidentForm.assigneeId = undefined;
-      
-      // Load members and then check if current assignee is valid
-      if (projectId) {
-        this.loadProjectMembers(projectId, currentAssignee);
-        this.loadSprintsByProject(projectId);
-      }
-    } else if (projectId) {
+      this.loadProjectMembers(projectId, currentAssignee);
+    } else {
       this.loadProjectMembers(projectId);
-      this.loadSprintsByProject(projectId);
     }
+    
+    this.loadSprintsByProject(projectId);
   }
 
   loadProjectMembers(projectId: string, preserveAssigneeId?: string) {
@@ -478,7 +478,7 @@ export class IncidentsListComponent implements OnInit {
         this.projectMembers = members
           .filter(m => m.isActive)
           .map(m => ({ 
-            label: m.user?.name || m.userName || 'Unknown', 
+            label: m.user?.name || m.userName || 'Desconocido', 
             value: m.userId 
           }));
         
