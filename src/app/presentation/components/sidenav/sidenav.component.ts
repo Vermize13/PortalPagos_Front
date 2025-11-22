@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, forwardRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild, forwardRef, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -27,12 +27,9 @@ import { UserStateService } from '../../../data/states/userState.service';
   styleUrls: ['./sidenav.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SidenavComponent implements OnInit, ControlValueAccessor {
+export class SidenavComponent implements ControlValueAccessor {
   
   private userStateService = inject(UserStateService);
-  
-  ngOnInit(): void {
-  }
   
   get currentUser() {
     return this.userStateService.getUser();
