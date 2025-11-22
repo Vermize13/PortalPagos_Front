@@ -176,11 +176,12 @@ export class IncidentDetailComponent implements OnInit {
       return;
     }
 
+    const incidentId = this.incident.id;
     this.uploadingAttachment = true;
-    this.attachmentService.upload(this.incident.id, file).subscribe({
+    this.attachmentService.upload(incidentId, file).subscribe({
       next: () => {
         this.toastService.showSuccess('Éxito', 'Archivo subido correctamente');
-        this.loadAttachments(this.incident!.id);
+        this.loadAttachments(incidentId);
         this.uploadingAttachment = false;
         event.target.clear();
       },
@@ -220,10 +221,11 @@ export class IncidentDetailComponent implements OnInit {
       return;
     }
 
-    this.attachmentService.delete(this.incident.id, attachment.id).subscribe({
+    const incidentId = this.incident.id;
+    this.attachmentService.delete(incidentId, attachment.id).subscribe({
       next: () => {
         this.toastService.showSuccess('Éxito', 'Archivo eliminado correctamente');
-        this.loadAttachments(this.incident!.id);
+        this.loadAttachments(incidentId);
       },
       error: (error) => {
         console.error('Error deleting file:', error);
