@@ -8,6 +8,7 @@ import { RippleModule } from 'primeng/ripple';
 import { Sidebar, SidebarModule } from 'primeng/sidebar';
 import { StyleClassModule } from 'primeng/styleclass';
 import { UserStateService } from '../../../data/states/userState.service';
+
 @Component({
   selector: 'app-sidenav',
   standalone: true,

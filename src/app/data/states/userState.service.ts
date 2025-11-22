@@ -20,8 +20,8 @@ export class UserStateService {
   }
 
   getUser() {
-    this.getUserFromLocalStorage();
-    return this.currentUser();
+    const user = this.getUserFromLocalStorage();
+    return user || this.user();
   }
 
   clearUser() {
@@ -29,16 +29,24 @@ export class UserStateService {
     localStorage.removeItem('token');
   }
 
-  private getUserFromLocalStorage() {
+  private getUserFromLocalStorage(): User | null {
     const token = localStorage.getItem('token');
     if (token) {
-      const decodedToken:any = jwtDecode(token);
-      this.user.set({
+      const decodedToken: any = jwtDecode(token);
+      return {
         token: token,
-        nameid: 20,// Number(decodedToken.nameid),
+        nameid: 20, // Number(decodedToken.nameid),
         role: decodedToken.role,
         unique_name: decodedToken.unique_name
-      });
+      };
+    }
+    return null;
+  }
+
+  setUserFromLocalStorage(): void {
+    const user = this.getUserFromLocalStorage();
+    if (user) {
+      this.user.set(user);
     }
   }
 

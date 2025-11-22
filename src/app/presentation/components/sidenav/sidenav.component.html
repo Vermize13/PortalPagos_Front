@@ -11,7 +11,7 @@
             outlined="true" styleClass="h-2rem w-2rem"></p-button>
         </span>
       </div>
-      <div class="overflow-y-auto flex-1">
+      <div class="overflow-y-auto">
         <ul class="list-none p-3 m-0">
           <li>
             <a pRipple [routerLink]="['dashboard']" routerLinkActive="active-menu-item"
@@ -83,7 +83,6 @@
           </li>
         </ul>
       </div>
-      
       <!-- Profile section at bottom -->
       <div class="profile-section border-top-1 border-200 p-3 flex-shrink-0" *ngIf="currentUser as user">
         <div class="flex align-items-center gap-3">
@@ -101,41 +100,39 @@
 <!-- Collapsed vertical bar shown when sidebar is collapsed -->
 <div class="collapsed-bar" *ngIf="collapsed" role="navigation" aria-label="Collapsed sidebar">
   <div class="flex flex-column h-full">
-    <ul class="collapsed-list list-none p-0 m-0 flex-1">
-      <li>
-        <a pRipple [routerLink]="['dashboard']" class="collapsed-item" aria-label="Dashboard">
-          <i class="pi pi-home"></i>
-        </a>
-      </li>
-      <li>
-        <a pRipple [routerLink]="['incidents']" class="collapsed-item" aria-label="Incidencias">
-          <i class="pi pi-exclamation-circle"></i>
-        </a>
-      </li>
-      <li>
-        <a pRipple [routerLink]="['projects']" class="collapsed-item" aria-label="Proyectos">
-          <i class="pi pi-folder"></i>
-        </a>
-      </li>
-      <li>
-        <a pRipple [routerLink]="['users']" class="collapsed-item" aria-label="Usuarios">
-          <i class="pi pi-users"></i>
-        </a>
-      </li>
-      <li>
-        <a pRipple [routerLink]="['audit']" class="collapsed-item" aria-label="Auditoría">
-          <i class="pi pi-history"></i>
-        </a>
-      </li>
-      <li>
-        <a pRipple [routerLink]="['admin']" class="collapsed-item" aria-label="Administración">
-          <i class="pi pi-cog"></i>
-        </a>
-      </li>
-    </ul>
-    
-    <!-- Profile avatar in collapsed state -->
-    <div class="collapsed-profile p-2 flex-shrink-0" *ngIf="currentUser as user">
+  <ul class="collapsed-list list-none p-0 m-0">
+    <li>
+      <a pRipple [routerLink]="['dashboard']" class="collapsed-item" aria-label="Dashboard">
+        <i class="pi pi-home"></i>
+      </a>
+    </li>
+    <li>
+      <a pRipple [routerLink]="['incidents']" class="collapsed-item" aria-label="Incidencias">
+        <i class="pi pi-exclamation-circle"></i>
+      </a>
+    </li>
+    <li>
+      <a pRipple [routerLink]="['projects']" class="collapsed-item" aria-label="Proyectos">
+        <i class="pi pi-folder"></i>
+      </a>
+    </li>
+    <li>
+      <a pRipple [routerLink]="['users']" class="collapsed-item" aria-label="Usuarios">
+        <i class="pi pi-users"></i>
+      </a>
+    </li>
+    <li>
+      <a pRipple [routerLink]="['audit']" class="collapsed-item" aria-label="Auditoría">
+        <i class="pi pi-history"></i>
+      </a>
+    </li>
+    <li>
+      <a pRipple [routerLink]="['admin']" class="collapsed-item" aria-label="Administración">
+        <i class="pi pi-cog"></i>
+      </a>
+    </li>
+  </ul>
+  <div class="collapsed-profile p-2 flex-shrink-0" *ngIf="currentUser as user">
       <p-avatar [label]="userInitials" styleClass="mx-auto" size="normal" shape="circle"></p-avatar>
     </div>
   </div>
