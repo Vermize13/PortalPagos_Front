@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -62,7 +63,8 @@ export class ProjectsListComponent implements OnInit {
   constructor(
     private projectService: ProjectService,
     private toastService: ToastService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -178,8 +180,7 @@ export class ProjectsListComponent implements OnInit {
   }
 
   onViewDetails(project: Project) {
-    console.log('View project details:', project);
-    // TODO: Navigate to project details page or show details dialog
+    this.router.navigate(['/inicio/projects', project.id]);
   }
   
   onSaveProject() {

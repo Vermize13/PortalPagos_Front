@@ -1,0 +1,348 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Container styling */
+.container-fluid {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Header Section */
+.header-section {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.project-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.project-code {
+  font-size: 0.875rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Card Headers */
+::ng-deep .p-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+}
+
+.card-header-custom {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.card-header-custom h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+::ng-deep .p-card .p-card-body {
+  padding: 1.5rem;
+}
+
+::ng-deep .p-card .p-card-content {
+  padding: 0;
+}
+
+/* Project Details */
+.project-details {
+  padding: 0.5rem 0;
+}
+
+.detail-item {
+  margin-bottom: 1.5rem;
+}
+
+.detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 1rem;
+  color: #2c3e50;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Status Tags */
+::ng-deep .p-tag {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+
+::ng-deep .p-tag.p-tag-success {
+  background-color: #28a745;
+  color: white;
+}
+
+::ng-deep .p-tag.p-tag-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+/* Table Styling */
+::ng-deep .p-datatable {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  background-color: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 1rem;
+  border-bottom: 2px solid #dee2e6;
+  text-align: left;
+}
+
+::ng-deep .p-datatable .p-datatable-tbody > tr {
+  transition: background-color 0.2s;
+}
+
+::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
+  background-color: #f8f9fa;
+}
+
+::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+  padding: 1rem;
+  color: #495057;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+/* Avatar Styling */
+.avatar-custom {
+  background-color: #4285f4;
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* Role Badge */
+.role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: #e7f3ff;
+  color: #0066cc;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Statistics Section */
+.stats-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.stat-icon-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-icon-success {
+  background: linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%);
+}
+
+.stat-icon-info {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin: 0.25rem 0 0 0;
+}
+
+/* Activity Section */
+.activity-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.activity-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: #e7f3ff;
+  color: #4285f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.activity-info {
+  flex: 1;
+}
+
+.activity-text {
+  font-size: 0.875rem;
+  color: #2c3e50;
+  margin: 0 0 0.25rem 0;
+  font-weight: 500;
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin: 0;
+}
+
+/* Button Styling */
+::ng-deep .p-button {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+::ng-deep .p-button:not(.p-button-text):not(.p-button-outlined) {
+  background: #4285f4;
+  border-color: #4285f4;
+}
+
+::ng-deep .p-button:not(.p-button-text):not(.p-button-outlined):hover {
+  background: #3367d6;
+  border-color: #3367d6;
+  box-shadow: 0 4px 8px rgba(66, 133, 244, 0.3);
+}
+
+::ng-deep .p-button.p-button-rounded.p-button-text {
+  width: 2.5rem;
+  height: 2.5rem;
+  transition: all 0.2s ease;
+}
+
+::ng-deep .p-button.p-button-rounded.p-button-text:hover {
+  background-color: rgba(108, 117, 125, 0.1);
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+/* Pagination */
+::ng-deep .p-paginator {
+  background-color: transparent;
+  border: none;
+  padding: 1rem 0;
+  justify-content: space-between;
+}
+
+::ng-deep .p-paginator .p-paginator-pages .p-paginator-page {
+  min-width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 6px;
+  margin: 0 0.25rem;
+  color: #495057;
+}
+
+::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  background: #4285f4;
+  border-color: #4285f4;
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 991px) {
+  .project-title {
+    font-size: 1.5rem;
+  }
+
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-section .flex {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem;
+  }
+
+  .project-title {
+    font-size: 1.25rem;
+  }
+}

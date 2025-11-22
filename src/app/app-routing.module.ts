@@ -31,6 +31,7 @@ export const routes: Routes = [
       { path: 'dashboard', loadComponent: () => import('./presentation/pages/dashboard/dashboard.component').then(m => m.DashboardComponent) },
       { path: 'users', loadComponent: () => import('./presentation/pages/users/users-list.component').then(m => m.UsersListComponent) },
       { path: 'projects', loadComponent: () => import('./presentation/pages/projects/projects-list.component').then(m => m.ProjectsListComponent) },
+      { path: 'projects/:id', loadComponent: () => import('./presentation/pages/projects/project-view.component').then(m => m.ProjectViewComponent) },
       { path: 'incidents', loadComponent: () => import('./presentation/pages/incidents/incidents-list.component').then(m => m.IncidentsListComponent) },
       { path: 'audit', loadComponent: () => import('./presentation/pages/audit/audit-list.component').then(m => m.AuditListComponent) },
       { path: 'admin', loadComponent: () => import('./presentation/pages/admin/admin.component').then(m => m.AdminComponent) },
