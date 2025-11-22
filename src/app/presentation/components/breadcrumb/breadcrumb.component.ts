@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { ROUTE_LABELS } from './breadcrumb.constants';
 
 interface Breadcrumb {
   label: string;
@@ -23,16 +24,7 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
   private routerSubscription?: Subscription;
 
   // Map of routes to Spanish labels
-  private routeLabels: { [key: string]: string } = {
-    'dashboard': 'Dashboard',
-    'inicio': 'Inicio',
-    'incidents': 'Gestión de Incidencias',
-    'projects': 'Proyectos',
-    'users': 'Usuarios',
-    'audit': 'Auditoría',
-    'admin': 'Administración del Sistema',
-    'profile': 'Perfil'
-  };
+  private routeLabels = ROUTE_LABELS;
 
   constructor(
     private router: Router,

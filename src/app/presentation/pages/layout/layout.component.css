@@ -37,7 +37,8 @@
   }
 
   /* Ensure toggle button is always visible and above collapsed sidebar */
-  ::ng-deep .toggle-button {
-    z-index: 1200 !important;
+  .left-actions {
+    position: relative;
+    z-index: 1200;
   }
   
