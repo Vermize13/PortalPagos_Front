@@ -74,6 +74,9 @@ export class IncidentsListComponent implements OnInit {
   severities = Object.values(IncidentSeverity).map(s => ({ label: s, value: s }));
   selectedStatus: string = '';
   
+  // View mode
+  viewMode: 'board' | 'table' = 'board';
+  
   // Dialog state
   displayDialog: boolean = false;
   isEditMode: boolean = false;
@@ -306,7 +309,36 @@ export class IncidentsListComponent implements OnInit {
 
   onFilterByStatus() {
     console.log('Filter by status:', this.selectedStatus);
+    // When filtering by status, switch to table view
+    if (this.selectedStatus) {
+      this.viewMode = 'table';
+    }
     this.loadIncidents();
+  }
+  
+  toggleView(mode: 'board' | 'table') {
+    this.viewMode = mode;
+    // Clear status filter when switching to board view
+    if (mode === 'board') {
+      this.selectedStatus = '';
+      this.loadIncidents();
+    }
+  }
+  
+  getIncidentsByStatus(status: IncidentStatus): IncidentDisplay[] {
+    return this.incidents.filter(inc => inc.status === status);
+  }
+  
+  getStatusLabel(status: IncidentStatus): string {
+    const labels: Record<IncidentStatus, string> = {
+      [IncidentStatus.Open]: 'Abierto',
+      [IncidentStatus.InProgress]: 'En Progreso',
+      [IncidentStatus.Resolved]: 'Resuelto',
+      [IncidentStatus.Closed]: 'Cerrado',
+      [IncidentStatus.Rejected]: 'Rechazado',
+      [IncidentStatus.Duplicated]: 'Duplicado'
+    };
+    return labels[status] || status;
   }
   
   onSaveIncident() {
