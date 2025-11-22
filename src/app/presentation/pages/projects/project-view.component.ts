@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
@@ -10,8 +11,16 @@ import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
-import { ProjectWithMembers, ProjectMemberDetail } from '../../../domain/models';
-import { ProjectService } from '../../../data/services/project.service';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { ColorPickerModule } from 'primeng/colorpicker';
+import { CheckboxModule } from 'primeng/checkbox';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
+import { ProjectWithMembers, ProjectMemberDetail, Label } from '../../../domain/models';
+import { ProjectService, UpdateProjectRequest } from '../../../data/services/project.service';
+import { LabelService, CreateLabelRequest } from '../../../data/services/label.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { SprintListComponent } from '../../components/sprints/sprint-list.component';
 
@@ -20,6 +29,7 @@ import { SprintListComponent } from '../../components/sprints/sprint-list.compon
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     CardModule,
     ButtonModule,
     TagModule,
@@ -29,8 +39,15 @@ import { SprintListComponent } from '../../components/sprints/sprint-list.compon
     AvatarGroupModule,
     ProgressSpinnerModule,
     TooltipModule,
+    DialogModule,
+    InputTextModule,
+    InputTextareaModule,
+    ColorPickerModule,
+    CheckboxModule,
+    ConfirmDialogModule,
     SprintListComponent
   ],
+  providers: [ConfirmationService],
   templateUrl: './project-view.component.html',
   styleUrls: ['./project-view.component.css']
 })
@@ -39,12 +56,35 @@ export class ProjectViewComponent implements OnInit {
   projectId: string = '';
   loading: boolean = false;
   members: ProjectMemberDetail[] = [];
+  
+  // Labels
+  labels: Label[] = [];
+  loadingLabels: boolean = false;
+  displayLabelDialog: boolean = false;
+  isEditingLabel: boolean = false;
+  labelForm = {
+    id: '',
+    name: '',
+    colorHex: '#3b82f6'
+  };
+  submittedLabel: boolean = false;
+  
+  // Edit project
+  displayEditDialog: boolean = false;
+  editProjectForm = {
+    name: '',
+    description: '',
+    isActive: true
+  };
+  submittedProject: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private projectService: ProjectService,
-    private toastService: ToastService
+    private labelService: LabelService,
+    private toastService: ToastService,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit() {
@@ -52,6 +92,7 @@ export class ProjectViewComponent implements OnInit {
       this.projectId = params['id'];
       if (this.projectId) {
         this.loadProject();
+        this.loadLabels();
       }
     });
   }
@@ -61,12 +102,12 @@ export class ProjectViewComponent implements OnInit {
     this.projectService.getById(this.projectId).subscribe({
       next: (project) => {
         this.project = project;
-        this.members = project.memberDetails?.map(m => ({
+        this.members = Array.isArray(project.memberDetails) ? project.memberDetails.map(m => ({
           ...m,
           userName: m.userName || m.user?.name || 'Unknown',
           userEmail: m.userEmail || m.user?.email || '',
           roleName: m.roleName || m.role?.name || 'Member'
-        })) || [];
+        })) : [];
         this.loading = false;
       },
       error: (error) => {
@@ -162,7 +203,133 @@ export class ProjectViewComponent implements OnInit {
   }
 
   onEdit() {
-    this.toastService.showInfo('Información', 'Función de edición en desarrollo');
+    if (this.project) {
+      this.editProjectForm = {
+        name: this.project.name,
+        description: this.project.description || '',
+        isActive: this.project.isActive
+      };
+      this.submittedProject = false;
+      this.displayEditDialog = true;
+    }
+  }
+  
+  onSaveProject() {
+    this.submittedProject = true;
+    
+    if (!this.editProjectForm.name) {
+      return;
+    }
+    
+    const updateRequest: UpdateProjectRequest = {
+      name: this.editProjectForm.name,
+      description: this.editProjectForm.description,
+      isActive: this.editProjectForm.isActive
+    };
+    
+    this.projectService.update(this.projectId, updateRequest).subscribe({
+      next: () => {
+        this.toastService.showSuccess('Éxito', 'Proyecto actualizado correctamente');
+        this.displayEditDialog = false;
+        this.loadProject();
+      },
+      error: (error) => {
+        console.error('Error updating project:', error);
+        this.toastService.showError('Error', 'No se pudo actualizar el proyecto');
+      }
+    });
+  }
+  
+  onCancelEdit() {
+    this.displayEditDialog = false;
+    this.submittedProject = false;
+  }
+  
+  // Label management methods
+  loadLabels() {
+    this.loadingLabels = true;
+    this.labelService.getByProject(this.projectId).subscribe({
+      next: (labels) => {
+        this.labels = labels;
+        this.loadingLabels = false;
+      },
+      error: (error) => {
+        console.error('Error loading labels:', error);
+        this.toastService.showError('Error', 'No se pudieron cargar las etiquetas');
+        this.loadingLabels = false;
+      }
+    });
+  }
+  
+  onCreateLabel() {
+    this.isEditingLabel = false;
+    this.labelForm = {
+      id: '',
+      name: '',
+      colorHex: '#3b82f6'
+    };
+    this.submittedLabel = false;
+    this.displayLabelDialog = true;
+  }
+  
+  onEditLabel(label: Label) {
+    this.isEditingLabel = true;
+    this.labelForm = {
+      id: label.id,
+      name: label.name,
+      colorHex: label.colorHex || '#3b82f6'
+    };
+    this.submittedLabel = false;
+    this.displayLabelDialog = true;
+  }
+  
+  onSaveLabel() {
+    this.submittedLabel = true;
+    
+    if (!this.labelForm.name.trim()) {
+      return;
+    }
+    
+    if (this.isEditingLabel) {
+      this.toastService.showInfo('Información', 'La edición de etiquetas estará disponible próximamente');
+      this.displayLabelDialog = false;
+    } else {
+      const request: CreateLabelRequest = {
+        projectId: this.projectId,
+        name: this.labelForm.name.trim(),
+        colorHex: this.labelForm.colorHex
+      };
+      
+      this.labelService.create(request).subscribe({
+        next: () => {
+          this.toastService.showSuccess('Éxito', 'Etiqueta creada correctamente');
+          this.displayLabelDialog = false;
+          this.loadLabels();
+        },
+        error: (error) => {
+          console.error('Error creating label:', error);
+          this.toastService.showError('Error', 'No se pudo crear la etiqueta');
+        }
+      });
+    }
+  }
+  
+  onDeleteLabel(label: Label) {
+    this.confirmationService.confirm({
+      message: `¿Está seguro de eliminar la etiqueta "${label.name}"?`,
+      header: 'Confirmar Eliminación',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí',
+      rejectLabel: 'No',
+      accept: () => {
+        this.toastService.showInfo('Información', 'La eliminación de etiquetas estará disponible próximamente');
+      }
+    });
+  }
+  
+  onCancelLabel() {
+    this.displayLabelDialog = false;
+    this.submittedLabel = false;
   }
 
   getMemberInitials(name: string): string {

@@ -50,3 +50,11 @@
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+.label-color-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: #6c757d;
+}

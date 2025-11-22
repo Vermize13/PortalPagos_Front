@@ -53,10 +53,15 @@ export class SprintListComponent implements OnInit {
     this.loading = true;
     this.sprintService.getByProject(this.projectId).subscribe({
       next: (sprints) => {
-        this.sprints = sprints.sort((a, b) => {
-          // Sort by creation date, newest first
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        });
+        if (Array.isArray(sprints)) {
+          this.sprints = sprints.sort((a, b) => {
+            // Sort by creation date, newest first
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          });
+        } else {
+          console.error('Expected sprints to be an array, but got:', sprints);
+          this.sprints = [];
+        }
         this.loading = false;
       },
       error: (error) => {

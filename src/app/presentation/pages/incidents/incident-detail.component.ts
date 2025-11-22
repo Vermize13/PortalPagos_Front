@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
@@ -12,6 +14,8 @@ import { TabViewModule } from 'primeng/tabview';
 import { TableModule } from 'primeng/table';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
+import { DialogModule } from 'primeng/dialog';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { 
   Incident, 
   IncidentStatus, 
@@ -19,11 +23,13 @@ import {
   IncidentSeverity,
   IncidentComment,
   LabelInfo,
+  Label,
   IncidentWithDetails,
   IncidentHistory
 } from '../../../domain/models';
 import { IncidentService, AddCommentRequest } from '../../../data/services/incident.service';
 import { AttachmentService } from '../../../data/services/attachment.service';
+import { LabelService } from '../../../data/services/label.service';
 import { AttachmentWithUser } from '../../../domain/models/attachment.model';
 import { ToastService } from '../../../data/services/toast.service';
 import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping } from '../../../domain/models/enum-mappings';
@@ -43,7 +49,9 @@ import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping
     TabViewModule,
     TableModule,
     FileUploadModule,
-    TooltipModule
+    TooltipModule,
+    DialogModule,
+    MultiSelectModule
   ],
   templateUrl: './incident-detail.component.html',
   styleUrls: ['./incident-detail.component.css']
@@ -60,12 +68,19 @@ export class IncidentDetailComponent implements OnInit {
   newCommentBody: string = '';
   submittingComment: boolean = false;
   uploadingAttachment: boolean = false;
+  
+  // Label management
+  displayLabelDialog: boolean = false;
+  availableLabels: Label[] = [];
+  selectedLabelIds: string[] = [];
+  loadingLabels: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private incidentService: IncidentService,
     private attachmentService: AttachmentService,
+    private labelService: LabelService,
     private toastService: ToastService
   ) {}
 
@@ -310,5 +325,83 @@ export class IncidentDetailComponent implements OnInit {
       return names[0].substring(0, 2).toUpperCase();
     }
     return authorName.substring(0, 2).toUpperCase();
+  }
+
+  onManageLabels() {
+    if (!this.incident) return;
+    
+    this.selectedLabelIds = Array.isArray(this.incident.labels) ? this.incident.labels.map(l => l.id) : [];
+    this.loadingLabels = true;
+    
+    this.labelService.getByProject(this.incident.projectId).subscribe({
+      next: (labels) => {
+        this.availableLabels = labels;
+        this.loadingLabels = false;
+        this.displayLabelDialog = true;
+      },
+      error: (error) => {
+        console.error('Error loading labels:', error);
+        this.toastService.showError('Error', 'No se pudieron cargar las etiquetas');
+        this.loadingLabels = false;
+      }
+    });
+  }
+
+  onSaveLabels() {
+    if (!this.incident) return;
+
+    const currentLabelIds = Array.isArray(this.incident.labels) ? this.incident.labels.map(l => l.id) : [];
+    const labelsToAdd = this.selectedLabelIds.filter(id => !currentLabelIds.includes(id));
+    const labelsToRemove = currentLabelIds.filter(id => !this.selectedLabelIds.includes(id));
+
+    if (labelsToAdd.length === 0 && labelsToRemove.length === 0) {
+      this.displayLabelDialog = false;
+      return;
+    }
+
+    // Create arrays of observables for add and remove operations
+    const addOperations = labelsToAdd.map(labelId =>
+      this.incidentService.addLabel(this.incident!.id, labelId).pipe(
+        catchError(error => {
+          console.error('Error adding label:', error);
+          return of(null); // Return null on error to continue with other operations
+        })
+      )
+    );
+
+    const removeOperations = labelsToRemove.map(labelId =>
+      this.incidentService.removeLabel(this.incident!.id, labelId).pipe(
+        catchError(error => {
+          console.error('Error removing label:', error);
+          return of(null); // Return null on error to continue with other operations
+        })
+      )
+    );
+
+    // Combine all operations
+    const allOperations = [...addOperations, ...removeOperations];
+
+    // Execute all operations in parallel
+    forkJoin(allOperations).subscribe({
+      next: (results) => {
+        const hasErrors = results.some(result => result === null);
+        if (hasErrors) {
+          this.toastService.showError('Error', 'Algunas etiquetas no pudieron actualizarse');
+        } else {
+          this.toastService.showSuccess('Éxito', 'Etiquetas actualizadas correctamente');
+        }
+        this.displayLabelDialog = false;
+        this.loadIncident(this.incident!.id);
+      },
+      error: (error) => {
+        console.error('Error updating labels:', error);
+        this.toastService.showError('Error', 'No se pudieron actualizar las etiquetas');
+        this.displayLabelDialog = false;
+      }
+    });
+  }
+
+  onCancelLabelDialog() {
+    this.displayLabelDialog = false;
   }
 }

@@ -47,14 +47,26 @@
               </div>
 
               <!-- Labels Display -->
-              <div class="mb-4" *ngIf="incident.labels && incident.labels.length > 0">
-                <h3 class="text-lg font-semibold mb-2">Etiquetas</h3>
-                <div class="flex flex-wrap gap-2">
+              <div class="mb-4">
+                <div class="flex justify-content-between align-items-center mb-2">
+                  <h3 class="text-lg font-semibold m-0">Etiquetas</h3>
+                  <p-button 
+                    label="Gestionar" 
+                    icon="pi pi-tags" 
+                    [outlined]="true"
+                    size="small"
+                    (onClick)="onManageLabels()">
+                  </p-button>
+                </div>
+                <div class="flex flex-wrap gap-2" *ngIf="incident.labels && incident.labels.length > 0">
                   <p-tag 
                     *ngFor="let label of incident.labels" 
                     [value]="label.name"
                     [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
                     styleClass="text-sm"></p-tag>
+                </div>
+                <div *ngIf="!incident.labels || incident.labels.length === 0" class="text-gray-500 text-sm">
+                  No hay etiquetas asignadas
                 </div>
               </div>
 
@@ -315,4 +327,63 @@
       </div>
     </p-card>
   </div>
+
+  <!-- Label Management Dialog -->
+  <p-dialog 
+    [(visible)]="displayLabelDialog" 
+    header="Gestionar Etiquetas"
+    [modal]="true"
+    [style]="{width: '500px'}"
+    [baseZIndex]="10"
+    [closable]="true">
+    
+    <div class="p-fluid">
+      <div class="field">
+        <label for="labelSelect">Seleccione las etiquetas para esta incidencia</label>
+        <p-multiSelect 
+          id="labelSelect"
+          [options]="availableLabels"
+          [(ngModel)]="selectedLabelIds"
+          placeholder="Seleccione etiquetas"
+          [showClear]="true"
+          appendTo="body"
+          optionLabel="name"
+          optionValue="id"
+          [disabled]="loadingLabels"
+          [style]="{'width': '100%'}">
+          <ng-template let-label pTemplate="item">
+            <div class="flex align-items-center gap-2">
+              <span 
+                class="label-color-indicator" 
+                [style.background-color]="label.colorHex || '#6c757d'">
+              </span>
+              <span>{{ label.name }}</span>
+            </div>
+          </ng-template>
+          <ng-template let-label pTemplate="selectedItem">
+            <p-tag 
+              [value]="label.name"
+              [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
+              styleClass="text-xs mr-1">
+            </p-tag>
+          </ng-template>
+        </p-multiSelect>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button 
+        label="Cancelar" 
+        icon="pi pi-times" 
+        (onClick)="onCancelLabelDialog()"
+        styleClass="p-button-text">
+      </p-button>
+      <p-button 
+        label="Guardar" 
+        icon="pi pi-check" 
+        (onClick)="onSaveLabels()"
+        [disabled]="loadingLabels">
+      </p-button>
+    </ng-template>
+  </p-dialog>
 </div>

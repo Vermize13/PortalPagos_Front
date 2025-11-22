@@ -229,6 +229,7 @@
           #projectField="ngModel"
           [options]="projects"
           [(ngModel)]="incidentForm.projectId"
+          name="projectId"
           (onChange)="onProjectChange($event.value)"
           placeholder="Seleccione un proyecto"
           [disabled]="isEditMode"
@@ -343,6 +344,40 @@
             </p-dropdown>
           </div>
         </div>
+      </div>
+
+      <div class="field mb-3" *ngIf="!isEditMode && incidentForm.projectId && labels.length > 0">
+        <label for="labels">Etiquetas</label>
+        <p-multiSelect 
+          id="labels"
+          name="labels"
+          #labelsField="ngModel"
+          [options]="labels"
+          [(ngModel)]="incidentForm.labelIds"
+          placeholder="Seleccione etiquetas"
+          [showClear]="true"
+          appendTo="body"
+          optionLabel="name"
+          optionValue="id"
+          [style]="{'width': '100%'}">
+          <ng-template let-label pTemplate="item">
+            <div class="flex align-items-center gap-2">
+              <span 
+                class="label-color-indicator" 
+                [style.background-color]="label.colorHex || '#6c757d'">
+              </span>
+              <span>{{ label.name }}</span>
+            </div>
+          </ng-template>
+          <ng-template let-label pTemplate="selectedItem">
+            <p-tag 
+              [value]="label.name"
+              [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
+              styleClass="text-xs mr-1">
+            </p-tag>
+          </ng-template>
+        </p-multiSelect>
+        <small class="text-gray-500">Puede seleccionar múltiples etiquetas</small>
       </div>
 
       <div class="grid">

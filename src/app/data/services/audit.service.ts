@@ -1,62 +1,76 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuditLog, AuditLogWithUser, AuditAction, AuditEntityType } from '../../domain/models';
 
 export interface AuditLogFilter {
-  userId?: number;
+  userId?: string;
   action?: AuditAction;
-  entityType?: AuditEntityType;
   startDate?: Date;
   endDate?: Date;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface AuditFilterRequest {
+  userId?: string;
+  action?: AuditAction;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface AuditLogPagedResponse {
+  logs: AuditLogWithUser[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuditService {
-  private readonly apiUrl = `${environment.url}api/audit`;
+  private readonly apiUrl = `${environment.url}api/Audit`;
 
   constructor(private http: HttpClient) { }
 
-  getAll(filter?: AuditLogFilter): Observable<AuditLogWithUser[]> {
-    let params = new HttpParams();
+  /**
+   * Get audit logs with pagination
+   * API endpoint: POST /api/Audit/logs
+   */
+  getAll(filter?: AuditLogFilter): Observable<AuditLogPagedResponse> {
+    const requestBody: AuditFilterRequest = {};
+    
     if (filter) {
-      Object.keys(filter).forEach(key => {
-        const value = (filter as any)[key];
-        if (value !== undefined && value !== null) {
-          if (value instanceof Date) {
-            params = params.set(key, value.toISOString());
-          } else {
-            params = params.set(key, value.toString());
-          }
-        }
-      });
+      if (filter.userId) requestBody.userId = filter.userId;
+      if (filter.action !== undefined) requestBody.action = filter.action;
+      if (filter.startDate) requestBody.startDate = filter.startDate.toISOString();
+      if (filter.endDate) requestBody.endDate = filter.endDate.toISOString();
+      if (filter.page !== undefined) requestBody.page = filter.page;
+      if (filter.pageSize !== undefined) requestBody.pageSize = filter.pageSize;
     }
-    return this.http.get<AuditLogWithUser[]>(this.apiUrl, { params });
+
+    return this.http.post<AuditLogPagedResponse>(`${this.apiUrl}/logs`, requestBody);
   }
 
-  getById(id: number): Observable<AuditLogWithUser> {
-    return this.http.get<AuditLogWithUser>(`${this.apiUrl}/${id}`);
-  }
-
+  /**
+   * Export audit logs to file
+   * API endpoint: POST /api/Audit/export
+   */
   export(filter?: AuditLogFilter): Observable<Blob> {
-    let params = new HttpParams();
+    const requestBody: AuditFilterRequest = {};
+    
     if (filter) {
-      Object.keys(filter).forEach(key => {
-        const value = (filter as any)[key];
-        if (value !== undefined && value !== null) {
-          if (value instanceof Date) {
-            params = params.set(key, value.toISOString());
-          } else {
-            params = params.set(key, value.toString());
-          }
-        }
-      });
+      if (filter.userId) requestBody.userId = filter.userId;
+      if (filter.action !== undefined) requestBody.action = filter.action;
+      if (filter.startDate) requestBody.startDate = filter.startDate.toISOString();
+      if (filter.endDate) requestBody.endDate = filter.endDate.toISOString();
     }
-    return this.http.get(`${this.apiUrl}/export`, { 
-      params,
+
+    return this.http.post(`${this.apiUrl}/export`, requestBody, { 
       responseType: 'blob' 
     });
   }

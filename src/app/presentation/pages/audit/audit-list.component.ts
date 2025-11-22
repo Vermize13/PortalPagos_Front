@@ -8,7 +8,7 @@ import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
 import { AuditLogWithUser, AuditAction } from '../../../domain/models';
-import { AuditService, AuditLogFilter } from '../../../data/services/audit.service';
+import { AuditService, AuditLogFilter, AuditLogPagedResponse } from '../../../data/services/audit.service';
 import { ToastService } from '../../../data/services/toast.service';
 import * as XLSX from 'exceljs';
 import { saveAs } from 'file-saver';
@@ -33,10 +33,15 @@ export class AuditListComponent implements OnInit {
   auditLogs: AuditLogWithUser[] = [];
   loading: boolean = false;
   
+  // Pagination
+  totalRecords: number = 0;
+  currentPage: number = 1;
+  pageSize: number = 20;
+  
   // RF5.2: Filter properties
   filter: AuditLogFilter = {};
   selectedAction: AuditAction | null = null;
-  selectedUserId: number | null = null;
+  selectedUserId: string | null = null;
   startDate: Date | null = null;
   endDate: Date | null = null;
   
@@ -61,9 +66,13 @@ export class AuditListComponent implements OnInit {
   loadAuditLogs() {
     this.loading = true;
     
-    // Build filter
-    this.filter = {};
-    if (this.selectedAction) {
+    // Build filter with pagination
+    this.filter = {
+      page: this.currentPage,
+      pageSize: this.pageSize
+    };
+    
+    if (this.selectedAction !== null) {
       this.filter.action = this.selectedAction;
     }
     if (this.selectedUserId) {
@@ -77,8 +86,11 @@ export class AuditListComponent implements OnInit {
     }
 
     this.auditService.getAll(this.filter).subscribe({
-      next: (logs) => {
-        this.auditLogs = logs;
+      next: (response: AuditLogPagedResponse) => {
+        this.auditLogs = response.logs;
+        this.totalRecords = response.totalCount;
+        this.currentPage = response.page;
+        this.pageSize = response.pageSize;
         this.loading = false;
       },
       error: (error) => {
@@ -154,8 +166,18 @@ export class AuditListComponent implements OnInit {
     this.selectedUserId = null;
     this.startDate = null;
     this.endDate = null;
+    this.currentPage = 1;
     this.filter = {};
     this.loadAuditLogs();
+  }
+
+  // Pagination methods
+  onPageChange(event: any) {
+    if (event.first !== undefined && event.rows) {
+      this.currentPage = Math.floor(event.first / event.rows) + 1;
+      this.pageSize = event.rows;
+      this.loadAuditLogs();
+    }
   }
 
   getActionSeverity(action: AuditAction): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
