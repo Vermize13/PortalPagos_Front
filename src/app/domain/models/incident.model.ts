@@ -108,3 +108,15 @@ export interface IncidentWithDetails {
   reporter?: any;
   assignee?: any;
 }
+
+export interface IncidentHistory {
+  id: string; // Guid
+  incidentId: string; // Guid
+  incident?: any; // Incident reference
+  changedBy: string; // Guid
+  changedByUser?: any; // User reference
+  fieldName: string;
+  oldValue?: string;
+  newValue?: string;
+  changedAt: Date;
+}
