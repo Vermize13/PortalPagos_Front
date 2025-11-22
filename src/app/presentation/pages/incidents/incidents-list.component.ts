@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -77,6 +78,7 @@ export class IncidentsListComponent implements OnInit {
   statuses = Object.values(IncidentStatus).filter(value => typeof value === 'number') as IncidentStatus[];
   priorities = IncidentPriorityMapping;
   severities = IncidentSeverityMapping;
+  statusOptions = IncidentStatusMapping;
   selectedStatus: string = '';
   
   // View mode
@@ -108,7 +110,8 @@ export class IncidentsListComponent implements OnInit {
     private projectService: ProjectService,
     private userService: UserService,
     private toastService: ToastService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -311,8 +314,7 @@ export class IncidentsListComponent implements OnInit {
   }
 
   onViewDetails(incident: IncidentDisplay) {
-    console.log('View incident details:', incident);
-    // TODO: Navigate to incident details page
+    this.router.navigate(['/inicio/incidents', incident.id]);
   }
 
   onFilterByStatus() {
@@ -412,5 +414,50 @@ export class IncidentsListComponent implements OnInit {
       return false;
     }
     return true;
+  }
+
+  // Drag and drop functionality
+  draggedIncident: IncidentDisplay | null = null;
+
+  onDragStart(event: DragEvent, incident: IncidentDisplay) {
+    this.draggedIncident = incident;
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', incident.id);
+    }
+  }
+
+  onDragEnd(event: DragEvent) {
+    this.draggedIncident = null;
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+  }
+
+  onDrop(event: DragEvent, targetStatus: IncidentStatus) {
+    event.preventDefault();
+    
+    if (this.draggedIncident && this.draggedIncident.status !== targetStatus) {
+      const updateRequest: UpdateIncidentRequest = {
+        status: targetStatus
+      };
+      
+      this.incidentService.update(this.draggedIncident.id, updateRequest).subscribe({
+        next: () => {
+          this.toastService.showSuccess('Éxito', 'Estado de incidencia actualizado');
+          this.loadIncidents();
+        },
+        error: (error) => {
+          console.error('Error updating incident status:', error);
+          this.toastService.showError('Error', 'No se pudo actualizar el estado de la incidencia');
+        }
+      });
+    }
+    
+    this.draggedIncident = null;
   }
 }

@@ -33,13 +33,20 @@
     <!-- Board View -->
     <div *ngIf="viewMode === 'board'" class="board-container">
       <div class="board-columns">
-        <div class="board-column" *ngFor="let status of statuses">
+        <div class="board-column" 
+             *ngFor="let status of statuses"
+             (dragover)="onDragOver($event)"
+             (drop)="onDrop($event, status)">
           <div class="column-header">
             <h3 class="column-title">{{ getStatusLabel(status) }}</h3>
             <span class="incident-count">{{ getIncidentsByStatus(status).length }}</span>
           </div>
           <div class="column-content">
-            <div class="incident-card" *ngFor="let incident of getIncidentsByStatus(status)">
+            <div class="incident-card" 
+                 *ngFor="let incident of getIncidentsByStatus(status)"
+                 draggable="true"
+                 (dragstart)="onDragStart($event, incident)"
+                 (dragend)="onDragEnd($event)">
               <div class="card-header">
                 <span class="incident-code">{{ incident.code }}</span>
                 <p-tag 
@@ -228,6 +235,23 @@
               placeholder="Seleccione prioridad"
               optionLabel="label"
               appendTo="body"
+              optionValue="value">
+            </p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid" *ngIf="isEditMode">
+        <div class="col-12">
+          <div class="field mb-3">
+            <label for="status">Estado *</label>
+            <p-dropdown 
+              id="status"
+              [options]="statusOptions"
+              [(ngModel)]="incidentForm.status"
+              placeholder="Seleccione estado"
+              appendTo="body"
+              optionLabel="label"
               optionValue="value">
             </p-dropdown>
           </div>
