@@ -150,7 +150,10 @@ export class IncidentsListComponent implements OnInit {
 
   loadIncidents() {
     this.loading = true;
-    const filter: IncidentFilter = {};
+    const filter: IncidentFilter = {
+      projectId: this.selectedProjectId || undefined,
+      sprintId: this.selectedSprintId || undefined
+    };
 
     this.incidentService.getAll(filter).subscribe({
       next: (incidents: IncidentWithDetails[]) => {
@@ -440,6 +443,7 @@ export class IncidentsListComponent implements OnInit {
   onProjectChange(projectId: string) {
     this.selectedProjectId = projectId;
     this.incidentForm.sprintId = undefined;
+    this.selectedSprintId = '';
     this.sprints = [];
     
     if (projectId) {

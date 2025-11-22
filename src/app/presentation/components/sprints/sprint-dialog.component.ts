@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
@@ -27,7 +27,7 @@ import { ToastService } from '../../../data/services/toast.service';
       [(visible)]="visible"
       [modal]="true"
       [style]="{width: '500px'}"
-      [header]="editMode ? 'Editar Sprint' : 'Crear Nuevo Sprint'"
+      [header]="'Crear Nuevo Sprint'"
       [closable]="true"
       (onHide)="onCancel()">
       
@@ -111,7 +111,7 @@ import { ToastService } from '../../../data/services/toast.service';
     </p-dialog>
   `
 })
-export class SprintDialogComponent {
+export class SprintDialogComponent implements OnChanges {
   @Input() visible: boolean = false;
   @Input() projectId: string = '';
   @Input() sprint: Sprint | null = null;
@@ -137,8 +137,8 @@ export class SprintDialogComponent {
     private toastService: ToastService
   ) {}
 
-  ngOnChanges() {
-    if (this.visible) {
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['visible'] && this.visible) {
       this.editMode = !!this.sprint;
       if (this.sprint) {
         this.formData = {
