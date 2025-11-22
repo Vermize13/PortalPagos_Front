@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { SidenavComponent } from '../../components/sidenav/sidenav.component';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
     selector: 'app-layout',
@@ -11,8 +13,17 @@ import { ToastModule } from 'primeng/toast';
     imports: [
         SidenavComponent,
         RouterModule,
-        ToastModule
+        ToastModule,
+        ButtonModule,
+        FormsModule
     ],
     providers: []
 })
-export class LayoutComponent { }
+export class LayoutComponent {
+    // model bound to the sidenav collapsed state via [(ngModel)]
+    sidenavCollapsed: boolean = false;
+
+    toggleSidenav(): void {
+        this.sidenavCollapsed = !this.sidenavCollapsed;
+    }
+}

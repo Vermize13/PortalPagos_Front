@@ -80,7 +80,7 @@ export class DashboardService {
     // Calculate status metrics
     const statusGroups = this.groupBy(incidents, 'status');
     const incidentsByStatus: StatusMetric[] = Object.keys(statusGroups).map(status => ({
-      status: status as IncidentStatus,
+      status: status as unknown as IncidentStatus,
       count: statusGroups[status].length,
       percentage: total > 0 ? (statusGroups[status].length / total) * 100 : 0
     }));
@@ -88,7 +88,7 @@ export class DashboardService {
     // Calculate priority metrics
     const priorityGroups = this.groupBy(incidents, 'priority');
     const incidentsByPriority: PriorityMetric[] = Object.keys(priorityGroups).map(priority => ({
-      priority: priority as IncidentPriority,
+      priority: priority as unknown as IncidentPriority,
       count: priorityGroups[priority].length,
       percentage: total > 0 ? (priorityGroups[priority].length / total) * 100 : 0
     }));
@@ -96,7 +96,7 @@ export class DashboardService {
     // Calculate severity metrics
     const severityGroups = this.groupBy(incidents, 'severity');
     const incidentsBySeverity: SeverityMetric[] = Object.keys(severityGroups).map(severity => ({
-      severity: severity as IncidentSeverity,
+      severity: severity as unknown as IncidentSeverity,
       count: severityGroups[severity].length,
       percentage: total > 0 ? (severityGroups[severity].length / total) * 100 : 0
     }));
@@ -108,8 +108,8 @@ export class DashboardService {
       return {
         sprintId,
         sprintName: sprintIncidents[0]?.sprint?.name || `Sprint ${sprintId}`,
-        openCount: sprintIncidents.filter(i => i.status === IncidentStatus.Open || i.status === IncidentStatus.InProgress).length,
-        closedCount: sprintIncidents.filter(i => i.status === IncidentStatus.Closed || i.status === IncidentStatus.Resolved).length,
+        openCount: sprintIncidents.filter(i => i.status === IncidentStatus.Abierto || i.status === IncidentStatus.EnProgreso).length,
+        closedCount: sprintIncidents.filter(i => i.status === IncidentStatus.Cerrado || i.status === IncidentStatus.Resuelto).length,
         totalCount: sprintIncidents.length
       };
     });
@@ -123,9 +123,9 @@ export class DashboardService {
 
     return {
       totalIncidents: total,
-      openIncidents: incidents.filter(i => i.status === IncidentStatus.Open).length,
-      closedIncidents: incidents.filter(i => i.status === IncidentStatus.Closed || i.status === IncidentStatus.Resolved).length,
-      inProgressIncidents: incidents.filter(i => i.status === IncidentStatus.InProgress).length,
+      openIncidents: incidents.filter(i => i.status === IncidentStatus.Abierto).length,
+      closedIncidents: incidents.filter(i => i.status === IncidentStatus.Cerrado || i.status === IncidentStatus.Resuelto).length,
+      inProgressIncidents: incidents.filter(i => i.status === IncidentStatus.EnProgreso).length,
       activeProjects: 0, // Will be populated from projects API
       activeUsers: 0, // Will be populated from users API
       incidentsByStatus,

@@ -4,11 +4,17 @@
     height: 100vh;
     overflow: hidden;
   }
-  
-  app-sidenav {
-    width: 250px; /* Ajusta el ancho del sidebar según lo que necesites */
-    height: 100vh;
-    overflow: hidden;
+
+  .topbar {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    background: #fff;
+  }
+
+  .main-content {
+    padding: 1rem;
   }
   
   .content-container {

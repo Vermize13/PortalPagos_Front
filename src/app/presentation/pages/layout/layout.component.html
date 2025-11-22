@@ -1,7 +1,20 @@
 <div class="layout-container">    
-    <app-sidenav></app-sidenav> <!-- El componente de Sidebar -->
+    <app-sidenav [(ngModel)]="sidenavCollapsed"></app-sidenav> <!-- El componente de Sidebar -->
     <div class="content-container">
-        <p-toast key="global-toast"></p-toast>
-        <router-outlet></router-outlet> <!-- Aquí se cargará el contenido de cada ruta -->
+        <!-- Top bar with toggle -->
+        <header class="topbar px-3 py-2 flex align-items-center justify-content-between">
+            <div class="left-actions flex align-items-center gap-2">
+                <p-button type="button" (onClick)="toggleSidenav()" icon="pi pi-angle-double-right" rounded="true"
+            outlined="true" styleClass="h-2rem w-2rem"></p-button>
+            </div>
+            <div class="right-actions">
+                <!-- keep toast placeholder at top -->
+                <p-toast key="global-toast"></p-toast>
+            </div>
+        </header>
+
+        <main class="main-content">
+          <router-outlet></router-outlet> <!-- Aquí se cargará el contenido de cada ruta -->
+        </main>
     </div>
 </div>

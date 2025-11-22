@@ -23,13 +23,18 @@ import { IncidentService, IncidentFilter, CreateIncidentRequest, UpdateIncidentR
 import { ProjectService } from '../../../data/services/project.service';
 import { UserService } from '../../../data/services/user.service';
 import { ToastService } from '../../../data/services/toast.service';
+import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping } from '../../../domain/models/enum-mappings';
 
 // Helper interface for displaying incidents with additional info
 interface IncidentDisplay extends Incident {
+  // Display-friendly names and labels (keep original enum-typed properties like status/priority/severity)
   projectName?: string;
   sprintName?: string;
   reporterName?: string;
   assigneeName?: string;
+  statusLabel?: string;
+  priorityLabel?: string;
+  severityLabel?: string;
 }
 
 interface IncidentFormData {
@@ -69,9 +74,9 @@ export class IncidentsListComponent implements OnInit {
   incidents: IncidentDisplay[] = [];
   loading: boolean = false;
   
-  statuses = Object.values(IncidentStatus);
-  priorities = Object.values(IncidentPriority).map(p => ({ label: p, value: p }));
-  severities = Object.values(IncidentSeverity).map(s => ({ label: s, value: s }));
+  statuses = Object.values(IncidentStatus).filter(value => typeof value === 'number') as IncidentStatus[];
+  priorities = IncidentPriorityMapping;
+  severities = IncidentSeverityMapping;
   selectedStatus: string = '';
   
   // View mode
@@ -80,14 +85,18 @@ export class IncidentsListComponent implements OnInit {
   // Dialog state
   displayDialog: boolean = false;
   isEditMode: boolean = false;
+
+  // Date range
+  minDate: Date | null = new Date();
+  maxDate: Date | null = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
   
   // Form data
   incidentForm: IncidentFormData = {
     projectId: '',
     title: '',
     description: '',
-    severity: IncidentSeverity.Medium,
-    priority: IncidentPriority.Should
+    severity: IncidentSeverity.Medio,
+    priority: IncidentPriority.DeberíaHacer
   };
   
   // Dropdown options
@@ -132,28 +141,27 @@ export class IncidentsListComponent implements OnInit {
   loadIncidents() {
     this.loading = true;
     const filter: IncidentFilter = {};
-    if (this.selectedStatus) {
-      filter.status = this.selectedStatus as IncidentStatus;
-    }
-    
+
     this.incidentService.getAll(filter).subscribe({
       next: (incidents: IncidentWithDetails[]) => {
         // Map to display format
         this.incidents = incidents.map(inc => ({
           ...inc,
+          statusLabel: IncidentStatusMapping.find((s: { label: string; value: IncidentStatus }) => s.value === inc.status)?.label ?? 'Desconocido',
+          priorityLabel: IncidentPriorityMapping.find((p: { label: string; value: IncidentPriority }) => p.value === inc.priority)?.label ?? 'Desconocido',
+          severityLabel: IncidentSeverityMapping.find((sev: { label: string; value: IncidentSeverity }) => sev.value === inc.severity)?.label ?? 'Desconocido',
           projectName: inc.project?.name,
           sprintName: inc.sprint?.name,
           reporterName: inc.reporterName || inc.reporter?.name,
           assigneeName: inc.assigneeName || inc.assignee?.name
         }));
+        console.log('Loaded incidents:', this.incidents);
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading incidents:', error);
         this.toastService.showError('Error', 'No se pudieron cargar las incidencias');
         this.loading = false;
-        // Fallback to mock data on error
-        this.loadMockIncidents();
       }
     });
   }
@@ -172,9 +180,9 @@ export class IncidentsListComponent implements OnInit {
         code: 'PP-1',
         title: 'Error en el formulario de login',
         description: 'El usuario no puede iniciar sesión',
-        status: IncidentStatus.Open,
-        priority: IncidentPriority.Must,
-        severity: IncidentSeverity.High,
+        status: IncidentStatus.Abierto,
+        priority: IncidentPriority.DebeHacer,
+        severity: IncidentSeverity.Alto,
         reporterId: '550e8400-e29b-41d4-a716-446655440002',
         reporter: null,
         reporterName: 'John Developer',
@@ -194,9 +202,9 @@ export class IncidentsListComponent implements OnInit {
         code: 'PP-2',
         title: 'Optimizar consulta de base de datos',
         description: 'Las consultas son muy lentas',
-        status: IncidentStatus.InProgress,
-        priority: IncidentPriority.Should,
-        severity: IncidentSeverity.Medium,
+        status: IncidentStatus.EnProgreso,
+        priority: IncidentPriority.DeberíaHacer,
+        severity: IncidentSeverity.Medio,
         reporterId: '550e8400-e29b-41d4-a716-446655440001',
         reporter: null,
         reporterName: 'Admin User',
@@ -219,9 +227,9 @@ export class IncidentsListComponent implements OnInit {
         code: 'SI-1',
         title: 'Implementar filtros avanzados',
         description: 'Añadir filtros por múltiples criterios',
-        status: IncidentStatus.Resolved,
-        priority: IncidentPriority.Could,
-        severity: IncidentSeverity.Low,
+        status: IncidentStatus.Resuelto,
+        priority: IncidentPriority.PodríaHacer,
+        severity: IncidentSeverity.Bajo,
         reporterId: '550e8400-e29b-41d4-a716-446655440001',
         reporter: null,
         reporterName: 'Admin User',
@@ -239,22 +247,22 @@ export class IncidentsListComponent implements OnInit {
 
   getStatusSeverity(status: IncidentStatus): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
     switch (status) {
-      case IncidentStatus.Open: return 'info';
-      case IncidentStatus.InProgress: return 'warning';
-      case IncidentStatus.Resolved: return 'success';
-      case IncidentStatus.Closed: return 'secondary';
-      case IncidentStatus.Rejected: return 'danger';
-      case IncidentStatus.Duplicated: return 'secondary';
+      case IncidentStatus.Abierto: return 'info';
+      case IncidentStatus.EnProgreso: return 'warning';
+      case IncidentStatus.Resuelto: return 'success';
+      case IncidentStatus.Cerrado: return 'secondary';
+      case IncidentStatus.Rechazado: return 'danger';
+      case IncidentStatus.Duplicado: return 'secondary';
       default: return 'info';
     }
   }
 
   getPrioritySeverity(priority: IncidentPriority): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
     switch (priority) {
-      case IncidentPriority.Wont: return 'secondary';
-      case IncidentPriority.Could: return 'success';
-      case IncidentPriority.Should: return 'info';
-      case IncidentPriority.Must: return 'danger';
+      case IncidentPriority.NoHacer: return 'secondary';
+      case IncidentPriority.PodríaHacer: return 'success';
+      case IncidentPriority.DeberíaHacer: return 'info';
+      case IncidentPriority.DebeHacer: return 'danger';
       default: return 'info';
     }
   }
@@ -296,8 +304,8 @@ export class IncidentsListComponent implements OnInit {
       projectId: '',
       title: '',
       description: '',
-      severity: IncidentSeverity.Medium,
-      priority: IncidentPriority.Should
+      severity: IncidentSeverity.Medio,
+      priority: IncidentPriority.DeberíaHacer
     };
     this.displayDialog = true;
   }
@@ -330,15 +338,17 @@ export class IncidentsListComponent implements OnInit {
   }
   
   getStatusLabel(status: IncidentStatus): string {
-    const labels: Record<IncidentStatus, string> = {
-      [IncidentStatus.Open]: 'Abierto',
-      [IncidentStatus.InProgress]: 'En Progreso',
-      [IncidentStatus.Resolved]: 'Resuelto',
-      [IncidentStatus.Closed]: 'Cerrado',
-      [IncidentStatus.Rejected]: 'Rechazado',
-      [IncidentStatus.Duplicated]: 'Duplicado'
-    };
-    return labels[status] || status;
+    const labels = [
+      'Abierto',
+      'En Progreso',
+      'Resuelto',
+      'Cerrado',
+      'Rechazado',
+      'Duplicado'
+    ];
+
+
+    return labels[status];
   }
   
   onSaveIncident() {

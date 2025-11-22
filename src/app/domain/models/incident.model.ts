@@ -1,24 +1,24 @@
 export enum IncidentStatus {
-  Open = 'Open',
-  InProgress = 'InProgress',
-  Resolved = 'Resolved',
-  Closed = 'Closed',
-  Rejected = 'Rejected',
-  Duplicated = 'Duplicated'
+  Abierto = 0,
+  EnProgreso = 1,
+  Resuelto = 2,
+  Cerrado = 3,
+  Rechazado = 4,
+  Duplicado = 5
 }
 
 export enum IncidentSeverity {
-  Low = 'Low',
-  Medium = 'Medium',
-  High = 'High',
-  Critical = 'Critical'
+  Bajo = 0,
+  Medio = 1,
+  Alto = 2,
+  Crítico = 3
 }
 
 export enum IncidentPriority {
-  Wont = 'Wont',
-  Could = 'Could',
-  Should = 'Should',
-  Must = 'Must'
+  NoHacer = 0,
+  PodríaHacer = 1,
+  DeberíaHacer = 2,
+  DebeHacer = 3
 }
 
 export interface Incident {

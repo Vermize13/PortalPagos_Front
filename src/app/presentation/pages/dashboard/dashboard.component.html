@@ -39,7 +39,6 @@
           <i class="pi pi-clock text-4xl text-purple-500"></i>
           <h3 class="mt-2">MTTR (horas)</h3>
           <p class="text-3xl font-bold">{{ metrics?.mttr || 0 }}</p>
-          <small class="text-gray-500">RF4.3: Tiempo Medio de Resolución</small>
         </div>
       </p-card>
     </div>
@@ -48,19 +47,19 @@
   <!-- RF4.1: Charts by Status, Priority, and Severity -->
   <div class="grid mt-4">
     <div class="col-12 lg:col-4">
-      <p-card header="RF4.1: Incidencias por Estado">
+      <p-card header="Incidencias por Estado">
         <p-chart type="doughnut" [data]="statusChartData" [options]="chartOptions" height="300px"></p-chart>
       </p-card>
     </div>
     
     <div class="col-12 lg:col-4">
-      <p-card header="RF4.1: Incidencias por Prioridad">
+      <p-card header="Incidencias por Prioridad">
         <p-chart type="pie" [data]="priorityChartData" [options]="chartOptions" height="300px"></p-chart>
       </p-card>
     </div>
     
     <div class="col-12 lg:col-4">
-      <p-card header="RF4.1: Incidencias por Severidad">
+      <p-card header="Incidencias por Severidad">
         <p-chart type="polarArea" [data]="severityChartData" [options]="chartOptions" height="300px"></p-chart>
       </p-card>
     </div>
@@ -69,7 +68,7 @@
   <!-- RF4.4: Incident Evolution Chart -->
   <div class="grid mt-4">
     <div class="col-12">
-      <p-card header="RF4.4: Evolución de Incidencias (Últimos 30 días)">
+      <p-card header="Evolución de Incidencias (Últimos 30 días)">
         <p-chart type="line" [data]="evolutionChartData" [options]="chartOptions" height="300px"></p-chart>
       </p-card>
     </div>
@@ -78,7 +77,7 @@
   <!-- RF4.2: Incidents by Sprint Table -->
   <div class="grid mt-4">
     <div class="col-12">
-      <p-card header="RF4.2: Incidencias por Sprint">
+      <p-card header="Incidencias por Sprint">
         <p-table [value]="metrics?.incidentsBySprint || []" [loading]="loading">
           <ng-template pTemplate="header">
             <tr>

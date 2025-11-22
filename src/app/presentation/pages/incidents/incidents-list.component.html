@@ -43,7 +43,7 @@
               <div class="card-header">
                 <span class="incident-code">{{ incident.code }}</span>
                 <p-tag 
-                  [value]="incident.priority" 
+                  [value]="incident.priorityLabel" 
                   [severity]="getPrioritySeverity(incident.priority)"
                   styleClass="text-xs"></p-tag>
               </div>
@@ -163,7 +163,8 @@
     [(visible)]="displayDialog" 
     [header]="isEditMode ? 'Editar Incidencia' : 'Nueva Incidencia'"
     [modal]="true"
-    [style]="{width: '700px'}"
+    [style]="{width: '730px'}"
+    [baseZIndex]="10"
     [closable]="true">
     
     <div class="p-fluid">
@@ -210,6 +211,7 @@
               [options]="severities"
               [(ngModel)]="incidentForm.severity"
               placeholder="Seleccione severidad"
+              appendTo="body"
               optionLabel="label"
               optionValue="value">
             </p-dropdown>
@@ -225,6 +227,7 @@
               [(ngModel)]="incidentForm.priority"
               placeholder="Seleccione prioridad"
               optionLabel="label"
+              appendTo="body"
               optionValue="value">
             </p-dropdown>
           </div>
@@ -241,6 +244,7 @@
               [(ngModel)]="incidentForm.assigneeId"
               placeholder="Seleccione usuario"
               [showClear]="true"
+              appendTo="body"
               optionLabel="label"
               optionValue="value">
             </p-dropdown>
@@ -255,6 +259,9 @@
               [(ngModel)]="incidentForm.dueDate"
               [showIcon]="true"
               placeholder="Seleccione fecha"
+              appendTo="body"
+              [minDate]="minDate"
+              [maxDate]="maxDate"
               dateFormat="dd/mm/yy">
             </p-calendar>
           </div>
