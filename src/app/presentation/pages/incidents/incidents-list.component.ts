@@ -347,7 +347,6 @@ export class IncidentsListComponent implements OnInit {
       'Duplicado'
     ];
 
-
     return labels[status];
   }
   
