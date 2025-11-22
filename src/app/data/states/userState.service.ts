@@ -9,7 +9,7 @@ export class UserStateService {
   readonly currentUser = computed(() => this.user());
 
   setUser(token: string) {
-    localStorage.setItem('token', token);
+    sessionStorage.setItem('token', token);
     const decodedToken:any = jwtDecode(token);
     this.user.set({
       token: token,
@@ -26,11 +26,11 @@ export class UserStateService {
 
   clearUser() {
     this.user.set(null);
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
   }
 
   private getUserFromLocalStorage(): User | null {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       const decodedToken: any = jwtDecode(token);
       return {
