@@ -59,24 +59,27 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 
     // Build cumulative URL and breadcrumbs
     let cumulativeUrl = '';
+    
     urlSegments.forEach((segment, index) => {
       cumulativeUrl += '/' + segment;
       
-      // Get label from route mapping or use segment
-      const label = this.routeLabels[segment] || this.capitalizeFirstLetter(segment);
-      
-      // Check if it's the last segment (active)
-      const isActive = index === urlSegments.length - 1;
-      
       // Skip numeric IDs in breadcrumb display but keep in URL
       if (!this.isNumeric(segment)) {
+        // Get label from route mapping or use segment
+        const label = this.routeLabels[segment] || this.capitalizeFirstLetter(segment);
+        
         breadcrumbs.push({
           label: label,
           url: cumulativeUrl,
-          active: isActive
+          active: false  // Will be set after loop
         });
       }
     });
+    
+    // Mark the last breadcrumb as active
+    if (breadcrumbs.length > 0) {
+      breadcrumbs[breadcrumbs.length - 1].active = true;
+    }
 
     this.breadcrumbs = breadcrumbs;
   }
