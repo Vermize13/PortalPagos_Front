@@ -405,6 +405,7 @@ export class IncidentDetailComponent implements OnInit {
         return severityMapping?.label || value;
       }
       // Handle string values - backend may return C# enum names
+      // Note: Using feminine forms (Baja, Media, Alta, Crítica) to match "severidad" (feminine noun)
       const severityStringMappings: { [key: string]: string } = {
         'Low': 'Baja',
         'Bajo': 'Baja',
@@ -413,7 +414,8 @@ export class IncidentDetailComponent implements OnInit {
         'High': 'Alta',
         'Alto': 'Alta',
         'Critical': 'Crítica',
-        'Crítico': 'Crítica'
+        'Crítico': 'Crítica',
+        'Critico': 'Crítica' // Handle without accent
       };
       return severityStringMappings[value] || value;
     }
