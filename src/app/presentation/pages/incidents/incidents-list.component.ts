@@ -28,12 +28,10 @@ import { ToastService } from '../../../data/services/toast.service';
 import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping } from '../../../domain/models/enum-mappings';
 
 // Helper interface for displaying incidents with additional info
-interface IncidentDisplay extends Incident {
+interface IncidentDisplay extends IncidentWithDetails {
   // Display-friendly names and labels (keep original enum-typed properties like status/priority/severity)
   projectName?: string;
   sprintName?: string;
-  reporterName?: string;
-  assigneeName?: string;
   statusLabel?: string;
   priorityLabel?: string;
   severityLabel?: string;
@@ -197,7 +195,8 @@ export class IncidentsListComponent implements OnInit {
         createdAt: new Date('2024-03-01'),
         updatedAt: new Date('2024-03-01'),
         labels: [],
-        comments: []
+        commentCount: 0,
+        attachmentCount: 0
       },
       {
         id: '750e8400-e29b-41d4-a716-446655440002',
@@ -219,7 +218,8 @@ export class IncidentsListComponent implements OnInit {
         createdAt: new Date('2024-03-05'),
         updatedAt: new Date('2024-03-05'),
         labels: [],
-        comments: []
+        commentCount: 0,
+        attachmentCount: 0
       },
       {
         id: '750e8400-e29b-41d4-a716-446655440003',
@@ -245,7 +245,8 @@ export class IncidentsListComponent implements OnInit {
         updatedAt: new Date('2024-03-10'),
         closedAt: new Date('2024-03-10'),
         labels: [],
-        comments: []
+        commentCount: 0,
+        attachmentCount: 0
       }
     ];
   }
