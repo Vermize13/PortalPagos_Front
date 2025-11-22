@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, forwardRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, forwardRef, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -7,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { Sidebar, SidebarModule } from 'primeng/sidebar';
 import { StyleClassModule } from 'primeng/styleclass';
+import { UserStateService } from '../../../data/states/userState.service';
 @Component({
   selector: 'app-sidenav',
   standalone: true,
@@ -27,9 +28,23 @@ import { StyleClassModule } from 'primeng/styleclass';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidenavComponent implements OnInit, ControlValueAccessor {
-
+  
+  private userStateService = inject(UserStateService);
+  
   ngOnInit(): void {
     console.log("llego aqui");
+  }
+  
+  get currentUser() {
+    return this.userStateService.getUser();
+  }
+  
+  getUserInitials(): string {
+    const user = this.currentUser;
+    if (!user || !user.unique_name) return 'U';
+    const names = user.unique_name.trim().split(' ');
+    if (names.length === 1) return names[0].charAt(0).toUpperCase();
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
   }
 
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
