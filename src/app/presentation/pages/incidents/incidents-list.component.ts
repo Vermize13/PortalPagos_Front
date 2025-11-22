@@ -12,6 +12,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { ConfirmationService } from 'primeng/api';
 import { 
   Incident, 
@@ -19,12 +20,14 @@ import {
   IncidentPriority, 
   IncidentSeverity,
   IncidentWithDetails,
-  LabelInfo
+  LabelInfo,
+  Label
 } from '../../../domain/models';
 import { IncidentService, IncidentFilter, CreateIncidentRequest, UpdateIncidentRequest } from '../../../data/services/incident.service';
 import { ProjectService } from '../../../data/services/project.service';
 import { UserService } from '../../../data/services/user.service';
 import { SprintService } from '../../../data/services/sprint.service';
+import { LabelService } from '../../../data/services/label.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping } from '../../../domain/models/enum-mappings';
 
@@ -49,6 +52,7 @@ interface IncidentFormData {
   status?: IncidentStatus;
   assigneeId?: string;
   dueDate?: Date;
+  labelIds?: string[];
 }
 
 @Component({
@@ -66,7 +70,8 @@ interface IncidentFormData {
     InputTextModule,
     InputTextareaModule,
     CalendarModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    MultiSelectModule
   ],
   providers: [ConfirmationService],
   templateUrl: './incidents-list.component.html',
@@ -100,13 +105,15 @@ export class IncidentsListComponent implements OnInit {
     title: '',
     description: '',
     severity: IncidentSeverity.Medio,
-    priority: IncidentPriority.DeberíaHacer
+    priority: IncidentPriority.DeberíaHacer,
+    labelIds: []
   };
   
   // Dropdown options
   projects: any[] = [];
   users: any[] = [];
   sprints: any[] = [];
+  labels: Label[] = [];
   selectedProjectId: string = '';
   selectedSprintId: string = '';
 
@@ -115,6 +122,7 @@ export class IncidentsListComponent implements OnInit {
     private projectService: ProjectService,
     private userService: UserService,
     private sprintService: SprintService,
+    private labelService: LabelService,
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
     private router: Router
@@ -303,12 +311,14 @@ export class IncidentsListComponent implements OnInit {
       priority: incident.priority,
       status: incident.status,
       assigneeId: incident.assigneeId,
-      dueDate: incident.dueDate ? new Date(incident.dueDate) : undefined
+      dueDate: incident.dueDate ? new Date(incident.dueDate) : undefined,
+      labelIds: incident.labels?.map(l => l.id) || []
     };
     
-    // Load sprints for the project
+    // Load sprints and labels for the project
     if (incident.projectId) {
       this.loadSprintsByProject(incident.projectId);
+      this.loadLabelsByProject(incident.projectId);
     }
     
     this.displayDialog = true;
@@ -337,8 +347,10 @@ export class IncidentsListComponent implements OnInit {
       title: '',
       description: '',
       severity: IncidentSeverity.Medio,
-      priority: IncidentPriority.DeberíaHacer
+      priority: IncidentPriority.DeberíaHacer,
+      labelIds: []
     };
+    this.labels = [];
     this.displayDialog = true;
   }
 
@@ -401,6 +413,9 @@ export class IncidentsListComponent implements OnInit {
         dueDate: this.incidentForm.dueDate?.toISOString().split('T')[0]
       };
       
+      // Note: Labels need to be managed separately via addLabel/removeLabel API calls
+      // The update endpoint doesn't support updating labels directly
+      
       this.incidentService.update(this.incidentForm.id, updateRequest).subscribe({
         next: () => {
           this.toastService.showSuccess('Éxito', 'Incidencia actualizada correctamente');
@@ -421,7 +436,8 @@ export class IncidentsListComponent implements OnInit {
         severity: this.incidentForm.severity,
         priority: this.incidentForm.priority,
         assigneeId: this.incidentForm.assigneeId,
-        dueDate: this.incidentForm.dueDate?.toISOString().split('T')[0]
+        dueDate: this.incidentForm.dueDate?.toISOString().split('T')[0],
+        labelIds: this.incidentForm.labelIds
       };
       
       this.incidentService.create(createRequest).subscribe({
@@ -453,11 +469,14 @@ export class IncidentsListComponent implements OnInit {
   onProjectChange(projectId: string) {
     this.selectedProjectId = projectId;
     this.incidentForm.sprintId = undefined;
+    this.incidentForm.labelIds = [];
     this.selectedSprintId = '';
     this.sprints = [];
+    this.labels = [];
     
     if (projectId) {
       this.loadSprintsByProject(projectId);
+      this.loadLabelsByProject(projectId);
     }
   }
 
@@ -470,6 +489,17 @@ export class IncidentsListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading sprints:', error);
+      }
+    });
+  }
+
+  loadLabelsByProject(projectId: string) {
+    this.labelService.getByProject(projectId).subscribe({
+      next: (labels) => {
+        this.labels = labels;
+      },
+      error: (error) => {
+        console.error('Error loading labels:', error);
       }
     });
   }

@@ -12,6 +12,8 @@ import { TabViewModule } from 'primeng/tabview';
 import { TableModule } from 'primeng/table';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
+import { DialogModule } from 'primeng/dialog';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { 
   Incident, 
   IncidentStatus, 
@@ -19,11 +21,13 @@ import {
   IncidentSeverity,
   IncidentComment,
   LabelInfo,
+  Label,
   IncidentWithDetails,
   IncidentHistory
 } from '../../../domain/models';
 import { IncidentService, AddCommentRequest } from '../../../data/services/incident.service';
 import { AttachmentService } from '../../../data/services/attachment.service';
+import { LabelService } from '../../../data/services/label.service';
 import { AttachmentWithUser } from '../../../domain/models/attachment.model';
 import { ToastService } from '../../../data/services/toast.service';
 import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping } from '../../../domain/models/enum-mappings';
@@ -43,7 +47,9 @@ import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping
     TabViewModule,
     TableModule,
     FileUploadModule,
-    TooltipModule
+    TooltipModule,
+    DialogModule,
+    MultiSelectModule
   ],
   templateUrl: './incident-detail.component.html',
   styleUrls: ['./incident-detail.component.css']
@@ -60,12 +66,19 @@ export class IncidentDetailComponent implements OnInit {
   newCommentBody: string = '';
   submittingComment: boolean = false;
   uploadingAttachment: boolean = false;
+  
+  // Label management
+  displayLabelDialog: boolean = false;
+  availableLabels: Label[] = [];
+  selectedLabelIds: string[] = [];
+  loadingLabels: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private incidentService: IncidentService,
     private attachmentService: AttachmentService,
+    private labelService: LabelService,
     private toastService: ToastService
   ) {}
 
@@ -310,5 +323,77 @@ export class IncidentDetailComponent implements OnInit {
       return names[0].substring(0, 2).toUpperCase();
     }
     return authorName.substring(0, 2).toUpperCase();
+  }
+
+  onManageLabels() {
+    if (!this.incident) return;
+    
+    this.selectedLabelIds = this.incident.labels?.map(l => l.id) || [];
+    this.loadingLabels = true;
+    
+    this.labelService.getByProject(this.incident.projectId).subscribe({
+      next: (labels) => {
+        this.availableLabels = labels;
+        this.loadingLabels = false;
+        this.displayLabelDialog = true;
+      },
+      error: (error) => {
+        console.error('Error loading labels:', error);
+        this.toastService.showError('Error', 'No se pudieron cargar las etiquetas');
+        this.loadingLabels = false;
+      }
+    });
+  }
+
+  onSaveLabels() {
+    if (!this.incident) return;
+
+    const currentLabelIds = this.incident.labels?.map(l => l.id) || [];
+    const labelsToAdd = this.selectedLabelIds.filter(id => !currentLabelIds.includes(id));
+    const labelsToRemove = currentLabelIds.filter(id => !this.selectedLabelIds.includes(id));
+
+    let operationsCount = labelsToAdd.length + labelsToRemove.length;
+    if (operationsCount === 0) {
+      this.displayLabelDialog = false;
+      return;
+    }
+
+    let completedOperations = 0;
+    const checkComplete = () => {
+      completedOperations++;
+      if (completedOperations === operationsCount) {
+        this.toastService.showSuccess('Éxito', 'Etiquetas actualizadas correctamente');
+        this.displayLabelDialog = false;
+        this.loadIncident(this.incident!.id);
+      }
+    };
+
+    // Add new labels
+    labelsToAdd.forEach(labelId => {
+      this.incidentService.addLabel(this.incident!.id, labelId).subscribe({
+        next: () => checkComplete(),
+        error: (error) => {
+          console.error('Error adding label:', error);
+          this.toastService.showError('Error', 'No se pudo agregar una etiqueta');
+          checkComplete();
+        }
+      });
+    });
+
+    // Remove labels
+    labelsToRemove.forEach(labelId => {
+      this.incidentService.removeLabel(this.incident!.id, labelId).subscribe({
+        next: () => checkComplete(),
+        error: (error) => {
+          console.error('Error removing label:', error);
+          this.toastService.showError('Error', 'No se pudo eliminar una etiqueta');
+          checkComplete();
+        }
+      });
+    });
+  }
+
+  onCancelLabelDialog() {
+    this.displayLabelDialog = false;
   }
 }
