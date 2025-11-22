@@ -20,52 +20,17 @@ export class LabelService {
 
   /**
    * Get all labels for a specific project
-   * 
-   * IMPORTANT: This method currently returns mock data.
-   * When the API endpoint is available, uncomment the HTTP call below
-   * and remove the mock data implementation.
-   * 
-   * Expected API endpoint: GET /api/Projects/{projectId}/labels
+   * API endpoint: GET /api/Labels/project/{projectId}
    */
   getByProject(projectId: string): Observable<Label[]> {
-    // TODO: Replace with actual API call when endpoint is available
-    // Uncomment the line below and remove the mock data when API is ready:
-    // return this.http.get<Label[]>(`${this.apiUrl}/Projects/${projectId}/labels`);
-    
-    // TEMPORARY: Using mock data until API endpoint is available
-    // This should be removed in production
-    return of(this.getMockLabels(projectId));
+    return this.http.get<Label[]>(`${this.apiUrl}/Labels/project/${projectId}`);
   }
 
   /**
    * Create a new label for a project
+   * API endpoint: POST /api/Labels
    */
   create(request: CreateLabelRequest): Observable<Label> {
-    // TODO: Implement when API endpoint is available
-    // return this.http.post<Label>(`${this.apiUrl}/Projects/${request.projectId}/labels`, request);
-    return of({
-      id: crypto.randomUUID(),
-      projectId: request.projectId,
-      project: null,
-      name: request.name,
-      colorHex: request.colorHex
-    });
-  }
-
-  /**
-   * Mock labels for demonstration
-   * In production, this should be removed and use the actual API
-   */
-  private getMockLabels(projectId: string): Label[] {
-    return [
-      { id: '123e4567-e89b-12d3-a456-426614174000', projectId, project: null, name: 'Bug', colorHex: '#dc3545' },
-      { id: '123e4567-e89b-12d3-a456-426614174001', projectId, project: null, name: 'Urgente', colorHex: '#ff6b6b' },
-      { id: '123e4567-e89b-12d3-a456-426614174002', projectId, project: null, name: 'Performance', colorHex: '#ffc107' },
-      { id: '123e4567-e89b-12d3-a456-426614174003', projectId, project: null, name: 'Feature', colorHex: '#28a745' },
-      { id: '123e4567-e89b-12d3-a456-426614174004', projectId, project: null, name: 'UI/UX', colorHex: '#17a2b8' },
-      { id: '123e4567-e89b-12d3-a456-426614174005', projectId, project: null, name: 'Documentación', colorHex: '#6c757d' },
-      { id: '123e4567-e89b-12d3-a456-426614174006', projectId, project: null, name: 'Seguridad', colorHex: '#e83e8c' },
-      { id: '123e4567-e89b-12d3-a456-426614174007', projectId, project: null, name: 'Refactorización', colorHex: '#6610f2' },
-    ];
+    return this.http.post<Label>(`${this.apiUrl}/Labels`, request);
   }
 }
