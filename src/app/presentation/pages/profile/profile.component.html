@@ -75,7 +75,35 @@
       </div>
     </div>
 
-    <div *ngIf="!loading && !user" class="text-center p-5">
+    <div *ngIf="!loading && !user && currentUser" class="profile-content">
+      <p class="text-600 mb-4">Mostrando información básica del perfil:</p>
+      
+      <div class="field">
+        <label for="username" class="font-semibold">Usuario</label>
+        <input 
+          id="username" 
+          type="text" 
+          pInputText 
+          [value]="currentUser.unique_name" 
+          [disabled]="true"
+          class="w-full" />
+      </div>
+
+      <div class="field">
+        <label for="role" class="font-semibold">Rol</label>
+        <input 
+          id="role" 
+          type="text" 
+          pInputText 
+          [value]="currentUser.role" 
+          [disabled]="true"
+          class="w-full" />
+      </div>
+      
+      <p class="text-500 text-sm mt-4">Para ver información completa del perfil, el backend debe estar configurado correctamente.</p>
+    </div>
+    
+    <div *ngIf="!loading && !user && !currentUser" class="text-center p-5">
       <p class="text-600">No se pudo cargar la información del perfil.</p>
     </div>
   </p-card>

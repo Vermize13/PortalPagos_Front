@@ -31,6 +31,10 @@ export class ProfileComponent implements OnInit {
 
   user: DomainUser | null = null;
   loading = false;
+  
+  get currentUser() {
+    return this.userStateService.getUser();
+  }
 
   ngOnInit(): void {
     this.loadUserProfile();
@@ -43,15 +47,21 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
+    // Note: The current JWT implementation uses a hardcoded numeric ID (20)
+    // In production, this should be replaced with the actual user GUID from the JWT token
+    // For now, we attempt to call the API but gracefully handle errors
     this.loading = true;
-    this.userService.getUserById(currentUser.nameid.toString()).subscribe({
+    const userId = currentUser.nameid.toString();
+    
+    this.userService.getUserById(userId).subscribe({
       next: (user) => {
         this.user = user;
         this.loading = false;
       },
       error: (error) => {
         console.error('Error loading user profile:', error);
-        this.toastService.showError('Error', 'No se pudo cargar el perfil del usuario');
+        // Show a message but don't block the user - they can still see basic info from JWT
+        this.toastService.showError('Información', 'Mostrando información básica del perfil');
         this.loading = false;
       }
     });

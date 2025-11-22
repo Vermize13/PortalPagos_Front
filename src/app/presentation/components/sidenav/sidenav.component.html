@@ -88,6 +88,11 @@
       <div class="profile-section border-top-1 border-200 p-3 flex-shrink-0" *ngIf="currentUser as user">
         <div class="flex align-items-center gap-3 cursor-pointer p-2 border-round hover:surface-100 transition-duration-150" 
              (click)="toggleProfileMenu($event)"
+             (keydown.enter)="toggleProfileMenu($event)"
+             (keydown.space)="toggleProfileMenu($event); $event.preventDefault()"
+             tabindex="0"
+             role="button"
+             aria-label="Abrir menú de perfil"
              pRipple>
           <p-avatar [label]="userInitials" size="large" shape="circle"></p-avatar>
           <div class="flex flex-column flex-1">
@@ -96,7 +101,7 @@
           </div>
           <i class="pi pi-ellipsis-v text-600"></i>
         </div>
-        <p-menu #profileMenu [model]="profileMenuItems" [popup]="true" appendTo="body"></p-menu>
+        <p-menu #profileMenu [model]="profileMenuItems" [popup]="true" appendTo="body" [ariaLabel]="'Menú de opciones de perfil'"></p-menu>
       </div>
     </div>
   </ng-template>
@@ -141,7 +146,12 @@
     <!-- Profile avatar in collapsed state -->
     <div class="collapsed-profile p-2 flex-shrink-0 cursor-pointer" 
          *ngIf="currentUser as user"
-         (click)="toggleProfileMenu($event)">
+         (click)="toggleProfileMenu($event)"
+         (keydown.enter)="toggleProfileMenu($event)"
+         (keydown.space)="toggleProfileMenu($event); $event.preventDefault()"
+         tabindex="0"
+         role="button"
+         aria-label="Abrir menú de perfil">
       <p-avatar [label]="userInitials" styleClass="mx-auto hover:bg-primary-100" size="normal" shape="circle"></p-avatar>
     </div>
   </div>
