@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -18,6 +18,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideHttpClient(withInterceptors([JwtInterceptor, ErrorHandlerInterceptor])),
     importProvidersFrom([BrowserAnimationsModule]),
-    MessageService
+    MessageService,
+    { provide: LOCALE_ID, useValue: 'es' }
   ]
 };
