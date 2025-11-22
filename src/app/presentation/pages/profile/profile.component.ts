@@ -7,6 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TabViewModule } from 'primeng/tabview';
+import { TooltipModule } from 'primeng/tooltip';
 import { UserStateService } from '../../../data/states/userState.service';
 import { UserService } from '../../../data/services/user.service';
 import { IncidentService } from '../../../data/services/incident.service';
@@ -35,7 +36,8 @@ interface UserProjectInfo {
     InputTextModule,
     TableModule,
     TagModule,
-    TabViewModule
+    TabViewModule,
+    TooltipModule
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
@@ -57,6 +59,7 @@ export class ProfileComponent implements OnInit {
   assignedIncidents: IncidentWithDetails[] = [];
   reportedIncidents: IncidentWithDetails[] = [];
   userProjects: UserProjectInfo[] = [];
+  projectsMap: Map<string, string> = new Map(); // projectId -> projectName
   
   isViewingOtherUser = false;
   isAdmin = false;
@@ -144,6 +147,11 @@ export class ProfileComponent implements OnInit {
     // GET /api/Users/{userId}/projects to fetch user's projects in a single call
     this.projectService.getAll().subscribe({
       next: async (projects) => {
+        // Build project name map for incidents display
+        projects.forEach(project => {
+          this.projectsMap.set(project.id, project.name);
+        });
+
         // For each project, check if user is a member
         const projectPromises = projects.map(async project => {
           try {
@@ -217,6 +225,10 @@ export class ProfileComponent implements OnInit {
 
   viewProject(projectId: string): void {
     this.router.navigate(['/inicio/projects', projectId]);
+  }
+
+  getProjectName(projectId: string): string {
+    return this.projectsMap.get(projectId) || projectId;
   }
 
   goBack(): void {
