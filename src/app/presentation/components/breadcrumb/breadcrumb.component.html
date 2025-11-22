@@ -1,0 +1,20 @@
+<nav aria-label="breadcrumb" class="breadcrumb-container">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a routerLink="/inicio/dashboard" class="breadcrumb-link">
+        <i class="pi pi-home"></i>
+      </a>
+    </li>
+    <li *ngFor="let crumb of breadcrumbs; let last = last" 
+        class="breadcrumb-item" 
+        [class.active]="crumb.active">
+      <i class="pi pi-chevron-right separator"></i>
+      <a *ngIf="!crumb.active" [routerLink]="crumb.url" class="breadcrumb-link">
+        {{ crumb.label }}
+      </a>
+      <span *ngIf="crumb.active" class="breadcrumb-active">
+        {{ crumb.label }}
+      </span>
+    </li>
+  </ol>
+</nav>
