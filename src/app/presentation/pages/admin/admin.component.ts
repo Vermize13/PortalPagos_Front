@@ -11,6 +11,8 @@ import { TabViewModule } from 'primeng/tabview';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { CheckboxModule } from 'primeng/checkbox';
+import { TooltipModule } from 'primeng/tooltip';
+import { AccordionModule } from 'primeng/accordion';
 import { BackupService, BackupResponse, RestoreResponse } from '../../../data/services/backup.service';
 import { ToastService } from '../../../data/services/toast.service';
 
@@ -32,7 +34,9 @@ import { ToastService } from '../../../data/services/toast.service';
     TabViewModule,
     InputTextModule,
     DropdownModule,
-    CheckboxModule
+    CheckboxModule,
+    TooltipModule,
+    AccordionModule
   ],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.css']
@@ -40,6 +44,9 @@ import { ToastService } from '../../../data/services/toast.service';
 export class AdminComponent implements OnInit {
   // Active tab index
   activeTabIndex: number = 0;
+  
+  // Help manual visibility
+  showHelpManual: boolean = false;
   
   // Backup & Restore properties
   backups: BackupResponse[] = [];
