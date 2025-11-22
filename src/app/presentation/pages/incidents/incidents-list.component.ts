@@ -18,7 +18,8 @@ import {
   IncidentStatus, 
   IncidentPriority, 
   IncidentSeverity,
-  IncidentWithDetails
+  IncidentWithDetails,
+  LabelInfo
 } from '../../../domain/models';
 import { IncidentService, IncidentFilter, CreateIncidentRequest, UpdateIncidentRequest } from '../../../data/services/incident.service';
 import { ProjectService } from '../../../data/services/project.service';

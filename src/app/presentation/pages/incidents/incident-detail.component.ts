@@ -13,7 +13,9 @@ import {
   IncidentStatus, 
   IncidentPriority, 
   IncidentSeverity,
-  IncidentComment
+  IncidentComment,
+  LabelInfo,
+  IncidentWithDetails
 } from '../../../domain/models';
 import { IncidentService, AddCommentRequest } from '../../../data/services/incident.service';
 import { ToastService } from '../../../data/services/toast.service';
@@ -36,7 +38,7 @@ import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping
   styleUrls: ['./incident-detail.component.css']
 })
 export class IncidentDetailComponent implements OnInit {
-  incident: Incident | null = null;
+  incident: IncidentWithDetails | null = null;
   comments: IncidentComment[] = [];
   loading: boolean = false;
   loadingComments: boolean = false;

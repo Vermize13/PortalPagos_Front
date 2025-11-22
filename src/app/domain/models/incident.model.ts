@@ -54,6 +54,12 @@ export interface Label {
   colorHex?: string;
 }
 
+export interface LabelInfo {
+  id: string; // Guid
+  name: string;
+  colorHex?: string;
+}
+
 export interface IncidentLabel {
   incidentId: string; // Guid
   incident: any; // Incident reference
@@ -72,9 +78,31 @@ export interface IncidentComment {
   editedAt?: Date;
 }
 
-export interface IncidentWithDetails extends Incident {
+export interface IncidentWithDetails {
+  id: string;
+  projectId: string;
+  sprintId?: string;
+  code: string;
+  title: string;
+  description?: string;
+  severity: IncidentSeverity;
+  priority: IncidentPriority;
+  status: IncidentStatus;
+  reporterId: string;
   reporterName?: string;
+  assigneeId?: string;
   assigneeName?: string;
+  storyPoints?: number;
+  dueDate?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  closedAt?: Date;
+  labels?: LabelInfo[];
   commentCount?: number;
   attachmentCount?: number;
+  // Optional expanded references
+  project?: any;
+  sprint?: any;
+  reporter?: any;
+  assignee?: any;
 }

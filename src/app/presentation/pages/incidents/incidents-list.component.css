@@ -116,6 +116,13 @@
   line-height: 1.4;
 }
 
+.card-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
 .card-footer {
   margin-top: 1rem;
   padding-top: 0.75rem;
@@ -141,6 +148,11 @@
 
 .card-meta i {
   font-size: 0.7rem;
+}
+
+.card-meta .reporter {
+  font-weight: 600;
+  color: #495057;
 }
 
 .card-actions {

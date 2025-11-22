@@ -43,6 +43,18 @@
             </p>
           </div>
 
+          <!-- Labels Display -->
+          <div class="mb-4" *ngIf="incident.labels && incident.labels.length > 0">
+            <h3 class="text-lg font-semibold mb-2">Etiquetas</h3>
+            <div class="flex flex-wrap gap-2">
+              <p-tag 
+                *ngFor="let label of incident.labels" 
+                [value]="label.name"
+                [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
+                styleClass="text-sm"></p-tag>
+            </div>
+          </div>
+
           <p-divider></p-divider>
 
           <!-- Comments Section -->
@@ -146,13 +158,19 @@
             </div>
 
             <div class="detail-item">
-              <span class="detail-label">Reportado por</span>
-              <div class="detail-value">{{ incident.reporter?.name || 'N/A' }}</div>
+              <span class="detail-label">
+                <i class="pi pi-user-plus mr-1"></i>
+                Reportado por
+              </span>
+              <div class="detail-value font-semibold">{{ incident.reporterName || incident.reporter?.name || 'N/A' }}</div>
             </div>
 
             <div class="detail-item">
-              <span class="detail-label">Asignado a</span>
-              <div class="detail-value">{{ incident.assignee?.name || 'Sin asignar' }}</div>
+              <span class="detail-label">
+                <i class="pi pi-user mr-1"></i>
+                Asignado a
+              </span>
+              <div class="detail-value">{{ incident.assigneeName || incident.assignee?.name || 'Sin asignar' }}</div>
             </div>
 
             <p-divider></p-divider>
