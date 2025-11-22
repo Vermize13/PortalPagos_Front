@@ -171,11 +171,14 @@ export class IncidentDetailComponent implements OnInit {
   }
 
   getAuthorInitials(authorName: string): string {
-    if (!authorName) return '?';
-    const names = authorName.split(' ');
-    if (names.length >= 2) {
-      return names[0][0] + names[1][0];
+    if (!authorName || !authorName.trim()) return '?';
+    const names = authorName.trim().split(' ').filter(n => n.length > 0);
+    if (names.length >= 2 && names[0][0] && names[1][0]) {
+      return names[0][0].toUpperCase() + names[1][0].toUpperCase();
     }
-    return authorName.substring(0, 2);
+    if (names.length > 0 && names[0].length >= 2) {
+      return names[0].substring(0, 2).toUpperCase();
+    }
+    return authorName.substring(0, 2).toUpperCase();
   }
 }

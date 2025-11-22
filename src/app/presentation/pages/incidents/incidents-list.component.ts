@@ -424,7 +424,7 @@ export class IncidentsListComponent implements OnInit {
     this.draggedIncident = incident;
     if (event.dataTransfer) {
       event.dataTransfer.effectAllowed = 'move';
-      event.dataTransfer.setData('text/html', incident.id);
+      event.dataTransfer.setData('text/plain', incident.id);
     }
   }
 
