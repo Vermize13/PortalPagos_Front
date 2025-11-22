@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -10,6 +11,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
 import { UserDisplay, RoleCode } from '../../../domain/models';
 import { User as DomainUser } from '../../../domain/models/user.model';
@@ -40,7 +42,8 @@ interface UserFormData {
     InputTextModule,
     DropdownModule,
     CheckboxModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    TooltipModule
   ],
   providers: [ConfirmationService],
   templateUrl: './users-list.component.html',
@@ -76,7 +79,8 @@ export class UsersListComponent implements OnInit {
   constructor(
     private userService: UserService,
     private toastService: ToastService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -156,6 +160,10 @@ export class UsersListComponent implements OnInit {
 
   getStatusSeverity(isActive: boolean): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
     return isActive ? 'success' : 'danger';
+  }
+
+  onViewProfile(user: UserDisplay) {
+    this.router.navigate(['/inicio/profile', user.id]);
   }
 
   onEdit(user: UserDisplay) {
