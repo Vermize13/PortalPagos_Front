@@ -16,6 +16,7 @@ import { User as DomainUser } from '../../../domain/models/user.model';
 import { IncidentWithDetails } from '../../../domain/models';
 import { ProjectMemberDetail } from '../../../domain/models';
 import { Router, ActivatedRoute } from '@angular/router';
+import { forkJoin, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -111,26 +112,19 @@ export class ProfileComponent implements OnInit {
   loadUserIncidents(userId: string): void {
     this.loadingIncidents = true;
     
-    // Load incidents assigned to the user
-    this.incidentService.getAll({ assigneeId: userId }).subscribe({
-      next: (incidents) => {
-        this.assignedIncidents = incidents;
-      },
-      error: (error) => {
-        console.error('Error loading assigned incidents:', error);
-        this.toastService.showError('Error', 'No se pudieron cargar las incidencias asignadas');
-      }
-    });
-
-    // Load incidents reported by the user
-    this.incidentService.getAll({ reporterId: userId }).subscribe({
-      next: (incidents) => {
-        this.reportedIncidents = incidents;
+    // Load both assigned and reported incidents in parallel
+    forkJoin({
+      assigned: this.incidentService.getAll({ assigneeId: userId }),
+      reported: this.incidentService.getAll({ reporterId: userId })
+    }).subscribe({
+      next: (results) => {
+        this.assignedIncidents = results.assigned;
+        this.reportedIncidents = results.reported;
         this.loadingIncidents = false;
       },
       error: (error) => {
-        console.error('Error loading reported incidents:', error);
-        this.toastService.showError('Error', 'No se pudieron cargar las incidencias reportadas');
+        console.error('Error loading incidents:', error);
+        this.toastService.showError('Error', 'No se pudieron cargar las incidencias');
         this.loadingIncidents = false;
       }
     });
@@ -141,30 +135,31 @@ export class ProfileComponent implements OnInit {
     
     // Get all projects and filter by user membership
     this.projectService.getAll().subscribe({
-      next: (projects) => {
+      next: async (projects) => {
         // For each project, check if user is a member
-        const projectPromises = projects.map(project => 
-          this.projectService.getMembers(project.id).toPromise()
-            .then(members => {
-              const userMember = members?.find(m => m.userId === userId);
-              if (userMember) {
-                return { 
-                  project: project, 
-                  role: userMember.roleName || 'Sin rol'
-                };
-              }
-              return null;
-            })
-            .catch(error => {
-              console.error(`Error loading members for project ${project.id}:`, error);
-              return null;
-            })
-        );
-
-        Promise.all(projectPromises).then(results => {
-          this.userProjects = results.filter(r => r !== null) as { project: any, role: string }[];
-          this.loadingProjects = false;
+        const projectPromises = projects.map(async project => {
+          try {
+            const members = await firstValueFrom(this.projectService.getMembers(project.id));
+            const userMember = members?.find(m => m.userId === userId);
+            if (userMember) {
+              return { 
+                project: project, 
+                role: userMember.roleName || 'Sin rol'
+              };
+            }
+            return null;
+          } catch (error) {
+            console.error(`Error loading members for project ${project.id}:`, error);
+            return null;
+          }
         });
+
+        try {
+          const results = await Promise.all(projectPromises);
+          this.userProjects = results.filter(r => r !== null) as { project: any, role: string }[];
+        } finally {
+          this.loadingProjects = false;
+        }
       },
       error: (error) => {
         console.error('Error loading projects:', error);
