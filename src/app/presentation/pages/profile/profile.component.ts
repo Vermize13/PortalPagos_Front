@@ -47,9 +47,11 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    // Note: The current JWT implementation uses a hardcoded numeric ID (20)
-    // In production, this should be replaced with the actual user GUID from the JWT token
-    // For now, we attempt to call the API but gracefully handle errors
+    // Note: The current JWT implementation uses a hardcoded numeric ID (20) in UserStateService
+    // because the backend JWT token doesn't include the actual user GUID in the 'nameid' claim.
+    // In production, the JWT token should include the user's GUID in the 'nameid' claim,
+    // and the UserStateService should extract it properly from the decoded token.
+    // For now, we attempt to call the API but gracefully handle errors when it fails.
     this.loading = true;
     const userId = currentUser.nameid.toString();
     
@@ -61,7 +63,7 @@ export class ProfileComponent implements OnInit {
       error: (error) => {
         console.error('Error loading user profile:', error);
         // Show a message but don't block the user - they can still see basic info from JWT
-        this.toastService.showError('Información', 'Mostrando información básica del perfil');
+        this.toastService.showError('Advertencia', 'Error al cargar el perfil completo. Mostrando información básica.');
         this.loading = false;
       }
     });
