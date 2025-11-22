@@ -228,7 +228,7 @@ export class ProfileComponent implements OnInit {
   }
 
   getProjectName(projectId: string): string {
-    return this.projectsMap.get(projectId) || projectId;
+    return this.projectsMap.get(projectId) || 'Proyecto desconocido';
   }
 
   goBack(): void {
