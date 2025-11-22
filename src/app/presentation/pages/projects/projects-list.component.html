@@ -74,34 +74,50 @@
     [style]="{width: '600px'}"
     [closable]="true">
     
-    <div class="p-fluid">
+    <form #projectFormRef="ngForm" class="p-fluid">
       <div class="field mb-3">
         <label for="code">Código *</label>
         <input 
           id="code" 
+          name="code"
+          #codeField="ngModel"
           type="text" 
           pInputText 
           [(ngModel)]="projectForm.code"
           [disabled]="isEditMode"
           placeholder="Ej: PP, SI"
-          maxlength="10" />
-        <small class="text-muted">Código único del proyecto (2-10 caracteres)</small>
+          maxlength="10"
+          minlength="2"
+          required />
+        <small class="text-muted" *ngIf="!codeField.invalid || (!codeField.dirty && !codeField.touched && !submitted)">Código único del proyecto (2-10 caracteres)</small>
+        <small class="p-error" *ngIf="codeField.invalid && (codeField.dirty || codeField.touched || submitted)">
+          <span *ngIf="codeField.errors?.['required']">El código es requerido</span>
+          <span *ngIf="codeField.errors?.['minlength']">El código debe tener al menos 2 caracteres</span>
+        </small>
       </div>
 
       <div class="field mb-3">
         <label for="name">Nombre *</label>
         <input 
           id="name" 
+          name="name"
+          #nameField="ngModel"
           type="text" 
           pInputText 
           [(ngModel)]="projectForm.name"
-          placeholder="Nombre del proyecto" />
+          placeholder="Nombre del proyecto"
+          required />
+        <small class="p-error" *ngIf="nameField.invalid && (nameField.dirty || nameField.touched || submitted)">
+          El nombre es requerido
+        </small>
       </div>
 
       <div class="field mb-3">
         <label for="description">Descripción</label>
         <textarea 
-          id="description" 
+          id="description"
+          name="description"
+          #descriptionField="ngModel"
           pInputTextarea 
           [(ngModel)]="projectForm.description"
           placeholder="Descripción del proyecto"
@@ -113,13 +129,14 @@
         <div class="flex align-items-center">
           <p-checkbox 
             [(ngModel)]="projectForm.isActive"
+            name="isActive"
             [binary]="true"
             inputId="active">
           </p-checkbox>
           <label for="active" class="ml-2">Proyecto Activo</label>
         </div>
       </div>
-    </div>
+    </form>
 
     <ng-template pTemplate="footer">
       <p-button 

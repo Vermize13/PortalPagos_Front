@@ -85,6 +85,7 @@ export class IncidentsListComponent implements OnInit {
   // Dialog state
   displayDialog: boolean = false;
   isEditMode: boolean = false;
+  submitted: boolean = false;
 
   // Date range
   minDate: Date | null = new Date();
@@ -269,6 +270,7 @@ export class IncidentsListComponent implements OnInit {
 
   onEdit(incident: IncidentDisplay) {
     this.isEditMode = true;
+    this.submitted = false;
     this.incidentForm = {
       id: incident.id,
       projectId: incident.projectId,
@@ -300,6 +302,7 @@ export class IncidentsListComponent implements OnInit {
 
   onCreate() {
     this.isEditMode = false;
+    this.submitted = false;
     this.incidentForm = {
       projectId: '',
       title: '',
@@ -352,6 +355,8 @@ export class IncidentsListComponent implements OnInit {
   }
   
   onSaveIncident() {
+    this.submitted = true;
+    
     if (!this.validateForm()) {
       this.toastService.showError('Error', 'Por favor complete todos los campos requeridos');
       return;
@@ -406,6 +411,7 @@ export class IncidentsListComponent implements OnInit {
   
   onCancelDialog() {
     this.displayDialog = false;
+    this.submitted = false;
   }
   
   validateForm(): boolean {
