@@ -10,7 +10,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
-import { Project, ProjectMemberDetail } from '../../../domain/models';
+import { ProjectWithMembers, ProjectMemberDetail } from '../../../domain/models';
 import { ProjectService } from '../../../data/services/project.service';
 import { ToastService } from '../../../data/services/toast.service';
 
@@ -33,7 +33,7 @@ import { ToastService } from '../../../data/services/toast.service';
   styleUrls: ['./project-view.component.css']
 })
 export class ProjectViewComponent implements OnInit {
-  project: Project | null = null;
+  project: ProjectWithMembers | null = null;
   projectId: string = '';
   loading: boolean = false;
   members: ProjectMemberDetail[] = [];
@@ -59,11 +59,11 @@ export class ProjectViewComponent implements OnInit {
     this.projectService.getById(this.projectId).subscribe({
       next: (project) => {
         this.project = project;
-        this.members = project.members?.map(m => ({
+        this.members = project.memberDetails?.map(m => ({
           ...m,
-          userName: m.user?.name || 'Unknown',
-          userEmail: m.user?.email || '',
-          roleName: m.role?.name || 'Member'
+          userName: m.userName || m.user?.name || 'Unknown',
+          userEmail: m.userEmail || m.user?.email || '',
+          roleName: m.roleName || m.role?.name || 'Member'
         })) || [];
         this.loading = false;
       },
