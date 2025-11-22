@@ -413,8 +413,11 @@ export class IncidentsListComponent implements OnInit {
         dueDate: this.incidentForm.dueDate?.toISOString().split('T')[0]
       };
       
-      // Note: Labels need to be managed separately via addLabel/removeLabel API calls
-      // The update endpoint doesn't support updating labels directly
+      // Note: Labels are not updated through the edit modal in this flow.
+      // Labels must be managed separately via the "Gestionar" button in the detail view,
+      // which uses the addLabel/removeLabel API endpoints.
+      // This is due to API design: the update endpoint doesn't support label updates,
+      // and labels shown in the edit form are for reference only.
       
       this.incidentService.update(this.incidentForm.id, updateRequest).subscribe({
         next: () => {

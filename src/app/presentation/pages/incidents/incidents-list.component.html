@@ -345,7 +345,7 @@
         </div>
       </div>
 
-      <div class="field mb-3" *ngIf="incidentForm.projectId && labels.length > 0">
+      <div class="field mb-3" *ngIf="!isEditMode && incidentForm.projectId && labels.length > 0">
         <label for="labels">Etiquetas</label>
         <p-multiSelect 
           id="labels"
