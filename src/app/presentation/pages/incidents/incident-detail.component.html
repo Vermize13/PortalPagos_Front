@@ -355,7 +355,7 @@
             <div class="flex align-items-center gap-2">
               <span 
                 class="label-color-indicator" 
-                [style]="{'background-color': label.colorHex || '#6c757d', 'width': '12px', 'height': '12px', 'border-radius': '50%', 'display': 'inline-block'}">
+                [style.background-color]="label.colorHex || '#6c757d'">
               </span>
               <span>{{ label.name }}</span>
             </div>

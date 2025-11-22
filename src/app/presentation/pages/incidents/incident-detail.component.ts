@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
@@ -352,44 +354,50 @@ export class IncidentDetailComponent implements OnInit {
     const labelsToAdd = this.selectedLabelIds.filter(id => !currentLabelIds.includes(id));
     const labelsToRemove = currentLabelIds.filter(id => !this.selectedLabelIds.includes(id));
 
-    let operationsCount = labelsToAdd.length + labelsToRemove.length;
-    if (operationsCount === 0) {
+    if (labelsToAdd.length === 0 && labelsToRemove.length === 0) {
       this.displayLabelDialog = false;
       return;
     }
 
-    let completedOperations = 0;
-    const checkComplete = () => {
-      completedOperations++;
-      if (completedOperations === operationsCount) {
-        this.toastService.showSuccess('Éxito', 'Etiquetas actualizadas correctamente');
+    // Create arrays of observables for add and remove operations
+    const addOperations = labelsToAdd.map(labelId =>
+      this.incidentService.addLabel(this.incident!.id, labelId).pipe(
+        catchError(error => {
+          console.error('Error adding label:', error);
+          return of(null); // Return null on error to continue with other operations
+        })
+      )
+    );
+
+    const removeOperations = labelsToRemove.map(labelId =>
+      this.incidentService.removeLabel(this.incident!.id, labelId).pipe(
+        catchError(error => {
+          console.error('Error removing label:', error);
+          return of(null); // Return null on error to continue with other operations
+        })
+      )
+    );
+
+    // Combine all operations
+    const allOperations = [...addOperations, ...removeOperations];
+
+    // Execute all operations in parallel
+    forkJoin(allOperations).subscribe({
+      next: (results) => {
+        const hasErrors = results.some(result => result === null);
+        if (hasErrors) {
+          this.toastService.showError('Error', 'Algunas etiquetas no pudieron actualizarse');
+        } else {
+          this.toastService.showSuccess('Éxito', 'Etiquetas actualizadas correctamente');
+        }
         this.displayLabelDialog = false;
         this.loadIncident(this.incident!.id);
+      },
+      error: (error) => {
+        console.error('Error updating labels:', error);
+        this.toastService.showError('Error', 'No se pudieron actualizar las etiquetas');
+        this.displayLabelDialog = false;
       }
-    };
-
-    // Add new labels
-    labelsToAdd.forEach(labelId => {
-      this.incidentService.addLabel(this.incident!.id, labelId).subscribe({
-        next: () => checkComplete(),
-        error: (error) => {
-          console.error('Error adding label:', error);
-          this.toastService.showError('Error', 'No se pudo agregar una etiqueta');
-          checkComplete();
-        }
-      });
-    });
-
-    // Remove labels
-    labelsToRemove.forEach(labelId => {
-      this.incidentService.removeLabel(this.incident!.id, labelId).subscribe({
-        next: () => checkComplete(),
-        error: (error) => {
-          console.error('Error removing label:', error);
-          this.toastService.showError('Error', 'No se pudo eliminar una etiqueta');
-          checkComplete();
-        }
-      });
     });
   }
 

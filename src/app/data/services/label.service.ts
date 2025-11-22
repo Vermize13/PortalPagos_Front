@@ -20,15 +20,20 @@ export class LabelService {
 
   /**
    * Get all labels for a specific project
-   * Note: This endpoint may not exist in the API yet. 
-   * If it doesn't exist, we'll need to get labels from incidents or projects.
-   * For now, we'll return mock data based on the project.
+   * 
+   * IMPORTANT: This method currently returns mock data.
+   * When the API endpoint is available, uncomment the HTTP call below
+   * and remove the mock data implementation.
+   * 
+   * Expected API endpoint: GET /api/Projects/{projectId}/labels
    */
   getByProject(projectId: string): Observable<Label[]> {
     // TODO: Replace with actual API call when endpoint is available
+    // Uncomment the line below and remove the mock data when API is ready:
     // return this.http.get<Label[]>(`${this.apiUrl}/Projects/${projectId}/labels`);
     
-    // Mock data for now - in production this should call the API
+    // TEMPORARY: Using mock data until API endpoint is available
+    // This should be removed in production
     return of(this.getMockLabels(projectId));
   }
 
