@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { SidenavComponent } from '../../components/sidenav/sidenav.component';
+import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
@@ -12,6 +13,7 @@ import { ButtonModule } from 'primeng/button';
     standalone: true,
     imports: [
         SidenavComponent,
+        BreadcrumbComponent,
         RouterModule,
         ToastModule,
         ButtonModule,

@@ -70,32 +70,37 @@ a {
   z-index: 1100;
   box-shadow: 2px 0 8px rgba(0,0,0,0.06);
   display: flex;
-  align-items: flex-start;
-  padding-top: 12px;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 16px;
 }
 .collapsed-bar .collapsed-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
   align-items: center;
+  padding: 0 12px;
 }
 .collapsed-bar .collapsed-item {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 48px;
   height: 48px;
   border-radius: 8px;
   color: #4b5563;
+  transition: all 0.2s ease;
 }
 .collapsed-bar .collapsed-item:hover {
   background: #eef2ff;
   color: var(--primary-color);
+  transform: scale(1.05);
 }
 
-/* keep collapsed bar above content but below global header if present */
-.collapsed-bar { top: 8px; }
+.collapsed-bar .collapsed-item i {
+  font-size: 1.25rem;
+}
 
 /* Profile section styling */
 .profile-section {
@@ -111,6 +116,16 @@ a {
   justify-content: center;
   align-items: center;
   border-top: 1px solid #e5e7eb;
-  padding-top: 12px;
+  padding: 12px;
   margin-top: auto;
+  width: 100%;
+}
+
+.collapsed-profile p-avatar {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.collapsed-profile p-avatar:hover {
+  transform: scale(1.1);
 }
