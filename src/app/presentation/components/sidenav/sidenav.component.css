@@ -102,6 +102,10 @@ a {
   margin-top: auto;
 }
 
+.profile-section .cursor-pointer:hover {
+  background-color: var(--surface-100);
+}
+
 .collapsed-profile {
   display: flex;
   justify-content: center;

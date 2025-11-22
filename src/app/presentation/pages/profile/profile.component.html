@@ -1,0 +1,82 @@
+<div class="profile-container p-4">
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="flex align-items-center justify-content-between p-3">
+        <h2 class="m-0">Mi Perfil</h2>
+        <p-button 
+          label="Volver" 
+          icon="pi pi-arrow-left" 
+          [outlined]="true"
+          (onClick)="goBack()">
+        </p-button>
+      </div>
+    </ng-template>
+
+    <div *ngIf="loading" class="flex justify-content-center align-items-center" style="min-height: 300px;">
+      <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
+    </div>
+
+    <div *ngIf="!loading && user" class="profile-content">
+      <div class="field">
+        <label for="name" class="font-semibold">Nombre</label>
+        <input 
+          id="name" 
+          type="text" 
+          pInputText 
+          [(ngModel)]="user.name" 
+          [disabled]="true"
+          class="w-full" />
+      </div>
+
+      <div class="field">
+        <label for="email" class="font-semibold">Correo Electrónico</label>
+        <input 
+          id="email" 
+          type="email" 
+          pInputText 
+          [(ngModel)]="user.email" 
+          [disabled]="true"
+          class="w-full" />
+      </div>
+
+      <div class="field">
+        <label for="username" class="font-semibold">Usuario</label>
+        <input 
+          id="username" 
+          type="text" 
+          pInputText 
+          [(ngModel)]="user.username" 
+          [disabled]="true"
+          class="w-full" />
+      </div>
+
+      <div class="field">
+        <label class="font-semibold">Roles</label>
+        <div class="mt-2">
+          <span *ngFor="let userRole of user.userRoles" class="inline-flex align-items-center bg-primary-100 text-primary-700 border-round px-3 py-1 mr-2">
+            {{ userRole.role.name }}
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="font-semibold">Estado</label>
+        <div class="mt-2">
+          <span [class]="user.isActive ? 'text-green-600' : 'text-red-600'">
+            <i [class]="user.isActive ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
+            {{ user.isActive ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="font-semibold">Fecha de Creación</label>
+        <p class="mt-1 text-600">{{ user.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && !user" class="text-center p-5">
+      <p class="text-600">No se pudo cargar la información del perfil.</p>
+    </div>
+  </p-card>
+</div>

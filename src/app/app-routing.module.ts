@@ -36,6 +36,7 @@ export const routes: Routes = [
       { path: 'incidents/:id', loadComponent: () => import('./presentation/pages/incidents/incident-detail.component').then(m => m.IncidentDetailComponent) },
       { path: 'audit', loadComponent: () => import('./presentation/pages/audit/audit-list.component').then(m => m.AuditListComponent) },
       { path: 'admin', loadComponent: () => import('./presentation/pages/admin/admin.component').then(m => m.AdminComponent) },
+      { path: 'profile', loadComponent: () => import('./presentation/pages/profile/profile.component').then(m => m.ProfileComponent) },
       
       // Redirect empty path to dashboard
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
