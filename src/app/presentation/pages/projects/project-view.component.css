@@ -346,3 +346,48 @@
     font-size: 1.25rem;
   }
 }
+
+/* Label Color Preview */
+.label-color-preview {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 2px solid #e9ecef;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.label-color-preview:hover {
+  transform: scale(1.1);
+}
+
+/* Form Styling */
+::ng-deep .p-dialog .p-dialog-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1.5rem;
+}
+
+::ng-deep .p-dialog .p-dialog-content {
+  padding: 1.5rem;
+}
+
+::ng-deep .p-dialog .p-dialog-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+}
+
+::ng-deep .p-inputtext, ::ng-deep .p-inputtextarea {
+  border-radius: 6px;
+}
+
+::ng-deep .p-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Color Picker */
+::ng-deep .p-colorpicker-preview {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 6px;
+}
