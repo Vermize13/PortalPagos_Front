@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { ROUTE_LABELS } from './breadcrumb.constants';
+import { ROUTE_LABELS, HOME_ROUTE } from './breadcrumb.constants';
 
 interface Breadcrumb {
   label: string;
@@ -21,7 +21,9 @@ interface Breadcrumb {
 })
 export class BreadcrumbComponent implements OnInit, OnDestroy {
   breadcrumbs: Breadcrumb[] = [];
+  homeRoute = HOME_ROUTE;
   private routerSubscription?: Subscription;
+  private static readonly NUMERIC_REGEX = /^\d+$/;
 
   // Map of routes to Spanish labels
   private routeLabels = ROUTE_LABELS;
@@ -47,7 +49,9 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 
   private buildBreadcrumbs(): void {
     const breadcrumbs: Breadcrumb[] = [];
-    const urlSegments = this.router.url.split('/').filter(segment => segment);
+    // Use routerState snapshot to get clean URL segments
+    const url = this.router.routerState.snapshot.url;
+    const urlSegments = url.split('/').filter(segment => segment);
 
     // Build cumulative URL and breadcrumbs
     let cumulativeUrl = '';
@@ -77,10 +81,11 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
   }
 
   private capitalizeFirstLetter(str: string): string {
+    if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   private isNumeric(str: string): boolean {
-    return /^\d+$/.test(str);
+    return BreadcrumbComponent.NUMERIC_REGEX.test(str);
   }
 }

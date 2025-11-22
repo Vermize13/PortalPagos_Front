@@ -12,3 +12,8 @@ export const ROUTE_LABELS: { [key: string]: string } = {
   'admin': 'Administración del Sistema',
   'profile': 'Perfil'
 };
+
+/**
+ * Default home route for breadcrumb navigation
+ */
+export const HOME_ROUTE = '/inicio/dashboard';
