@@ -398,18 +398,12 @@ export class ProjectViewComponent implements OnInit {
         const memberUserIds = this.members.map(m => m.userId);
         this.allUsers = users.filter(u => !memberUserIds.includes(u.id) && u.isActive);
         
-        // Extract unique roles from all users
-        const rolesMap = new Map<string, Role>();
+        // Extract unique roles from all users using Set for efficiency
+        const uniqueRoles = new Map<string, Role>();
         users.forEach(user => {
-          if (user.roles) {
-            user.roles.forEach(role => {
-              if (!rolesMap.has(role.id)) {
-                rolesMap.set(role.id, role);
-              }
-            });
-          }
+          user.roles?.forEach(role => uniqueRoles.set(role.id, role));
         });
-        this.availableRoles = Array.from(rolesMap.values());
+        this.availableRoles = Array.from(uniqueRoles.values());
         
         this.loadingUsers = false;
       },
