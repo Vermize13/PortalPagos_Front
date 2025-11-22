@@ -17,6 +17,12 @@ import { IncidentWithDetails } from '../../../domain/models';
 import { ProjectMemberDetail } from '../../../domain/models';
 import { Router, ActivatedRoute } from '@angular/router';
 import { forkJoin, firstValueFrom } from 'rxjs';
+import { Project } from '../../../domain/models';
+
+interface UserProjectInfo {
+  project: Project;
+  role: string;
+}
 
 @Component({
   selector: 'app-profile',
@@ -50,7 +56,7 @@ export class ProfileComponent implements OnInit {
   
   assignedIncidents: IncidentWithDetails[] = [];
   reportedIncidents: IncidentWithDetails[] = [];
-  userProjects: { project: any, role: string }[] = [];
+  userProjects: UserProjectInfo[] = [];
   
   isViewingOtherUser = false;
   isAdmin = false;
@@ -134,6 +140,8 @@ export class ProfileComponent implements OnInit {
     this.loadingProjects = true;
     
     // Get all projects and filter by user membership
+    // TODO: This makes N+1 API calls. Consider adding a backend endpoint like
+    // GET /api/Users/{userId}/projects to fetch user's projects in a single call
     this.projectService.getAll().subscribe({
       next: async (projects) => {
         // For each project, check if user is a member
@@ -156,7 +164,7 @@ export class ProfileComponent implements OnInit {
 
         try {
           const results = await Promise.all(projectPromises);
-          this.userProjects = results.filter(r => r !== null) as { project: any, role: string }[];
+          this.userProjects = results.filter((r): r is UserProjectInfo => r !== null);
         } finally {
           this.loadingProjects = false;
         }
