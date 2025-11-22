@@ -1,11 +1,15 @@
 <div class="layout-container">    
     <app-sidenav [(ngModel)]="sidenavCollapsed"></app-sidenav> <!-- El componente de Sidebar -->
-    <div class="content-container">
-        <!-- Top bar with toggle -->
+    <div class="content-container" [class.sidebar-collapsed]="sidenavCollapsed">
+        <!-- Top bar with toggle and breadcrumbs -->
         <header class="topbar px-3 py-2 flex align-items-center justify-content-between">
-            <div class="left-actions flex align-items-center gap-2">
-                <p-button type="button" (onClick)="toggleSidenav()" icon="pi pi-angle-double-right" rounded="true"
-            outlined="true" styleClass="h-2rem w-2rem"></p-button>
+            <div class="left-actions flex align-items-center gap-3">
+                <p-button type="button" (onClick)="toggleSidenav()" 
+                    [icon]="sidenavCollapsed ? 'pi pi-angle-double-right' : 'pi pi-angle-double-left'" 
+                    rounded="true"
+                    outlined="true" 
+                    styleClass="h-2rem w-2rem toggle-button"></p-button>
+                <app-breadcrumb></app-breadcrumb>
             </div>
             <div class="right-actions">
                 <!-- keep toast placeholder at top -->
