@@ -54,6 +54,8 @@ export interface Label {
   colorHex?: string;
 }
 
+// LabelInfo is a simplified DTO returned by the API in IncidentResponse
+// It contains only the essential label information without project references
 export interface LabelInfo {
   id: string; // Guid
   name: string;

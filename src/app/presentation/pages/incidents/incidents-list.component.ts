@@ -27,9 +27,9 @@ import { UserService } from '../../../data/services/user.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping } from '../../../domain/models/enum-mappings';
 
-// Helper interface for displaying incidents with additional info
+// Helper interface for displaying incidents with additional computed labels
 interface IncidentDisplay extends IncidentWithDetails {
-  // Display-friendly names and labels (keep original enum-typed properties like status/priority/severity)
+  // Additional computed display properties for UI rendering
   projectName?: string;
   sprintName?: string;
   statusLabel?: string;

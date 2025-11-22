@@ -162,6 +162,7 @@
                 <i class="pi pi-user-plus mr-1"></i>
                 Reportado por
               </span>
+              <!-- Fallback chain: API DTO field (reporterName) or expanded reference (reporter.name) -->
               <div class="detail-value font-semibold">{{ incident.reporterName || incident.reporter?.name || 'N/A' }}</div>
             </div>
 
@@ -170,6 +171,7 @@
                 <i class="pi pi-user mr-1"></i>
                 Asignado a
               </span>
+              <!-- Fallback chain: API DTO field (assigneeName) or expanded reference (assignee.name) -->
               <div class="detail-value">{{ incident.assigneeName || incident.assignee?.name || 'Sin asignar' }}</div>
             </div>
 
