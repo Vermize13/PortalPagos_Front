@@ -330,7 +330,7 @@ export class IncidentDetailComponent implements OnInit {
   onManageLabels() {
     if (!this.incident) return;
     
-    this.selectedLabelIds = this.incident.labels?.map(l => l.id) || [];
+    this.selectedLabelIds = Array.isArray(this.incident.labels) ? this.incident.labels.map(l => l.id) : [];
     this.loadingLabels = true;
     
     this.labelService.getByProject(this.incident.projectId).subscribe({
@@ -350,7 +350,7 @@ export class IncidentDetailComponent implements OnInit {
   onSaveLabels() {
     if (!this.incident) return;
 
-    const currentLabelIds = this.incident.labels?.map(l => l.id) || [];
+    const currentLabelIds = Array.isArray(this.incident.labels) ? this.incident.labels.map(l => l.id) : [];
     const labelsToAdd = this.selectedLabelIds.filter(id => !currentLabelIds.includes(id));
     const labelsToRemove = currentLabelIds.filter(id => !this.selectedLabelIds.includes(id));
 

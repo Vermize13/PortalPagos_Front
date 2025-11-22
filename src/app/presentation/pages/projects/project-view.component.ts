@@ -102,12 +102,12 @@ export class ProjectViewComponent implements OnInit {
     this.projectService.getById(this.projectId).subscribe({
       next: (project) => {
         this.project = project;
-        this.members = project.memberDetails?.map(m => ({
+        this.members = Array.isArray(project.memberDetails) ? project.memberDetails.map(m => ({
           ...m,
           userName: m.userName || m.user?.name || 'Unknown',
           userEmail: m.userEmail || m.user?.email || '',
           roleName: m.roleName || m.role?.name || 'Member'
-        })) || [];
+        })) : [];
         this.loading = false;
       },
       error: (error) => {
