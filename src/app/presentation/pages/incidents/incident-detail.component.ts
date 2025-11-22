@@ -327,6 +327,88 @@ export class IncidentDetailComponent implements OnInit {
     return authorName.substring(0, 2).toUpperCase();
   }
 
+  // Field name translations for history
+  getFieldNameInSpanish(fieldName: string): string {
+    const fieldMappings: { [key: string]: string } = {
+      'Status': 'Estado',
+      'Priority': 'Prioridad',
+      'Severity': 'Severidad',
+      'Title': 'Título',
+      'Description': 'Descripción',
+      'DueDate': 'Fecha límite',
+      'AssigneeId': 'Asignado a',
+      'SprintId': 'Sprint',
+      'StoryPoints': 'Puntos de historia',
+      'ClosedAt': 'Fecha de cierre'
+    };
+    return fieldMappings[fieldName] || fieldName;
+  }
+
+  // Transform history values to Spanish
+  getHistoryValueInSpanish(fieldName: string, value: string | null | undefined): string {
+    if (!value || value === '-') return '-';
+
+    // Handle Status enum
+    if (fieldName === 'Status') {
+      const statusValue = parseInt(value, 10);
+      if (!isNaN(statusValue)) {
+        const statusMapping = IncidentStatusMapping.find(s => s.value === statusValue);
+        return statusMapping?.label || value;
+      }
+      // Handle string values like "Open", "InProgress"
+      const statusStringMappings: { [key: string]: string } = {
+        'Open': 'Abierto',
+        'InProgress': 'En Progreso',
+        'Resolved': 'Resuelto',
+        'Closed': 'Cerrado',
+        'Rejected': 'Rechazado',
+        'Duplicate': 'Duplicado'
+      };
+      return statusStringMappings[value] || value;
+    }
+
+    // Handle Priority enum
+    if (fieldName === 'Priority') {
+      const priorityValue = parseInt(value, 10);
+      if (!isNaN(priorityValue)) {
+        const priorityMapping = IncidentPriorityMapping.find(p => p.value === priorityValue);
+        return priorityMapping?.label || value;
+      }
+      // Handle string values
+      const priorityStringMappings: { [key: string]: string } = {
+        'NoHacer': 'No necesario',
+        'PodríaHacer': 'Podría tener',
+        'DeberíaHacer': 'Debería tener',
+        'DebeHacer': 'Debe tener'
+      };
+      return priorityStringMappings[value] || value;
+    }
+
+    // Handle Severity enum
+    if (fieldName === 'Severity') {
+      const severityValue = parseInt(value, 10);
+      if (!isNaN(severityValue)) {
+        const severityMapping = IncidentSeverityMapping.find(s => s.value === severityValue);
+        return severityMapping?.label || value;
+      }
+      // Handle string values
+      const severityStringMappings: { [key: string]: string } = {
+        'Low': 'Baja',
+        'Medium': 'Media',
+        'High': 'Alta',
+        'Critical': 'Crítica'
+      };
+      return severityStringMappings[value] || value;
+    }
+
+    return value;
+  }
+
+  // Get the user name from history change
+  getHistoryUserName(change: IncidentHistory): string {
+    return change.changedByUser?.name || 'Usuario';
+  }
+
   onManageLabels() {
     if (!this.incident) return;
     

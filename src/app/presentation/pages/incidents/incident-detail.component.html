@@ -157,10 +157,10 @@
                   </ng-template>
                   <ng-template pTemplate="body" let-change>
                     <tr>
-                      <td>{{ change.fieldName }}</td>
-                      <td>{{ change.oldValue || '-' }}</td>
-                      <td>{{ change.newValue || '-' }}</td>
-                      <td>{{ change.changedByUser?.name || 'Usuario' }}</td>
+                      <td>{{ getFieldNameInSpanish(change.fieldName) }}</td>
+                      <td>{{ getHistoryValueInSpanish(change.fieldName, change.oldValue) }}</td>
+                      <td>{{ getHistoryValueInSpanish(change.fieldName, change.newValue) }}</td>
+                      <td>{{ getHistoryUserName(change) }}</td>
                       <td>{{ change.changedAt | date:'short' }}</td>
                     </tr>
                   </ng-template>
