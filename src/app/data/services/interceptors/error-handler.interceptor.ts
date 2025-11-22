@@ -4,6 +4,9 @@ import { Router } from "@angular/router";
 import { catchError, throwError } from "rxjs";
 import { UserStateService } from "../../states/userState.service";
 
+// Flag to prevent multiple simultaneous logout operations
+let isLoggingOut = false;
+
 export const ErrorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const userStateService = inject(UserStateService);
@@ -14,11 +17,19 @@ export const ErrorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
       
       // Handle 401 Unauthorized - logout and redirect to login
       if (error.status === 401) {
-        // Clear user session
-        userStateService.clearUser();
-        
-        // Redirect to login page
-        router.navigate(['/login']);
+        // Prevent multiple simultaneous logout operations
+        if (!isLoggingOut) {
+          isLoggingOut = true;
+          
+          // Clear user session
+          userStateService.clearUser();
+          
+          // Redirect to login page
+          router.navigate(['/login']).then(() => {
+            // Reset flag after navigation completes
+            isLoggingOut = false;
+          });
+        }
         
         errorMessage = 'Sesión expirada. Por favor, inicie sesión nuevamente.';
       } else if (error.error instanceof ErrorEvent) {
