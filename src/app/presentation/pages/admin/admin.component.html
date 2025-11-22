@@ -152,28 +152,28 @@
           <ng-template pTemplate="header">
             <tr>
               <th pTooltip="Identificador único de la copia de seguridad" tooltipPosition="top">
-                ID <i class="pi pi-info-circle text-sm"></i>
+                ID <i class="pi pi-info-circle text-sm" aria-label="Información sobre ID" role="img"></i>
               </th>
               <th pTooltip="Fecha y hora de inicio de la copia de seguridad" tooltipPosition="top">
-                Fecha/Hora <i class="pi pi-info-circle text-sm"></i>
+                Fecha/Hora <i class="pi pi-info-circle text-sm" aria-label="Información sobre Fecha/Hora" role="img"></i>
               </th>
               <th pTooltip="Usuario que creó la copia de seguridad" tooltipPosition="top">
-                Creado Por <i class="pi pi-info-circle text-sm"></i>
+                Creado Por <i class="pi pi-info-circle text-sm" aria-label="Información sobre Creado Por" role="img"></i>
               </th>
               <th pTooltip="Estado actual del proceso de backup (Completado, En Progreso, Fallido)" tooltipPosition="top">
-                Estado <i class="pi pi-info-circle text-sm"></i>
+                Estado <i class="pi pi-info-circle text-sm" aria-label="Información sobre Estado" role="img"></i>
               </th>
               <th pTooltip="Tamaño del archivo de la copia de seguridad" tooltipPosition="top">
-                Tamaño <i class="pi pi-info-circle text-sm"></i>
+                Tamaño <i class="pi pi-info-circle text-sm" aria-label="Información sobre Tamaño" role="img"></i>
               </th>
               <th pTooltip="Tiempo que tardó en completarse la copia de seguridad" tooltipPosition="top">
-                Duración <i class="pi pi-info-circle text-sm"></i>
+                Duración <i class="pi pi-info-circle text-sm" aria-label="Información sobre Duración" role="img"></i>
               </th>
               <th pTooltip="Notas o comentarios sobre la copia de seguridad" tooltipPosition="top">
-                Notas <i class="pi pi-info-circle text-sm"></i>
+                Notas <i class="pi pi-info-circle text-sm" aria-label="Información sobre Notas" role="img"></i>
               </th>
               <th pTooltip="Acciones disponibles para esta copia de seguridad" tooltipPosition="top">
-                Acciones <i class="pi pi-info-circle text-sm"></i>
+                Acciones <i class="pi pi-info-circle text-sm" aria-label="Información sobre Acciones" role="img"></i>
               </th>
             </tr>
           </ng-template>
@@ -238,7 +238,9 @@
                   Nombre del Sistema 
                   <i class="pi pi-info-circle text-sm ml-1" 
                      pTooltip="Nombre que se mostrará en la interfaz del sistema para identificar la aplicación"
-                     tooltipPosition="right"></i>
+                     tooltipPosition="right"
+                     aria-label="Información sobre Nombre del Sistema"
+                     role="img"></i>
                 </label>
                 <input 
                   id="systemName"
@@ -262,7 +264,9 @@
                   Tamaño Máximo de Carga
                   <i class="pi pi-info-circle text-sm ml-1" 
                      pTooltip="Define el tamaño máximo de archivos que los usuarios pueden subir. Archivos más grandes serán rechazados."
-                     tooltipPosition="right"></i>
+                     tooltipPosition="right"
+                     aria-label="Información sobre Tamaño Máximo de Carga"
+                     role="img"></i>
                 </label>
                 <p-dropdown 
                   id="maxUploadSize"
@@ -289,7 +293,9 @@
                   Tiempo de Sesión
                   <i class="pi pi-info-circle text-sm ml-1" 
                      pTooltip="Tiempo de inactividad permitido antes de que el sistema cierre automáticamente la sesión del usuario por seguridad"
-                     tooltipPosition="right"></i>
+                     tooltipPosition="right"
+                     aria-label="Información sobre Tiempo de Sesión"
+                     role="img"></i>
                 </label>
                 <p-dropdown 
                   id="sessionTimeout"
@@ -316,7 +322,9 @@
                   Retención de Backups
                   <i class="pi pi-info-circle text-sm ml-1" 
                      pTooltip="Número de días que se conservarán las copias de seguridad antes de ser eliminadas automáticamente del sistema"
-                     tooltipPosition="right"></i>
+                     tooltipPosition="right"
+                     aria-label="Información sobre Retención de Backups"
+                     role="img"></i>
                 </label>
                 <p-dropdown 
                   id="backupRetention"
@@ -349,7 +357,9 @@
                   Habilitar notificaciones por correo electrónico
                   <i class="pi pi-info-circle text-sm ml-1" 
                      pTooltip="Permite enviar notificaciones automáticas por email a los usuarios sobre eventos importantes del sistema"
-                     tooltipPosition="right"></i>
+                     tooltipPosition="right"
+                     aria-label="Información sobre notificaciones por correo electrónico"
+                     role="img"></i>
                 </label>
               </div>
               
@@ -364,7 +374,9 @@
                   Modo de mantenimiento
                   <i class="pi pi-info-circle text-sm ml-1" 
                      pTooltip="Activa el modo de mantenimiento. Solo administradores podrán acceder mientras se realizan actualizaciones o mantenimiento"
-                     tooltipPosition="right"></i>
+                     tooltipPosition="right"
+                     aria-label="Información sobre modo de mantenimiento"
+                     role="img"></i>
                 </label>
               </div>
               <small class="text-600">Cuando está activo, solo los administradores pueden acceder al sistema</small>
@@ -411,7 +423,9 @@
       Notas
       <i class="pi pi-info-circle text-sm ml-1" 
          pTooltip="Ingrese una descripción del motivo de esta copia de seguridad para futuras referencias"
-         tooltipPosition="right"></i>
+         tooltipPosition="right"
+         aria-label="Información sobre Notas de Backup"
+         role="img"></i>
     </label>
     <textarea 
       id="backupNotes"
@@ -476,7 +490,9 @@
       Notas de Restauración
       <i class="pi pi-info-circle text-sm ml-1" 
          pTooltip="Ingrese el motivo por el cual se está restaurando esta copia de seguridad para mantener un registro"
-         tooltipPosition="right"></i>
+         tooltipPosition="right"
+         aria-label="Información sobre Notas de Restauración"
+         role="img"></i>
     </label>
     <textarea 
       id="restoreNotes"
