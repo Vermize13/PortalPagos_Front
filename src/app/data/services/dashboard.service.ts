@@ -59,6 +59,10 @@ export interface IncidentEvolutionMetric {
 export class DashboardService {
   private readonly apiUrl = `${environment.url}api/Dashboard`;
 
+  // Status constants for better readability
+  private readonly OPEN_STATUSES = [IncidentStatus.Abierto, IncidentStatus.EnProgreso]; // 0, 1
+  private readonly CLOSED_STATUSES = [IncidentStatus.Resuelto, IncidentStatus.Cerrado]; // 2, 3
+
   constructor(private http: HttpClient) { }
 
   /**
@@ -121,8 +125,8 @@ export class DashboardService {
       return {
         sprintId,
         sprintName: sprintIncidents[0]?.sprint?.name || `Sprint ${sprintId}`,
-        openCount: sprintIncidents.filter(i => i.status === 0 || i.status === 1).length, // Abierto=0, EnProgreso=1
-        closedCount: sprintIncidents.filter(i => i.status === 3 || i.status === 2).length, // Cerrado=3, Resuelto=2
+        openCount: sprintIncidents.filter(i => this.OPEN_STATUSES.includes(i.status)).length,
+        closedCount: sprintIncidents.filter(i => this.CLOSED_STATUSES.includes(i.status)).length,
         totalCount: sprintIncidents.length
       };
     });
@@ -136,9 +140,9 @@ export class DashboardService {
 
     return {
       totalIncidents: total,
-      openIncidents: incidents.filter(i => i.status === 0).length, // Abierto=0
-      closedIncidents: incidents.filter(i => i.status === 3 || i.status === 2).length, // Cerrado=3, Resuelto=2
-      inProgressIncidents: incidents.filter(i => i.status === 1).length, // EnProgreso=1
+      openIncidents: incidents.filter(i => i.status === IncidentStatus.Abierto).length,
+      closedIncidents: incidents.filter(i => this.CLOSED_STATUSES.includes(i.status)).length,
+      inProgressIncidents: incidents.filter(i => i.status === IncidentStatus.EnProgreso).length,
       activeProjects: 0, // Will be populated from projects API
       activeUsers: 0, // Will be populated from users API
       incidentsByStatus,
