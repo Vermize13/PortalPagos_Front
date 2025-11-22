@@ -78,3 +78,15 @@ export interface IncidentWithDetails extends Incident {
   commentCount?: number;
   attachmentCount?: number;
 }
+
+export interface IncidentHistory {
+  id: string; // Guid
+  incidentId: string; // Guid
+  incident?: any; // Incident reference
+  changedBy: string; // Guid
+  changedByUser?: any; // User reference
+  fieldName: string;
+  oldValue?: string;
+  newValue?: string;
+  changedAt: Date;
+}

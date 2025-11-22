@@ -7,7 +7,8 @@ import {
   IncidentWithDetails, 
   IncidentStatus, 
   IncidentPriority, 
-  IncidentSeverity 
+  IncidentSeverity,
+  IncidentHistory
 } from '../../domain/models';
 
 export interface IncidentFilter {
@@ -90,8 +91,8 @@ export class IncidentService {
     return this.http.post<Incident>(`${this.apiUrl}/${id}/close`, {});
   }
 
-  getHistory(id: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/${id}/history`);
+  getHistory(id: string): Observable<IncidentHistory[]> {
+    return this.http.get<IncidentHistory[]>(`${this.apiUrl}/${id}/history`);
   }
 
   getComments(id: string): Observable<any[]> {

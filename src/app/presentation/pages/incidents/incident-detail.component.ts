@@ -8,14 +8,21 @@ import { TagModule } from 'primeng/tag';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { DividerModule } from 'primeng/divider';
 import { AvatarModule } from 'primeng/avatar';
+import { TabViewModule } from 'primeng/tabview';
+import { TableModule } from 'primeng/table';
+import { FileUploadModule } from 'primeng/fileupload';
+import { TooltipModule } from 'primeng/tooltip';
 import { 
   Incident, 
   IncidentStatus, 
   IncidentPriority, 
   IncidentSeverity,
-  IncidentComment
+  IncidentComment,
+  IncidentHistory
 } from '../../../domain/models';
 import { IncidentService, AddCommentRequest } from '../../../data/services/incident.service';
+import { AttachmentService } from '../../../data/services/attachment.service';
+import { AttachmentWithUser } from '../../../domain/models/attachment.model';
 import { ToastService } from '../../../data/services/toast.service';
 import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping } from '../../../domain/models/enum-mappings';
 
@@ -30,7 +37,11 @@ import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping
     TagModule,
     InputTextareaModule,
     DividerModule,
-    AvatarModule
+    AvatarModule,
+    TabViewModule,
+    TableModule,
+    FileUploadModule,
+    TooltipModule
   ],
   templateUrl: './incident-detail.component.html',
   styleUrls: ['./incident-detail.component.css']
@@ -38,15 +49,21 @@ import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping
 export class IncidentDetailComponent implements OnInit {
   incident: Incident | null = null;
   comments: IncidentComment[] = [];
+  history: IncidentHistory[] = [];
+  attachments: AttachmentWithUser[] = [];
   loading: boolean = false;
   loadingComments: boolean = false;
+  loadingHistory: boolean = false;
+  loadingAttachments: boolean = false;
   newCommentBody: string = '';
   submittingComment: boolean = false;
+  uploadingAttachment: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private incidentService: IncidentService,
+    private attachmentService: AttachmentService,
     private toastService: ToastService
   ) {}
 
@@ -55,6 +72,8 @@ export class IncidentDetailComponent implements OnInit {
     if (id) {
       this.loadIncident(id);
       this.loadComments(id);
+      this.loadHistory(id);
+      this.loadAttachments(id);
     }
   }
 
@@ -89,6 +108,36 @@ export class IncidentDetailComponent implements OnInit {
     });
   }
 
+  loadHistory(id: string) {
+    this.loadingHistory = true;
+    this.incidentService.getHistory(id).subscribe({
+      next: (history) => {
+        this.history = history;
+        this.loadingHistory = false;
+      },
+      error: (error) => {
+        console.error('Error loading history:', error);
+        this.toastService.showError('Error', 'No se pudo cargar el historial');
+        this.loadingHistory = false;
+      }
+    });
+  }
+
+  loadAttachments(id: string) {
+    this.loadingAttachments = true;
+    this.attachmentService.getByIncident(id).subscribe({
+      next: (attachments) => {
+        this.attachments = attachments;
+        this.loadingAttachments = false;
+      },
+      error: (error) => {
+        console.error('Error loading attachments:', error);
+        this.toastService.showError('Error', 'No se pudieron cargar los adjuntos');
+        this.loadingAttachments = false;
+      }
+    });
+  }
+
   onAddComment() {
     if (!this.newCommentBody.trim() || !this.incident) {
       return;
@@ -112,6 +161,83 @@ export class IncidentDetailComponent implements OnInit {
         this.submittingComment = false;
       }
     });
+  }
+
+  onFileSelect(event: any) {
+    if (!this.incident) return;
+
+    const file = event.files[0];
+    if (!file) return;
+
+    const validation = this.attachmentService.validateFile(file);
+    if (!validation.valid) {
+      this.toastService.showError('Error', validation.error || 'Archivo no válido');
+      event.target.clear();
+      return;
+    }
+
+    this.uploadingAttachment = true;
+    this.attachmentService.upload(this.incident.id, file).subscribe({
+      next: () => {
+        this.toastService.showSuccess('Éxito', 'Archivo subido correctamente');
+        this.loadAttachments(this.incident!.id);
+        this.uploadingAttachment = false;
+        event.target.clear();
+      },
+      error: (error) => {
+        console.error('Error uploading file:', error);
+        this.toastService.showError('Error', 'No se pudo subir el archivo');
+        this.uploadingAttachment = false;
+        event.target.clear();
+      }
+    });
+  }
+
+  onDownloadAttachment(attachment: AttachmentWithUser) {
+    if (!this.incident) return;
+
+    this.attachmentService.download(this.incident.id, attachment.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = attachment.fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.toastService.showSuccess('Éxito', 'Archivo descargado');
+      },
+      error: (error) => {
+        console.error('Error downloading file:', error);
+        this.toastService.showError('Error', 'No se pudo descargar el archivo');
+      }
+    });
+  }
+
+  onDeleteAttachment(attachment: AttachmentWithUser) {
+    if (!this.incident) return;
+
+    if (!confirm(`¿Está seguro de eliminar el archivo "${attachment.fileName}"?`)) {
+      return;
+    }
+
+    this.attachmentService.delete(this.incident.id, attachment.id).subscribe({
+      next: () => {
+        this.toastService.showSuccess('Éxito', 'Archivo eliminado correctamente');
+        this.loadAttachments(this.incident!.id);
+      },
+      error: (error) => {
+        console.error('Error deleting file:', error);
+        this.toastService.showError('Error', 'No se pudo eliminar el archivo');
+      }
+    });
+  }
+
+  formatFileSize(bytes: number): string {
+    return this.attachmentService.formatFileSize(bytes);
+  }
+
+  getMaxFileSizeMB(): number {
+    return this.attachmentService.getMaxFileSizeMB();
   }
 
   onBack() {
