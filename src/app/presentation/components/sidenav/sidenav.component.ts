@@ -10,6 +10,7 @@ import { StyleClassModule } from 'primeng/styleclass';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { UserStateService } from '../../../data/states/userState.service';
+
 @Component({
   selector: 'app-sidenav',
   standalone: true,

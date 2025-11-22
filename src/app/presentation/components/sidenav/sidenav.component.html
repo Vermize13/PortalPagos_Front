@@ -11,7 +11,7 @@
             outlined="true" styleClass="h-2rem w-2rem"></p-button>
         </span>
       </div>
-      <div class="overflow-y-auto flex-1">
+      <div class="overflow-y-auto">
         <ul class="list-none p-3 m-0">
           <li>
             <a pRipple [routerLink]="['dashboard']" routerLinkActive="active-menu-item"
@@ -83,7 +83,6 @@
           </li>
         </ul>
       </div>
-      
       <!-- Profile section at bottom -->
       <div class="profile-section border-top-1 border-200 p-3 flex-shrink-0" *ngIf="currentUser as user">
         <div class="flex align-items-center gap-3 cursor-pointer p-2 border-round hover:surface-100 transition-duration-150" 
