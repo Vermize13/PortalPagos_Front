@@ -96,3 +96,17 @@ a {
 
 /* keep collapsed bar above content but below global header if present */
 .collapsed-bar { top: 8px; }
+
+/* Profile section styling */
+.profile-section {
+  margin-top: auto;
+}
+
+.collapsed-profile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
+  margin-top: auto;
+}
