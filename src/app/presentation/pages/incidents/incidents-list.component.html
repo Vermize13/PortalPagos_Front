@@ -75,8 +75,22 @@
               </div>
               <h4 class="card-title">{{ incident.title }}</h4>
               <p class="card-description">{{ incident.description | slice:0:80 }}{{ incident.description && incident.description.length > 80 ? '...' : '' }}</p>
+              
+              <!-- Labels Display -->
+              <div class="card-labels mb-2" *ngIf="incident.labels && incident.labels.length > 0">
+                <p-tag 
+                  *ngFor="let label of incident.labels" 
+                  [value]="label.name"
+                  [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
+                  styleClass="text-xs mr-1"></p-tag>
+              </div>
+              
               <div class="card-footer">
                 <div class="card-meta">
+                  <div class="reporter" *ngIf="incident.reporterName">
+                    <i class="pi pi-user-plus"></i>
+                    <span>{{ incident.reporterName }}</span>
+                  </div>
                   <div class="assignee" *ngIf="incident.assigneeName">
                     <i class="pi pi-user"></i>
                     <span>{{ incident.assigneeName }}</span>
@@ -128,9 +142,11 @@
         <tr>
           <th>ID</th>
           <th>Título</th>
+          <th>Etiquetas</th>
           <th>Proyecto</th>
           <th>Estado</th>
           <th>Prioridad</th>
+          <th>Reportado por</th>
           <th>Asignado a</th>
           <th>Creado</th>
           <th>Acciones</th>
@@ -144,13 +160,24 @@
             <div class="font-semibold">{{ incident.title }}</div>
             <div class="text-sm text-gray-500">{{ incident.description | slice:0:50 }}...</div>
           </td>
+          <td>
+            <div class="flex flex-wrap gap-1">
+              <p-tag 
+                *ngFor="let label of incident.labels" 
+                [value]="label.name"
+                [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
+                styleClass="text-xs"></p-tag>
+              <span *ngIf="!incident.labels || incident.labels.length === 0" class="text-sm text-gray-400">-</span>
+            </div>
+          </td>
           <td>{{ incident.projectName }}</td>
           <td>
-            <p-tag [value]="incident.status" [severity]="getStatusSeverity(incident.status)"></p-tag>
+            <p-tag [value]="incident.statusLabel" [severity]="getStatusSeverity(incident.status)"></p-tag>
           </td>
           <td>
-            <p-tag [value]="incident.priority" [severity]="getPrioritySeverity(incident.priority)"></p-tag>
+            <p-tag [value]="incident.priorityLabel" [severity]="getPrioritySeverity(incident.priority)"></p-tag>
           </td>
+          <td>{{ incident.reporterName || 'N/A' }}</td>
           <td>{{ incident.assigneeName || 'Sin asignar' }}</td>
           <td>{{ incident.createdAt | date:'short' }}</td>
           <td>
@@ -178,7 +205,7 @@
       
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="8" class="text-center">No se encontraron incidencias.</td>
+          <td colspan="10" class="text-center">No se encontraron incidencias.</td>
         </tr>
       </ng-template>
     </p-table>
