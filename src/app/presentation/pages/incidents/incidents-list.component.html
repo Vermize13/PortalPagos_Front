@@ -388,14 +388,21 @@
               id="assignee"
               name="assignee"
               #assigneeField="ngModel"
-              [options]="users"
+              [options]="projectMembers"
               [(ngModel)]="incidentForm.assigneeId"
-              placeholder="Seleccione usuario"
+              placeholder="Seleccione un miembro del proyecto"
               [showClear]="true"
+              [disabled]="!incidentForm.projectId || projectMembers.length === 0"
               appendTo="body"
               optionLabel="label"
               optionValue="value">
             </p-dropdown>
+            <small class="text-gray-500" *ngIf="incidentForm.projectId && projectMembers.length === 0">
+              No hay miembros en este proyecto
+            </small>
+            <small class="text-gray-500" *ngIf="!incidentForm.projectId">
+              Primero seleccione un proyecto
+            </small>
           </div>
         </div>
 

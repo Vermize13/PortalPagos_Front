@@ -9,14 +9,17 @@ export class UserStateService {
   readonly currentUser = computed(() => this.user());
 
   setUser(token: string) {
-    localStorage.setItem('token', token);
+    sessionStorage.setItem('token', token);
     const decodedToken:any = jwtDecode(token);
-    this.user.set({
+    const userData: User = {
       token: token,
       nameid: 20,//Number(decodedToken.nameid),
       role: decodedToken.role,
       unique_name: decodedToken.unique_name
-    });
+    };
+    this.user.set(userData);
+    // Store the complete user data in sessionStorage
+    sessionStorage.setItem('user', JSON.stringify(userData));
   }
 
   getUser() {
@@ -26,19 +29,35 @@ export class UserStateService {
 
   clearUser() {
     this.user.set(null);
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
   }
 
   private getUserFromLocalStorage(): User | null {
-    const token = localStorage.getItem('token');
+    // First try to get the user data from sessionStorage
+    const userJson = sessionStorage.getItem('user');
+    if (userJson) {
+      try {
+        return JSON.parse(userJson) as User;
+      } catch (e) {
+        console.error('Error parsing user data from sessionStorage', e);
+      }
+    }
+    
+    // Fallback: reconstruct from token if user data is not available
+    const token = sessionStorage.getItem('token');
     if (token) {
-      const decodedToken: any = jwtDecode(token);
-      return {
-        token: token,
-        nameid: 20, // Number(decodedToken.nameid),
-        role: decodedToken.role,
-        unique_name: decodedToken.unique_name
-      };
+      try {
+        const decodedToken: any = jwtDecode(token);
+        return {
+          token: token,
+          nameid: 20, // Number(decodedToken.nameid),
+          role: decodedToken.role,
+          unique_name: decodedToken.unique_name
+        };
+      } catch (e) {
+        console.error('Error decoding token', e);
+      }
     }
     return null;
   }

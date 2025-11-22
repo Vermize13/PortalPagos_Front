@@ -15,7 +15,8 @@ export interface User {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-  userRoles: UserRole[];
+  userRoles?: UserRole[];
+  roles?: Role[]; // Direct roles array as returned by the API
 }
 
 export interface Role {

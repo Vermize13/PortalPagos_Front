@@ -14,10 +14,10 @@ import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ConfirmationService } from 'primeng/api';
-import { 
-  Incident, 
-  IncidentStatus, 
-  IncidentPriority, 
+import {
+  Incident,
+  IncidentStatus,
+  IncidentPriority,
   IncidentSeverity,
   IncidentWithDetails,
   LabelInfo,
@@ -59,12 +59,12 @@ interface IncidentFormData {
   selector: 'app-incidents-list',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     FormsModule,
-    CardModule, 
-    TableModule, 
-    ButtonModule, 
-    TagModule, 
+    CardModule,
+    TableModule,
+    ButtonModule,
+    TagModule,
     DropdownModule,
     DialogModule,
     InputTextModule,
@@ -80,16 +80,16 @@ interface IncidentFormData {
 export class IncidentsListComponent implements OnInit {
   incidents: IncidentDisplay[] = [];
   loading: boolean = false;
-  
+
   statuses = Object.values(IncidentStatus).filter(value => typeof value === 'number') as IncidentStatus[];
   priorities = IncidentPriorityMapping;
   severities = IncidentSeverityMapping;
   statusOptions = IncidentStatusMapping;
   selectedStatus: string = '';
-  
+
   // View mode
   viewMode: 'board' | 'table' = 'board';
-  
+
   // Dialog state
   displayDialog: boolean = false;
   isEditMode: boolean = false;
@@ -98,7 +98,7 @@ export class IncidentsListComponent implements OnInit {
   // Date range
   minDate: Date | null = new Date();
   maxDate: Date | null = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
-  
+
   // Form data
   incidentForm: IncidentFormData = {
     projectId: '',
@@ -108,10 +108,11 @@ export class IncidentsListComponent implements OnInit {
     priority: IncidentPriority.DeberíaHacer,
     labelIds: []
   };
-  
+
   // Dropdown options
   projects: any[] = [];
   users: any[] = [];
+  projectMembers: any[] = []; // Members of the selected project for assignee dropdown
   sprints: any[] = [];
   labels: Label[] = [];
   selectedProjectId: string = '';
@@ -126,13 +127,13 @@ export class IncidentsListComponent implements OnInit {
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadIncidents();
     this.loadDropdownData();
   }
-  
+
   loadDropdownData() {
     // Load projects for dropdown
     this.projectService.getAll().subscribe({
@@ -143,16 +144,9 @@ export class IncidentsListComponent implements OnInit {
         console.error('Error loading projects:', error);
       }
     });
-    
-    // Load users for dropdown
-    this.userService.getAllUsers().subscribe({
-      next: (users) => {
-        this.users = users.map(u => ({ label: u.name, value: u.id }));
-      },
-      error: (error) => {
-        console.error('Error loading users:', error);
-      }
-    });
+
+    // Note: Users are no longer loaded globally for assignee dropdown
+    // Instead, project members will be loaded when a project is selected
   }
 
   loadIncidents() {
@@ -314,13 +308,18 @@ export class IncidentsListComponent implements OnInit {
       dueDate: incident.dueDate ? new Date(incident.dueDate) : undefined,
       labelIds: Array.isArray(incident.labels) ? incident.labels.map(l => l.id) : []
     };
-    
+
     // Load sprints and labels for the project
     if (incident.projectId) {
       this.loadSprintsByProject(incident.projectId);
       this.loadLabelsByProject(incident.projectId);
     }
-    
+    // Load sprints and members for the project
+    if (incident.projectId) {
+      this.loadSprintsByProject(incident.projectId);
+      this.loadProjectMembers(incident.projectId, incident.assigneeId);
+    }
+
     this.displayDialog = true;
   }
 
@@ -351,6 +350,8 @@ export class IncidentsListComponent implements OnInit {
       labelIds: []
     };
     this.labels = [];
+    this.projectMembers = [];
+    this.sprints = [];
     this.displayDialog = true;
   }
 
@@ -366,7 +367,7 @@ export class IncidentsListComponent implements OnInit {
     }
     this.loadIncidents();
   }
-  
+
   toggleView(mode: 'board' | 'table') {
     this.viewMode = mode;
     // Clear status filter when switching to board view
@@ -375,11 +376,11 @@ export class IncidentsListComponent implements OnInit {
       this.loadIncidents();
     }
   }
-  
+
   getIncidentsByStatus(status: IncidentStatus): IncidentDisplay[] {
     return this.incidents.filter(inc => inc.status === status);
   }
-  
+
   getStatusLabel(status: IncidentStatus): string {
     const labels = [
       'Abierto',
@@ -392,15 +393,15 @@ export class IncidentsListComponent implements OnInit {
 
     return labels[status];
   }
-  
+
   onSaveIncident() {
     this.submitted = true;
-    
+
     if (!this.validateForm()) {
       this.toastService.showError('Error', 'Por favor complete todos los campos requeridos');
       return;
     }
-    
+
     if (this.isEditMode && this.incidentForm.id) {
       const updateRequest: UpdateIncidentRequest = {
         title: this.incidentForm.title,
@@ -412,13 +413,13 @@ export class IncidentsListComponent implements OnInit {
         assigneeId: this.incidentForm.assigneeId,
         dueDate: this.incidentForm.dueDate?.toISOString().split('T')[0]
       };
-      
+
       // Note: Labels are not updated through the edit modal in this flow.
       // Labels must be managed separately via the "Gestionar" button in the detail view,
       // which uses the addLabel/removeLabel API endpoints.
       // This is due to API design: the update endpoint doesn't support label updates,
       // and labels shown in the edit form are for reference only.
-      
+
       this.incidentService.update(this.incidentForm.id, updateRequest).subscribe({
         next: () => {
           this.toastService.showSuccess('Éxito', 'Incidencia actualizada correctamente');
@@ -442,7 +443,7 @@ export class IncidentsListComponent implements OnInit {
         dueDate: this.incidentForm.dueDate?.toISOString().split('T')[0],
         labelIds: this.incidentForm.labelIds
       };
-      
+
       this.incidentService.create(createRequest).subscribe({
         next: () => {
           this.toastService.showSuccess('Éxito', 'Incidencia creada correctamente');
@@ -456,12 +457,12 @@ export class IncidentsListComponent implements OnInit {
       });
     }
   }
-  
+
   onCancelDialog() {
     this.displayDialog = false;
     this.submitted = false;
   }
-  
+
   validateForm(): boolean {
     if (!this.incidentForm.title || !this.incidentForm.projectId) {
       return false;
@@ -476,11 +477,53 @@ export class IncidentsListComponent implements OnInit {
     this.selectedSprintId = '';
     this.sprints = [];
     this.labels = [];
-    
-    if (projectId) {
-      this.loadSprintsByProject(projectId);
-      this.loadLabelsByProject(projectId);
+
+    if (!projectId) {
+      return;
     }
+    
+    this.loadSprintsByProject(projectId);
+    this.loadLabelsByProject(projectId);
+    this.projectMembers = [];
+
+
+    // Clear assignee if current assignee is not a member of the new project
+    if (this.incidentForm.assigneeId) {
+      // We'll validate after loading members
+      const currentAssignee = this.incidentForm.assigneeId;
+      this.incidentForm.assigneeId = undefined;
+      this.loadProjectMembers(projectId, currentAssignee);
+    } else {
+      this.loadProjectMembers(projectId);
+    }
+
+    this.loadSprintsByProject(projectId);
+  }
+
+  loadProjectMembers(projectId: string, preserveAssigneeId?: string) {
+    this.projectService.getMembers(projectId).subscribe({
+      next: (members) => {
+        // Filter only active members
+        this.projectMembers = members
+          .filter(m => m.isActive)
+          .map(m => ({
+            label: m.user?.name || m.userName || 'Desconocido',
+            value: m.userId
+          }));
+
+        // If we're trying to preserve an assignee, check if they're a member
+        if (preserveAssigneeId) {
+          const isMember = this.projectMembers.some(m => m.value === preserveAssigneeId);
+          if (isMember) {
+            this.incidentForm.assigneeId = preserveAssigneeId;
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error loading project members:', error);
+        this.toastService.showError('Error', 'No se pudieron cargar los miembros del proyecto');
+      }
+    });
   }
 
   loadSprintsByProject(projectId: string) {
@@ -544,12 +587,12 @@ export class IncidentsListComponent implements OnInit {
 
   onDrop(event: DragEvent, targetStatus: IncidentStatus) {
     event.preventDefault();
-    
+
     if (this.draggedIncident && this.draggedIncident.status !== targetStatus) {
       const updateRequest: UpdateIncidentRequest = {
         status: targetStatus
       };
-      
+
       this.incidentService.update(this.draggedIncident.id, updateRequest).subscribe({
         next: () => {
           this.toastService.showSuccess('Éxito', 'Estado de incidencia actualizado');
@@ -561,7 +604,7 @@ export class IncidentsListComponent implements OnInit {
         }
       });
     }
-    
+
     this.draggedIncident = null;
   }
 }
