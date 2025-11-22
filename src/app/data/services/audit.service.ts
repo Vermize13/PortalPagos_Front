@@ -13,6 +13,15 @@ export interface AuditLogFilter {
   pageSize?: number;
 }
 
+export interface AuditFilterRequest {
+  userId?: string;
+  action?: AuditAction;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  pageSize?: number;
+}
+
 export interface AuditLogPagedResponse {
   logs: AuditLogWithUser[];
   totalCount: number;
@@ -33,7 +42,7 @@ export class AuditService {
    * API endpoint: POST /api/Audit/logs
    */
   getAll(filter?: AuditLogFilter): Observable<AuditLogPagedResponse> {
-    const requestBody: any = {};
+    const requestBody: AuditFilterRequest = {};
     
     if (filter) {
       if (filter.userId) requestBody.userId = filter.userId;
@@ -52,7 +61,7 @@ export class AuditService {
    * API endpoint: POST /api/Audit/export
    */
   export(filter?: AuditLogFilter): Observable<Blob> {
-    const requestBody: any = {};
+    const requestBody: AuditFilterRequest = {};
     
     if (filter) {
       if (filter.userId) requestBody.userId = filter.userId;

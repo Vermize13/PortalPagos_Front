@@ -173,9 +173,11 @@ export class AuditListComponent implements OnInit {
 
   // Pagination methods
   onPageChange(event: any) {
-    this.currentPage = event.page + 1;
-    this.pageSize = event.rows;
-    this.loadAuditLogs();
+    if (event.first !== undefined && event.rows) {
+      this.currentPage = Math.floor(event.first / event.rows) + 1;
+      this.pageSize = event.rows;
+      this.loadAuditLogs();
+    }
   }
 
   getActionSeverity(action: AuditAction): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
