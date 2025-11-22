@@ -97,7 +97,7 @@ export class UsersListComponent implements OnInit {
           username: user.username,
           email: user.email,
           name: user.name,
-          primaryRole: user.userRoles?.[0]?.role?.name || 'Sin rol',
+          primaryRole: user.roles?.[0]?.name || user.userRoles?.[0]?.role?.name || 'Sin rol',
           isActive: user.isActive,
           createdAt: user.createdAt
         }));
@@ -149,7 +149,8 @@ export class UsersListComponent implements OnInit {
   getRoleSeverity(role?: string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
     if (!role) return 'info';
     switch (role.toLowerCase()) {
-      case 'admin': return 'danger';
+      case 'admin': 
+      case 'administrator': return 'danger';
       case 'product owner': 
       case 'productowner': return 'warning';
       case 'developer': return 'info';
