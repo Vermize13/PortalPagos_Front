@@ -312,7 +312,7 @@ export class IncidentsListComponent implements OnInit {
       status: incident.status,
       assigneeId: incident.assigneeId,
       dueDate: incident.dueDate ? new Date(incident.dueDate) : undefined,
-      labelIds: incident.labels?.map(l => l.id) || []
+      labelIds: Array.isArray(incident.labels) ? incident.labels.map(l => l.id) : []
     };
     
     // Load sprints and labels for the project

@@ -229,6 +229,7 @@
           #projectField="ngModel"
           [options]="projects"
           [(ngModel)]="incidentForm.projectId"
+          name="projectId"
           (onChange)="onProjectChange($event.value)"
           placeholder="Seleccione un proyecto"
           [disabled]="isEditMode"
