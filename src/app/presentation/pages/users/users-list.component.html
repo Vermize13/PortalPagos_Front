@@ -41,6 +41,13 @@
           <td>{{ user.createdAt | date:'short' }}</td>
           <td>
             <p-button 
+              icon="pi pi-user" 
+              [rounded]="true" 
+              [text]="true" 
+              severity="info"
+              (onClick)="onViewProfile(user)"
+              pTooltip="Ver perfil"></p-button>
+            <p-button 
               icon="pi pi-pencil" 
               [rounded]="true" 
               [text]="true" 

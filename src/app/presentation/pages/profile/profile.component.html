@@ -2,7 +2,7 @@
   <p-card>
     <ng-template pTemplate="header">
       <div class="flex align-items-center justify-content-between p-3">
-        <h2 class="m-0">Mi Perfil</h2>
+        <h2 class="m-0">{{ isViewingOtherUser ? 'Perfil de Usuario' : 'Mi Perfil' }}</h2>
         <p-button 
           label="Volver" 
           icon="pi pi-arrow-left" 
@@ -16,94 +16,260 @@
       <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
     </div>
 
-    <div *ngIf="!loading && user" class="profile-content">
-      <div class="field">
-        <label for="name" class="font-semibold">Nombre</label>
-        <input 
-          id="name" 
-          type="text" 
-          pInputText 
-          [(ngModel)]="user.name" 
-          [disabled]="true"
-          class="w-full" />
-      </div>
+    <div *ngIf="!loading && user">
+      <!-- User Information Section -->
+      <div class="profile-content mb-4">
+        <h3 class="mb-3">Información del Usuario</h3>
+        <div class="grid">
+          <div class="col-12 md:col-6">
+            <div class="field">
+              <label for="name" class="font-semibold">Nombre</label>
+              <input 
+                id="name" 
+                type="text" 
+                pInputText 
+                [(ngModel)]="user.name" 
+                [disabled]="true"
+                class="w-full" />
+            </div>
+          </div>
 
-      <div class="field">
-        <label for="email" class="font-semibold">Correo Electrónico</label>
-        <input 
-          id="email" 
-          type="email" 
-          pInputText 
-          [(ngModel)]="user.email" 
-          [disabled]="true"
-          class="w-full" />
-      </div>
+          <div class="col-12 md:col-6">
+            <div class="field">
+              <label for="email" class="font-semibold">Correo Electrónico</label>
+              <input 
+                id="email" 
+                type="email" 
+                pInputText 
+                [(ngModel)]="user.email" 
+                [disabled]="true"
+                class="w-full" />
+            </div>
+          </div>
 
-      <div class="field">
-        <label for="username" class="font-semibold">Usuario</label>
-        <input 
-          id="username" 
-          type="text" 
-          pInputText 
-          [(ngModel)]="user.username" 
-          [disabled]="true"
-          class="w-full" />
-      </div>
+          <div class="col-12 md:col-6">
+            <div class="field">
+              <label for="username" class="font-semibold">Usuario</label>
+              <input 
+                id="username" 
+                type="text" 
+                pInputText 
+                [(ngModel)]="user.username" 
+                [disabled]="true"
+                class="w-full" />
+            </div>
+          </div>
 
-      <div class="field">
-        <label class="font-semibold">Roles</label>
-        <div class="mt-2">
-          <span *ngFor="let userRole of user.userRoles" class="inline-flex align-items-center bg-primary-100 text-primary-700 border-round px-3 py-1 mr-2">
-            {{ userRole.role.name }}
-          </span>
+          <div class="col-12 md:col-6">
+            <div class="field">
+              <label class="font-semibold">Roles</label>
+              <div class="mt-2">
+                <span *ngFor="let userRole of user.userRoles" class="inline-flex align-items-center bg-primary-100 text-primary-700 border-round px-3 py-1 mr-2">
+                  {{ userRole.role.name }}
+                </span>
+                <span *ngIf="!user.userRoles || user.userRoles.length === 0" class="text-500">Sin roles asignados</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-6">
+            <div class="field">
+              <label class="font-semibold">Estado</label>
+              <div class="mt-2">
+                <span [class]="user.isActive ? 'text-green-600' : 'text-red-600'">
+                  <i [class]="user.isActive ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
+                  {{ user.isActive ? 'Activo' : 'Inactivo' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-6">
+            <div class="field">
+              <label class="font-semibold">Fecha de Creación</label>
+              <p class="mt-1 text-600">{{ user.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="field">
-        <label class="font-semibold">Estado</label>
-        <div class="mt-2">
-          <span [class]="user.isActive ? 'text-green-600' : 'text-red-600'">
-            <i [class]="user.isActive ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
-            {{ user.isActive ? 'Activo' : 'Inactivo' }}
-          </span>
-        </div>
-      </div>
+      <!-- Incidents and Projects Tabs -->
+      <p-tabView *ngIf="isAdmin || !isViewingOtherUser">
+        <!-- Assigned Incidents Tab -->
+        <p-tabPanel header="Incidencias Asignadas">
+          <div *ngIf="loadingIncidents" class="flex justify-content-center align-items-center" style="min-height: 200px;">
+            <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+          </div>
 
-      <div class="field">
-        <label class="font-semibold">Fecha de Creación</label>
-        <p class="mt-1 text-600">{{ user.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
-      </div>
-    </div>
+          <p-table 
+            *ngIf="!loadingIncidents"
+            [value]="assignedIncidents" 
+            [paginator]="true" 
+            [rows]="10"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} incidencias"
+            styleClass="p-datatable-striped">
+            
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Código</th>
+                <th>Título</th>
+                <th>Estado</th>
+                <th>Prioridad</th>
+                <th>Proyecto</th>
+                <th>Acciones</th>
+              </tr>
+            </ng-template>
+            
+            <ng-template pTemplate="body" let-incident>
+              <tr>
+                <td>{{ incident.code }}</td>
+                <td>{{ incident.title }}</td>
+                <td>
+                  <p-tag [value]="getStatusLabel(incident.status)" [severity]="getStatusSeverity(incident.status)"></p-tag>
+                </td>
+                <td>
+                  <p-tag [value]="getPriorityLabel(incident.priority)" [severity]="getPrioritySeverity(incident.priority)"></p-tag>
+                </td>
+                <td>{{ incident.projectId }}</td>
+                <td>
+                  <p-button 
+                    icon="pi pi-eye" 
+                    [rounded]="true" 
+                    [text]="true" 
+                    severity="info"
+                    (onClick)="viewIncident(incident.id)"
+                    pTooltip="Ver detalles">
+                  </p-button>
+                </td>
+              </tr>
+            </ng-template>
+            
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6" class="text-center">No hay incidencias asignadas.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabPanel>
 
-    <div *ngIf="!loading && !user && currentUser" class="profile-content">
-      <p class="text-600 mb-4">Mostrando información básica del perfil:</p>
-      
-      <div class="field">
-        <label for="username" class="font-semibold">Usuario</label>
-        <input 
-          id="username" 
-          type="text" 
-          pInputText 
-          [value]="currentUser.unique_name" 
-          [disabled]="true"
-          class="w-full" />
-      </div>
+        <!-- Reported Incidents Tab -->
+        <p-tabPanel header="Incidencias Reportadas">
+          <div *ngIf="loadingIncidents" class="flex justify-content-center align-items-center" style="min-height: 200px;">
+            <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+          </div>
 
-      <div class="field">
-        <label for="role" class="font-semibold">Rol</label>
-        <input 
-          id="role" 
-          type="text" 
-          pInputText 
-          [value]="currentUser.role" 
-          [disabled]="true"
-          class="w-full" />
-      </div>
-      
-      <p class="text-500 text-sm mt-4">Información limitada del perfil disponible. Por favor, contacte al administrador para acceder a información completa.</p>
+          <p-table 
+            *ngIf="!loadingIncidents"
+            [value]="reportedIncidents" 
+            [paginator]="true" 
+            [rows]="10"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} incidencias"
+            styleClass="p-datatable-striped">
+            
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Código</th>
+                <th>Título</th>
+                <th>Estado</th>
+                <th>Prioridad</th>
+                <th>Asignado a</th>
+                <th>Acciones</th>
+              </tr>
+            </ng-template>
+            
+            <ng-template pTemplate="body" let-incident>
+              <tr>
+                <td>{{ incident.code }}</td>
+                <td>{{ incident.title }}</td>
+                <td>
+                  <p-tag [value]="getStatusLabel(incident.status)" [severity]="getStatusSeverity(incident.status)"></p-tag>
+                </td>
+                <td>
+                  <p-tag [value]="getPriorityLabel(incident.priority)" [severity]="getPrioritySeverity(incident.priority)"></p-tag>
+                </td>
+                <td>{{ incident.assigneeName || 'Sin asignar' }}</td>
+                <td>
+                  <p-button 
+                    icon="pi pi-eye" 
+                    [rounded]="true" 
+                    [text]="true" 
+                    severity="info"
+                    (onClick)="viewIncident(incident.id)"
+                    pTooltip="Ver detalles">
+                  </p-button>
+                </td>
+              </tr>
+            </ng-template>
+            
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6" class="text-center">No hay incidencias reportadas.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabPanel>
+
+        <!-- Projects Tab -->
+        <p-tabPanel header="Proyectos Asignados">
+          <div *ngIf="loadingProjects" class="flex justify-content-center align-items-center" style="min-height: 200px;">
+            <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+          </div>
+
+          <p-table 
+            *ngIf="!loadingProjects"
+            [value]="userProjects" 
+            [paginator]="true" 
+            [rows]="10"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} proyectos"
+            styleClass="p-datatable-striped">
+            
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Rol en el Proyecto</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </ng-template>
+            
+            <ng-template pTemplate="body" let-projectInfo>
+              <tr>
+                <td>{{ projectInfo.project.code }}</td>
+                <td>{{ projectInfo.project.name }}</td>
+                <td>{{ projectInfo.role }}</td>
+                <td>
+                  <p-tag [value]="projectInfo.project.isActive ? 'Activo' : 'Inactivo'" 
+                         [severity]="projectInfo.project.isActive ? 'success' : 'danger'">
+                  </p-tag>
+                </td>
+                <td>
+                  <p-button 
+                    icon="pi pi-eye" 
+                    [rounded]="true" 
+                    [text]="true" 
+                    severity="info"
+                    (onClick)="viewProject(projectInfo.project.id)"
+                    pTooltip="Ver detalles">
+                  </p-button>
+                </td>
+              </tr>
+            </ng-template>
+            
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5" class="text-center">No hay proyectos asignados.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabPanel>
+      </p-tabView>
     </div>
     
-    <div *ngIf="!loading && !user && !currentUser" class="text-center p-5">
+    <div *ngIf="!loading && !user" class="text-center p-5">
       <p class="text-600">No se pudo cargar la información del perfil.</p>
     </div>
   </p-card>
