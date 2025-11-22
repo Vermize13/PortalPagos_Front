@@ -194,9 +194,12 @@ export class IncidentsListComponent implements OnInit {
         assigneeName: 'Jane Tester',
         createdAt: new Date('2024-03-01'),
         updatedAt: new Date('2024-03-01'),
-        labels: [],
-        commentCount: 0,
-        attachmentCount: 0
+        labels: [
+          { id: '123e4567-e89b-12d3-a456-426614174000', name: 'Bug', colorHex: '#dc3545' },
+          { id: '123e4567-e89b-12d3-a456-426614174001', name: 'Urgente', colorHex: '#ff6b6b' }
+        ],
+        commentCount: 3,
+        attachmentCount: 1
       },
       {
         id: '750e8400-e29b-41d4-a716-446655440002',
@@ -217,8 +220,10 @@ export class IncidentsListComponent implements OnInit {
         assigneeName: 'John Developer',
         createdAt: new Date('2024-03-05'),
         updatedAt: new Date('2024-03-05'),
-        labels: [],
-        commentCount: 0,
+        labels: [
+          { id: '123e4567-e89b-12d3-a456-426614174002', name: 'Performance', colorHex: '#ffc107' }
+        ],
+        commentCount: 1,
         attachmentCount: 0
       },
       {
@@ -244,9 +249,12 @@ export class IncidentsListComponent implements OnInit {
         createdAt: new Date('2024-02-20'),
         updatedAt: new Date('2024-03-10'),
         closedAt: new Date('2024-03-10'),
-        labels: [],
-        commentCount: 0,
-        attachmentCount: 0
+        labels: [
+          { id: '123e4567-e89b-12d3-a456-426614174003', name: 'Feature', colorHex: '#28a745' },
+          { id: '123e4567-e89b-12d3-a456-426614174004', name: 'UI/UX', colorHex: '#17a2b8' }
+        ],
+        commentCount: 5,
+        attachmentCount: 2
       }
     ];
   }
