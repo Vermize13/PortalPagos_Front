@@ -20,7 +20,26 @@
       </div>
     </div>
 
-    <div class="mb-3" *ngIf="viewMode === 'table'">
+    <div class="mb-3 flex gap-2" *ngIf="viewMode === 'table'">
+      <p-dropdown 
+        [options]="projects" 
+        [(ngModel)]="selectedProjectId" 
+        placeholder="Filtrar por proyecto"
+        [showClear]="true"
+        optionLabel="label"
+        optionValue="value"
+        (onChange)="onFilterByProject()">
+      </p-dropdown>
+      <p-dropdown 
+        *ngIf="selectedProjectId && sprints.length > 0"
+        [options]="sprints" 
+        [(ngModel)]="selectedSprintId" 
+        placeholder="Filtrar por sprint"
+        [showClear]="true"
+        optionLabel="label"
+        optionValue="value"
+        (onChange)="onFilterBySprint()">
+      </p-dropdown>
       <p-dropdown 
         [options]="statuses" 
         [(ngModel)]="selectedStatus" 
@@ -183,6 +202,7 @@
           #projectField="ngModel"
           [options]="projects"
           [(ngModel)]="incidentForm.projectId"
+          (onChange)="onProjectChange($event.value)"
           placeholder="Seleccione un proyecto"
           [disabled]="isEditMode"
           optionLabel="label"
@@ -192,6 +212,20 @@
         <small class="p-error" *ngIf="projectField.invalid && (projectField.dirty || projectField.touched || submitted)">
           El proyecto es requerido
         </small>
+      </div>
+
+      <div class="field mb-3" *ngIf="incidentForm.projectId && sprints.length > 0">
+        <label for="sprint">Sprint</label>
+        <p-dropdown 
+          id="sprint"
+          name="sprint"
+          [options]="sprints"
+          [(ngModel)]="incidentForm.sprintId"
+          placeholder="Seleccione un sprint (opcional)"
+          [showClear]="true"
+          optionLabel="label"
+          optionValue="value">
+        </p-dropdown>
       </div>
 
       <div class="field mb-3">

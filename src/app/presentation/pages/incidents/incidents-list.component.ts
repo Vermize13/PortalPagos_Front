@@ -23,6 +23,7 @@ import {
 import { IncidentService, IncidentFilter, CreateIncidentRequest, UpdateIncidentRequest } from '../../../data/services/incident.service';
 import { ProjectService } from '../../../data/services/project.service';
 import { UserService } from '../../../data/services/user.service';
+import { SprintService } from '../../../data/services/sprint.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping } from '../../../domain/models/enum-mappings';
 
@@ -41,6 +42,7 @@ interface IncidentDisplay extends Incident {
 interface IncidentFormData {
   id?: string;
   projectId: string;
+  sprintId?: string;
   title: string;
   description: string;
   severity: IncidentSeverity;
@@ -105,11 +107,15 @@ export class IncidentsListComponent implements OnInit {
   // Dropdown options
   projects: any[] = [];
   users: any[] = [];
+  sprints: any[] = [];
+  selectedProjectId: string = '';
+  selectedSprintId: string = '';
 
   constructor(
     private incidentService: IncidentService,
     private projectService: ProjectService,
     private userService: UserService,
+    private sprintService: SprintService,
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
     private router: Router
@@ -277,6 +283,7 @@ export class IncidentsListComponent implements OnInit {
     this.incidentForm = {
       id: incident.id,
       projectId: incident.projectId,
+      sprintId: incident.sprintId,
       title: incident.title,
       description: incident.description || '',
       severity: incident.severity,
@@ -285,6 +292,12 @@ export class IncidentsListComponent implements OnInit {
       assigneeId: incident.assigneeId,
       dueDate: incident.dueDate ? new Date(incident.dueDate) : undefined
     };
+    
+    // Load sprints for the project
+    if (incident.projectId) {
+      this.loadSprintsByProject(incident.projectId);
+    }
+    
     this.displayDialog = true;
   }
 
@@ -370,6 +383,7 @@ export class IncidentsListComponent implements OnInit {
         severity: this.incidentForm.severity,
         priority: this.incidentForm.priority,
         status: this.incidentForm.status,
+        sprintId: this.incidentForm.sprintId,
         assigneeId: this.incidentForm.assigneeId,
         dueDate: this.incidentForm.dueDate?.toISOString().split('T')[0]
       };
@@ -388,6 +402,7 @@ export class IncidentsListComponent implements OnInit {
     } else {
       const createRequest: CreateIncidentRequest = {
         projectId: this.incidentForm.projectId,
+        sprintId: this.incidentForm.sprintId,
         title: this.incidentForm.title,
         description: this.incidentForm.description,
         severity: this.incidentForm.severity,
@@ -420,6 +435,42 @@ export class IncidentsListComponent implements OnInit {
       return false;
     }
     return true;
+  }
+
+  onProjectChange(projectId: string) {
+    this.selectedProjectId = projectId;
+    this.incidentForm.sprintId = undefined;
+    this.sprints = [];
+    
+    if (projectId) {
+      this.loadSprintsByProject(projectId);
+    }
+  }
+
+  loadSprintsByProject(projectId: string) {
+    this.sprintService.getByProject(projectId).subscribe({
+      next: (sprints) => {
+        this.sprints = sprints
+          .filter(s => !s.isClosed)
+          .map(s => ({ label: s.name, value: s.id }));
+      },
+      error: (error) => {
+        console.error('Error loading sprints:', error);
+      }
+    });
+  }
+
+  onFilterByProject() {
+    this.selectedSprintId = '';
+    this.sprints = [];
+    if (this.selectedProjectId) {
+      this.loadSprintsByProject(this.selectedProjectId);
+    }
+    this.loadIncidents();
+  }
+
+  onFilterBySprint() {
+    this.loadIncidents();
   }
 
   // Drag and drop functionality
