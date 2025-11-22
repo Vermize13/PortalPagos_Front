@@ -110,7 +110,9 @@ export class AdminComponent implements OnInit {
     this.loading = true;
     this.backupService.getAllBackups().subscribe({
       next: (backups) => {
-        this.backups = backups.sort((a, b) => 
+        // Ensure backups is an array before calling sort
+        const backupsArray = Array.isArray(backups) ? backups : [];
+        this.backups = backupsArray.sort((a, b) => 
           new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
         );
         this.loading = false;
@@ -118,6 +120,7 @@ export class AdminComponent implements OnInit {
       error: (error) => {
         console.error('Error loading backups:', error);
         this.toastService.showError('Error', 'No se pudieron cargar las copias de seguridad');
+        this.backups = [];
         this.loading = false;
       }
     });
