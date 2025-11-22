@@ -72,71 +72,106 @@
     [style]="{width: '500px'}"
     [closable]="true">
     
-    <div class="p-fluid">
+    <form #userFormRef="ngForm" class="p-fluid">
       <div class="field mb-3">
         <label for="name">Nombre Completo *</label>
         <input 
           id="name" 
+          name="name"
+          #nameField="ngModel"
           type="text" 
           pInputText 
           [(ngModel)]="userForm.name"
-          placeholder="Ingrese el nombre completo" />
+          placeholder="Ingrese el nombre completo"
+          required />
+        <small class="p-error" *ngIf="nameField.invalid && (nameField.dirty || nameField.touched || submitted)">
+          El nombre es requerido
+        </small>
       </div>
 
       <div class="field mb-3">
         <label for="username">Usuario *</label>
         <input 
           id="username" 
+          name="username"
+          #usernameField="ngModel"
           type="text" 
           pInputText 
           [(ngModel)]="userForm.username"
           [disabled]="isEditMode"
-          placeholder="Ingrese el nombre de usuario" />
+          placeholder="Ingrese el nombre de usuario"
+          required />
+        <small class="p-error" *ngIf="usernameField.invalid && (usernameField.dirty || usernameField.touched || submitted)">
+          El usuario es requerido
+        </small>
       </div>
 
       <div class="field mb-3">
         <label for="email">Email *</label>
         <input 
           id="email" 
+          name="email"
+          #emailField="ngModel"
           type="email" 
           pInputText 
           [(ngModel)]="userForm.email"
-          placeholder="Ingrese el email" />
+          placeholder="Ingrese el email"
+          required
+          email />
+        <small class="p-error" *ngIf="emailField.invalid && (emailField.dirty || emailField.touched || submitted)">
+          <span *ngIf="emailField.errors?.['required']">El email es requerido</span>
+          <span *ngIf="emailField.errors?.['email']">El email no es válido</span>
+        </small>
       </div>
 
       <div class="field mb-3" *ngIf="!isEditMode">
         <label for="password">Contraseña *</label>
         <input 
           id="password" 
+          name="password"
+          #passwordField="ngModel"
           type="password" 
           pInputText 
           [(ngModel)]="userForm.password"
-          placeholder="Ingrese la contraseña" />
+          placeholder="Ingrese la contraseña"
+          required
+          minlength="6" />
+        <small class="p-error" *ngIf="passwordField.invalid && (passwordField.dirty || passwordField.touched || submitted)">
+          <span *ngIf="passwordField.errors?.['required']">La contraseña es requerida</span>
+          <span *ngIf="passwordField.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres</span>
+        </small>
       </div>
 
       <div class="field mb-3">
         <label for="role">Rol *</label>
         <p-dropdown 
           id="role"
+          name="role"
+          #roleField="ngModel"
           [options]="roles"
           [(ngModel)]="userForm.roleId"
           placeholder="Seleccione un rol"
           optionLabel="label"
-          optionValue="value">
+          optionValue="value"
+          required>
         </p-dropdown>
+        <small class="p-error" *ngIf="roleField.invalid && (roleField.dirty || roleField.touched || submitted)">
+          El rol es requerido
+        </small>
       </div>
 
       <div class="field mb-3">
         <div class="flex align-items-center">
           <p-checkbox 
             [(ngModel)]="userForm.isActive"
+            name="isActive"
             [binary]="true"
             inputId="active">
           </p-checkbox>
           <label for="active" class="ml-2">Usuario Activo</label>
         </div>
       </div>
-    </div>
+    </form>
 
     <ng-template pTemplate="footer">
       <p-button 

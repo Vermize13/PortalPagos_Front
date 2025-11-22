@@ -174,34 +174,48 @@
     [baseZIndex]="10"
     [closable]="true">
     
-    <div class="p-fluid">
+    <form #incidentFormRef="ngForm" class="p-fluid">
       <div class="field mb-3">
         <label for="project">Proyecto *</label>
         <p-dropdown 
           id="project"
+          name="project"
+          #projectField="ngModel"
           [options]="projects"
           [(ngModel)]="incidentForm.projectId"
           placeholder="Seleccione un proyecto"
           [disabled]="isEditMode"
           optionLabel="label"
-          optionValue="value">
+          optionValue="value"
+          required>
         </p-dropdown>
+        <small class="p-error" *ngIf="projectField.invalid && (projectField.dirty || projectField.touched || submitted)">
+          El proyecto es requerido
+        </small>
       </div>
 
       <div class="field mb-3">
         <label for="title">Título *</label>
         <input 
           id="title" 
+          name="title"
+          #titleField="ngModel"
           type="text" 
           pInputText 
           [(ngModel)]="incidentForm.title"
-          placeholder="Título de la incidencia" />
+          placeholder="Título de la incidencia"
+          required />
+        <small class="p-error" *ngIf="titleField.invalid && (titleField.dirty || titleField.touched || submitted)">
+          El título es requerido
+        </small>
       </div>
 
       <div class="field mb-3">
         <label for="description">Descripción</label>
         <textarea 
-          id="description" 
+          id="description"
+          name="description"
+          #descriptionField="ngModel" 
           pInputTextarea 
           [(ngModel)]="incidentForm.description"
           placeholder="Descripción detallada de la incidencia"
@@ -215,13 +229,19 @@
             <label for="severity">Severidad *</label>
             <p-dropdown 
               id="severity"
+              name="severity"
+              #severityField="ngModel"
               [options]="severities"
               [(ngModel)]="incidentForm.severity"
               placeholder="Seleccione severidad"
               appendTo="body"
               optionLabel="label"
-              optionValue="value">
+              optionValue="value"
+              required>
             </p-dropdown>
+            <small class="p-error" *ngIf="severityField.invalid && (severityField.dirty || severityField.touched || submitted)">
+              La severidad es requerida
+            </small>
           </div>
         </div>
 
@@ -230,13 +250,19 @@
             <label for="priority">Prioridad *</label>
             <p-dropdown 
               id="priority"
+              name="priority"
+              #priorityField="ngModel"
               [options]="priorities"
               [(ngModel)]="incidentForm.priority"
               placeholder="Seleccione prioridad"
               optionLabel="label"
               appendTo="body"
-              optionValue="value">
+              optionValue="value"
+              required>
             </p-dropdown>
+            <small class="p-error" *ngIf="priorityField.invalid && (priorityField.dirty || priorityField.touched || submitted)">
+              La prioridad es requerida
+            </small>
           </div>
         </div>
       </div>
@@ -264,6 +290,8 @@
             <label for="assignee">Asignado a</label>
             <p-dropdown 
               id="assignee"
+              name="assignee"
+              #assigneeField="ngModel"
               [options]="users"
               [(ngModel)]="incidentForm.assigneeId"
               placeholder="Seleccione usuario"
@@ -280,6 +308,8 @@
             <label for="dueDate">Fecha Límite</label>
             <p-calendar 
               id="dueDate"
+              name="dueDate"
+              #dueDateField="ngModel"
               [(ngModel)]="incidentForm.dueDate"
               [showIcon]="true"
               placeholder="Seleccione fecha"
@@ -291,7 +321,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </form>
 
     <ng-template pTemplate="footer">
       <p-button 

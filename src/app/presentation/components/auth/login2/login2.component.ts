@@ -37,6 +37,7 @@ export class LoginComponent implements OnInit {
   password: string = '';
   loading: boolean = false;
   rememberMe: boolean = false;
+  submitted: boolean = false;
 
   constructor(
     private router: Router,
@@ -46,6 +47,8 @@ export class LoginComponent implements OnInit {
   ) {}
 
   onSubmit() {
+    this.submitted = true;
+    
     if (!this.username || !this.password) {
       this.messageService.add({
         severity: 'warn',

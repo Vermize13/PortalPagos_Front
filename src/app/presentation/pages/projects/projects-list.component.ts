@@ -50,6 +50,7 @@ export class ProjectsListComponent implements OnInit {
   // Dialog state
   displayDialog: boolean = false;
   isEditMode: boolean = false;
+  submitted: boolean = false;
   
   // Form data
   projectForm: ProjectFormData = {
@@ -134,6 +135,7 @@ export class ProjectsListComponent implements OnInit {
 
   onEdit(project: Project) {
     this.isEditMode = true;
+    this.submitted = false;
     this.projectForm = {
       id: project.id,
       name: project.name,
@@ -168,6 +170,7 @@ export class ProjectsListComponent implements OnInit {
 
   onCreate() {
     this.isEditMode = false;
+    this.submitted = false;
     this.projectForm = {
       name: '',
       code: '',
@@ -183,6 +186,8 @@ export class ProjectsListComponent implements OnInit {
   }
   
   onSaveProject() {
+    this.submitted = true;
+    
     if (!this.validateForm()) {
       this.toastService.showError('Error', 'Por favor complete todos los campos requeridos');
       return;
@@ -229,6 +234,7 @@ export class ProjectsListComponent implements OnInit {
   
   onCancelDialog() {
     this.displayDialog = false;
+    this.submitted = false;
   }
   
   validateForm(): boolean {

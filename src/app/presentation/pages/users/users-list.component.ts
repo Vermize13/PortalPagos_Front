@@ -53,6 +53,7 @@ export class UsersListComponent implements OnInit {
   // Dialog state
   displayDialog: boolean = false;
   isEditMode: boolean = false;
+  submitted: boolean = false;
   
   // Form data
   userForm: UserFormData = {
@@ -159,6 +160,7 @@ export class UsersListComponent implements OnInit {
 
   onEdit(user: UserDisplay) {
     this.isEditMode = true;
+    this.submitted = false;
     this.userForm = {
       id: user.id,
       name: user.name,
@@ -187,6 +189,7 @@ export class UsersListComponent implements OnInit {
 
   onCreate() {
     this.isEditMode = false;
+    this.submitted = false;
     this.userForm = {
       name: '',
       email: '',
@@ -199,6 +202,8 @@ export class UsersListComponent implements OnInit {
   }
   
   onSaveUser() {
+    this.submitted = true;
+    
     if (!this.validateForm()) {
       this.toastService.showError('Error', 'Por favor complete todos los campos requeridos');
       return;
@@ -218,6 +223,7 @@ export class UsersListComponent implements OnInit {
   
   onCancelDialog() {
     this.displayDialog = false;
+    this.submitted = false;
   }
   
   validateForm(): boolean {
