@@ -36,47 +36,26 @@
 
       <div class="grid">
         <div class="col-12 md:col-8">
-          <div class="mb-4">
-            <h3 class="text-lg font-semibold mb-2">Descripción</h3>
-            <p class="text-gray-700 line-height-3">
-              {{ incident.description || 'Sin descripción' }}
-            </p>
-          </div>
+          <p-tabView>
+            <!-- Details Tab -->
+            <p-tabPanel header="Detalles">
+              <div class="mb-4">
+                <h3 class="text-lg font-semibold mb-2">Descripción</h3>
+                <p class="text-gray-700 line-height-3">
+                  {{ incident.description || 'Sin descripción' }}
+                </p>
+              </div>
 
-          <!-- Labels Display -->
-          <div class="mb-4" *ngIf="incident.labels && incident.labels.length > 0">
-            <h3 class="text-lg font-semibold mb-2">Etiquetas</h3>
-            <div class="flex flex-wrap gap-2">
-              <p-tag 
-                *ngFor="let label of incident.labels" 
-                [value]="label.name"
-                [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
-                styleClass="text-sm"></p-tag>
-            </div>
-          </div>
-
-          <p-divider></p-divider>
-
-          <!-- Comments Section -->
-          <div class="mt-4">
-            <h3 class="text-lg font-semibold mb-3">Comentarios ({{ comments.length }})</h3>
-            
-            <!-- Add Comment Form -->
-            <div class="mb-4">
-              <textarea 
-                pInputTextarea 
-                [(ngModel)]="newCommentBody"
-                placeholder="Agregar un comentario..."
-                rows="3"
-                class="w-full"></textarea>
-              <div class="flex justify-content-end mt-2">
-                <p-button 
-                  label="Comentar" 
-                  icon="pi pi-send"
-                  [disabled]="!newCommentBody.trim() || submittingComment"
-                  [loading]="submittingComment"
-                  (onClick)="onAddComment()">
-                </p-button>
+              <!-- Labels Display -->
+              <div class="mb-4" *ngIf="incident.labels && incident.labels.length > 0">
+                <h3 class="text-lg font-semibold mb-2">Etiquetas</h3>
+                <div class="flex flex-wrap gap-2">
+                  <p-tag 
+                    *ngFor="let label of incident.labels" 
+                    [value]="label.name"
+                    [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
+                    styleClass="text-sm"></p-tag>
+                </div>
               </div>
 
               <p-divider></p-divider>

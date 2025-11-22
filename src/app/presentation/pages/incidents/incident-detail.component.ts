@@ -19,7 +19,7 @@ import {
   IncidentSeverity,
   IncidentComment,
   LabelInfo,
-  IncidentWithDetails
+  IncidentWithDetails,
   IncidentHistory
 } from '../../../domain/models';
 import { IncidentService, AddCommentRequest } from '../../../data/services/incident.service';
