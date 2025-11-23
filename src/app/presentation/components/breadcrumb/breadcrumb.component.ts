@@ -23,14 +23,13 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
   breadcrumbs: Breadcrumb[] = [];
   homeRoute = HOME_ROUTE;
   private routerSubscription?: Subscription;
-  private static readonly NUMERIC_REGEX = /^\d+$/;
+  private static readonly UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
   // Map of routes to Spanish labels
   private routeLabels = ROUTE_LABELS;
 
   constructor(
     private router: Router,
-    private activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -49,30 +48,22 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 
   private buildBreadcrumbs(): void {
     const breadcrumbs: Breadcrumb[] = [];
-    // Use routerState snapshot to get clean URL segments
     const url = this.router.routerState.snapshot.url;
     const urlSegments = url.split('/').filter(segment => segment);
 
-    // Build cumulative URL and breadcrumbs
     let cumulativeUrl = '';
-    
+
     urlSegments.forEach((segment, index) => {
       cumulativeUrl += '/' + segment;
-      
-      // Skip numeric IDs in breadcrumb display but keep in URL
-      if (!this.isNumeric(segment)) {
-        // Get label from route mapping or use segment
+
         const label = this.routeLabels[segment] || this.capitalizeFirstLetter(segment);
-        
         breadcrumbs.push({
-          label: label,
+          label: this.isUUID(segment) ? 'Detalle' : label,
           url: cumulativeUrl,
-          active: false  // Will be set after loop
+          active: false
         });
-      }
     });
-    
-    // Mark the last breadcrumb as active
+
     if (breadcrumbs.length > 0) {
       breadcrumbs[breadcrumbs.length - 1].active = true;
     }
@@ -85,7 +76,7 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  private isNumeric(str: string): boolean {
-    return BreadcrumbComponent.NUMERIC_REGEX.test(str);
+  private isUUID(str: string): boolean {
+    return BreadcrumbComponent.UUID_REGEX.test(str);
   }
 }

@@ -34,7 +34,8 @@ export class AttachmentService {
     'text/plain',
     'text/csv',
     'application/zip',
-    'application/x-rar-compressed'
+    'application/x-rar-compressed',
+    'text/markdown'
   ];
 
   constructor(private http: HttpClient) { }
@@ -65,8 +66,10 @@ export class AttachmentService {
       };
     }
 
-    // Check file type
-    if (!this.ALLOWED_TYPES.includes(file.type)) {
+    // Infer file type from extension if type is empty
+    const fileType = file.type || this.inferFileType(file.name);
+    console.log('Validating file type:', file);
+    if (!this.ALLOWED_TYPES.includes(fileType)) {
       return { 
         valid: false, 
         error: 'Tipo de archivo no permitido. Por favor, sube una imagen, documento o archivo comprimido.' 
@@ -74,6 +77,32 @@ export class AttachmentService {
     }
 
     return { valid: true };
+  }
+
+  private inferFileType(fileName: string): string {
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    if (!extension) {
+      return '';
+    }
+
+    const extensionToTypeMap: Record<string, string> = {
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'png': 'image/png',
+      'gif': 'image/gif',
+      'pdf': 'application/pdf',
+      'doc': 'application/msword',
+      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'xls': 'application/vnd.ms-excel',
+      'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'txt': 'text/plain',
+      'csv': 'text/csv',
+      'zip': 'application/zip',
+      'rar': 'application/x-rar-compressed',
+      'md': 'text/markdown'
+    };
+
+    return extensionToTypeMap[extension] || '';
   }
 
   /**

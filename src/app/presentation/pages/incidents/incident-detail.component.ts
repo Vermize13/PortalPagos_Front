@@ -181,32 +181,34 @@ export class IncidentDetailComponent implements OnInit {
   }
 
   onFileSelect(event: any) {
+    console.log('File select event:', event.files);
     if (!this.incident) return;
 
-    const file = event.files[0];
+    const file = event.files?.[0];
     if (!file) return;
 
     const validation = this.attachmentService.validateFile(file);
+    console.log('File validation result:', validation);
     if (!validation.valid) {
       this.toastService.showError('Error', validation.error || 'Archivo no válido');
-      event.target.clear();
+      if (event.target?.clear) {
+        event.target.clear();
+      }
       return;
     }
 
     const incidentId = this.incident.id;
+    
     this.uploadingAttachment = true;
     this.attachmentService.upload(incidentId, file).subscribe({
       next: () => {
         this.toastService.showSuccess('Éxito', 'Archivo subido correctamente');
-        this.loadAttachments(incidentId);
-        this.uploadingAttachment = false;
-        event.target.clear();
       },
-      error: (error) => {
-        console.error('Error uploading file:', error);
+      error: () => {
         this.toastService.showError('Error', 'No se pudo subir el archivo');
+      },
+      complete: () => {
         this.uploadingAttachment = false;
-        event.target.clear();
       }
     });
   }

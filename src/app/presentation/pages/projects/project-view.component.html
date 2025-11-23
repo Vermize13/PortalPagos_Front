@@ -498,13 +498,14 @@
         filterBy="name,email"
         placeholder="Seleccione un usuario"
         [showClear]="true"
+        appendTo="body"
         [loading]="loadingUsers"
         required>
         <ng-template let-user pTemplate="item">
           <div class="flex align-items-center gap-2">
             <p-avatar 
               [label]="getMemberInitials(user.name)"
-              size="small"
+              size="normal"
               shape="circle">
             </p-avatar>
             <div>
@@ -531,6 +532,7 @@
         optionValue="id"
         placeholder="Seleccione un rol"
         [showClear]="true"
+        appendTo="body"
         required>
         <ng-template let-role pTemplate="item">
           <div>
