@@ -13,7 +13,7 @@
       </div>
       <div class="overflow-y-auto">
         <ul class="list-none p-3 m-0">
-          <li>
+          <li *ngIf="canViewDashboard()">
             <a pRipple [routerLink]="['dashboard']" routerLinkActive="active-menu-item"
               class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
               <i class="pi pi-home mr-2"></i>
@@ -22,7 +22,7 @@
           </li>
         </ul>
 
-        <ul class="list-none p-3 m-0">
+        <ul class="list-none p-3 m-0" *ngIf="canSeeManagementSection()">
           <li>
             <div pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown" leaveToClass="hidden"
               leaveActiveClass="slideup"
@@ -31,21 +31,21 @@
               <i class="pi pi-chevron-down"></i>
             </div>
             <ul class="list-none p-0 m-0 overflow-hidden">
-              <li>
+              <li *ngIf="canViewIncidents()">
                 <a pRipple [routerLink]="['incidents']" routerLinkActive="active-menu-item"
                   class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
                   <i class="pi pi-exclamation-circle mr-2"></i>
                   <span class="font-medium">Incidencias</span>
                 </a>
               </li>
-              <li>
+              <li *ngIf="canViewProjects()">
                 <a pRipple [routerLink]="['projects']" routerLinkActive="active-menu-item"
                   class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
                   <i class="pi pi-folder mr-2"></i>
                   <span class="font-medium">Proyectos</span>
                 </a>
               </li>
-              <li>
+              <li *ngIf="canViewUsers()">
                 <a pRipple [routerLink]="['users']" routerLinkActive="active-menu-item"
                   class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
                   <i class="pi pi-users mr-2"></i>
@@ -56,7 +56,7 @@
           </li>
         </ul>
 
-        <ul class="list-none p-3 m-0">
+        <ul class="list-none p-3 m-0" *ngIf="canSeeAdminSection()">
           <li>
             <div pRipple pStyleClass="@next" enterClass="hidden" enterActiveClass="slidedown" leaveToClass="hidden"
               leaveActiveClass="slideup"
@@ -65,14 +65,14 @@
               <i class="pi pi-chevron-down"></i>
             </div>
             <ul class="list-none p-0 m-0 overflow-hidden">
-              <li>
+              <li *ngIf="canViewAudit()">
                 <a pRipple [routerLink]="['audit']" routerLinkActive="active-menu-item"
                   class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
                   <i class="pi pi-history mr-2"></i>
                   <span class="font-medium">Auditoría</span>
                 </a>
               </li>
-              <li>
+              <li *ngIf="canAccessAdmin()">
                 <a pRipple [routerLink]="['admin']" routerLinkActive="active-menu-item"
                   class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
                   <i class="pi pi-cog mr-2"></i>
@@ -110,32 +110,32 @@
 <div class="collapsed-bar" *ngIf="collapsed" role="navigation" aria-label="Collapsed sidebar">
   <div class="flex flex-column h-full">
     <ul class="collapsed-list list-none p-0 m-0 flex-1">
-      <li>
+      <li *ngIf="canViewDashboard()">
         <a pRipple [routerLink]="['dashboard']" class="collapsed-item" aria-label="Dashboard">
           <i class="pi pi-home"></i>
         </a>
       </li>
-      <li>
+      <li *ngIf="canViewIncidents()">
         <a pRipple [routerLink]="['incidents']" class="collapsed-item" aria-label="Incidencias">
           <i class="pi pi-exclamation-circle"></i>
         </a>
       </li>
-      <li>
+      <li *ngIf="canViewProjects()">
         <a pRipple [routerLink]="['projects']" class="collapsed-item" aria-label="Proyectos">
           <i class="pi pi-folder"></i>
         </a>
       </li>
-      <li>
+      <li *ngIf="canViewUsers()">
         <a pRipple [routerLink]="['users']" class="collapsed-item" aria-label="Usuarios">
           <i class="pi pi-users"></i>
         </a>
       </li>
-      <li>
+      <li *ngIf="canViewAudit()">
         <a pRipple [routerLink]="['audit']" class="collapsed-item" aria-label="Auditoría">
           <i class="pi pi-history"></i>
         </a>
       </li>
-      <li>
+      <li *ngIf="canAccessAdmin()">
         <a pRipple [routerLink]="['admin']" class="collapsed-item" aria-label="Administración">
           <i class="pi pi-cog"></i>
         </a>

@@ -3,6 +3,7 @@
     <div class="flex align-items-center justify-content-between p-3">
       <h3 class="m-0">Sprints del Proyecto</h3>
       <p-button 
+        *ngIf="canCreateSprint()"
         label="Nuevo Sprint" 
         icon="pi pi-plus"
         (onClick)="showCreateDialog()">
@@ -26,7 +27,7 @@
         <th>Fecha Inicio</th>
         <th>Fecha Fin</th>
         <th>Estado</th>
-        <th style="width: 150px">Acciones</th>
+        <th style="width: 150px" *ngIf="canCloseSprint() || canDeleteSprint()">Acciones</th>
       </tr>
     </ng-template>
     
@@ -46,10 +47,10 @@
             [severity]="getSprintSeverity(sprint)">
           </p-tag>
         </td>
-        <td>
+        <td *ngIf="canCloseSprint() || canDeleteSprint()">
           <div class="flex gap-2">
             <p-button 
-              *ngIf="!sprint.isClosed"
+              *ngIf="!sprint.isClosed && canCloseSprint()"
               icon="pi pi-check" 
               [rounded]="true"
               [text]="true"
@@ -58,6 +59,7 @@
               (onClick)="closeSprint(sprint)">
             </p-button>
             <p-button 
+              *ngIf="canDeleteSprint()"
               icon="pi pi-trash" 
               [rounded]="true"
               [text]="true"
@@ -72,7 +74,7 @@
     
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="6" class="text-center">
+        <td [attr.colspan]="(canCloseSprint() || canDeleteSprint()) ? 6 : 5" class="text-center">
           <div class="py-4">
             <i class="pi pi-inbox text-4xl text-gray-400 mb-3"></i>
             <p class="text-gray-600">No hay sprints creados para este proyecto.</p>

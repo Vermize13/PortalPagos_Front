@@ -2,7 +2,13 @@
   <p-card>
     <div class="flex justify-content-between align-items-center mb-4">
       <h2 class="m-0">Auditoría del Sistema</h2>
-      <p-button label="Exportar" icon="pi pi-download" (onClick)="onExport()" [disabled]="loading"></p-button>
+      <p-button 
+        *ngIf="canExportAudit()"
+        label="Exportar" 
+        icon="pi pi-download" 
+        (onClick)="onExport()" 
+        [disabled]="loading">
+      </p-button>
     </div>
 
     <!-- RF5.2: Filter Section -->

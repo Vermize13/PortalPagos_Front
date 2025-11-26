@@ -14,6 +14,7 @@
           [outlined]="viewMode !== 'table'"
           (onClick)="toggleView('table')"></p-button>
         <p-button 
+          *ngIf="canCreateIncident()"
           label="Nueva Incidencia" 
           icon="pi pi-plus" 
           (onClick)="onCreate()"></p-button>
@@ -54,8 +55,8 @@
       <div class="board-columns">
         <div class="board-column" 
              *ngFor="let status of statuses"
-             (dragover)="onDragOver($event)"
-             (drop)="onDrop($event, status)">
+             (dragover)="canDragDrop() ? onDragOver($event) : null"
+             (drop)="canDragDrop() ? onDrop($event, status) : null">
           <div class="column-header">
             <h3 class="column-title">{{ getStatusLabel(status) }}</h3>
             <span class="incident-count">{{ getIncidentsByStatus(status).length }}</span>
@@ -63,9 +64,9 @@
           <div class="column-content">
             <div class="incident-card" 
                  *ngFor="let incident of getIncidentsByStatus(status)"
-                 draggable="true"
-                 (dragstart)="onDragStart($event, incident)"
-                 (dragend)="onDragEnd($event)">
+                 [attr.draggable]="canDragDrop()"
+                 (dragstart)="canDragDrop() ? onDragStart($event, incident) : null"
+                 (dragend)="canDragDrop() ? onDragEnd($event) : null">
               <div class="card-header">
                 <span class="incident-code">{{ incident.code }}</span>
                 <p-tag 
@@ -109,6 +110,7 @@
                     size="small"
                     (onClick)="onViewDetails(incident)"></p-button>
                   <p-button 
+                    *ngIf="canEditIncident()"
                     icon="pi pi-pencil" 
                     [rounded]="true" 
                     [text]="true" 
@@ -188,12 +190,14 @@
               severity="secondary"
               (onClick)="onViewDetails(incident)"></p-button>
             <p-button 
+              *ngIf="canEditIncident()"
               icon="pi pi-pencil" 
               [rounded]="true" 
               [text]="true" 
               severity="info"
               (onClick)="onEdit(incident)"></p-button>
             <p-button 
+              *ngIf="canDeleteIncident()"
               icon="pi pi-trash" 
               [rounded]="true" 
               [text]="true" 
@@ -256,6 +260,7 @@
         </p-dropdown>
       </div>
 
+      <!-- Title field - only editable if user has permission -->
       <div class="field mb-3">
         <label for="title">Título *</label>
         <input 
@@ -266,12 +271,17 @@
           pInputText 
           [(ngModel)]="incidentForm.title"
           placeholder="Título de la incidencia"
+          [disabled]="isEditMode && !canUpdateTitle()"
           required />
         <small class="p-error" *ngIf="titleField.invalid && (titleField.dirty || titleField.touched || submitted)">
           El título es requerido
         </small>
+        <small class="text-gray-500" *ngIf="isEditMode && !canUpdateTitle()">
+          No tiene permisos para modificar el título
+        </small>
       </div>
 
+      <!-- Description field - only editable if user has permission -->
       <div class="field mb-3">
         <label for="description">Descripción</label>
         <textarea 
@@ -281,8 +291,12 @@
           pInputTextarea 
           [(ngModel)]="incidentForm.description"
           placeholder="Descripción detallada de la incidencia"
+          [disabled]="isEditMode && !canUpdateDescription()"
           rows="4">
         </textarea>
+        <small class="text-gray-500" *ngIf="isEditMode && !canUpdateDescription()">
+          No tiene permisos para modificar la descripción
+        </small>
       </div>
 
       <div class="grid">
@@ -297,6 +311,7 @@
               [(ngModel)]="incidentForm.severity"
               placeholder="Seleccione severidad"
               appendTo="body"
+              [disabled]="isEditMode && !canUpdateData()"
               optionLabel="label"
               optionValue="value"
               required>
@@ -319,6 +334,7 @@
               placeholder="Seleccione prioridad"
               optionLabel="label"
               appendTo="body"
+              [disabled]="isEditMode && !canUpdateData()"
               optionValue="value"
               required>
             </p-dropdown>
@@ -339,9 +355,13 @@
               [(ngModel)]="incidentForm.status"
               placeholder="Seleccione estado"
               appendTo="body"
+              [disabled]="!canUpdateData()"
               optionLabel="label"
               optionValue="value">
             </p-dropdown>
+            <small class="text-gray-500" *ngIf="!canUpdateData()">
+              No tiene permisos para modificar el estado
+            </small>
           </div>
         </div>
       </div>
@@ -392,7 +412,7 @@
               [(ngModel)]="incidentForm.assigneeId"
               placeholder="Seleccione un miembro del proyecto"
               [showClear]="true"
-              [disabled]="!incidentForm.projectId || projectMembers.length === 0"
+              [disabled]="!incidentForm.projectId || projectMembers.length === 0 || (isEditMode && !canUpdateData())"
               appendTo="body"
               optionLabel="label"
               optionValue="value">
@@ -417,6 +437,7 @@
               [showIcon]="true"
               placeholder="Seleccione fecha"
               appendTo="body"
+              [disabled]="isEditMode && !canUpdateData()"
               [minDate]="minDate"
               [maxDate]="maxDate"
               dateFormat="dd/mm/yy">

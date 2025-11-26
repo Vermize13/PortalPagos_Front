@@ -10,6 +10,8 @@ import { StyleClassModule } from 'primeng/styleclass';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { UserStateService } from '../../../data/states/userState.service';
+import { PermissionService } from '../../../data/services/permission.service';
+import { Permissions } from '../../../domain/models/permissions.model';
 
 @Component({
   selector: 'app-sidenav',
@@ -34,6 +36,7 @@ export class SidenavComponent implements ControlValueAccessor {
   
   private userStateService = inject(UserStateService);
   private router = inject(Router);
+  public permissionService = inject(PermissionService);
   
   get currentUser() {
     return this.userStateService.getUser();
@@ -48,6 +51,42 @@ export class SidenavComponent implements ControlValueAccessor {
     if (names.length === 0) return 'U';
     if (names.length === 1) return names[0].charAt(0).toUpperCase();
     return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+  }
+
+  // Permission helper methods for template use
+  canViewDashboard(): boolean {
+    return this.permissionService.hasPermission(Permissions.DASHBOARD_ACCESS);
+  }
+
+  canViewIncidents(): boolean {
+    return this.permissionService.hasPermission(Permissions.INCIDENT_VIEW);
+  }
+
+  canViewProjects(): boolean {
+    return this.permissionService.hasPermission(Permissions.PROJECT_VIEW);
+  }
+
+  canViewUsers(): boolean {
+    return this.permissionService.hasPermission(Permissions.USER_VIEW) ||
+           this.permissionService.hasPermission(Permissions.USER_MANAGE);
+  }
+
+  canViewAudit(): boolean {
+    return this.permissionService.hasPermission(Permissions.AUDIT_VIEW);
+  }
+
+  canAccessAdmin(): boolean {
+    return this.permissionService.canAccessAdmin();
+  }
+
+  // Check if any admin section menu items are visible
+  canSeeAdminSection(): boolean {
+    return this.canViewAudit() || this.canAccessAdmin();
+  }
+
+  // Check if any management section menu items are visible  
+  canSeeManagementSection(): boolean {
+    return this.canViewIncidents() || this.canViewProjects() || this.canViewUsers();
   }
 
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;

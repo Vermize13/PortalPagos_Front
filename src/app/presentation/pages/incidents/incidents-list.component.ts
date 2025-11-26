@@ -21,7 +21,8 @@ import {
   IncidentSeverity,
   IncidentWithDetails,
   LabelInfo,
-  Label
+  Label,
+  Permissions
 } from '../../../domain/models';
 import { IncidentService, IncidentFilter, CreateIncidentRequest, UpdateIncidentRequest } from '../../../data/services/incident.service';
 import { ProjectService } from '../../../data/services/project.service';
@@ -29,6 +30,7 @@ import { UserService } from '../../../data/services/user.service';
 import { SprintService } from '../../../data/services/sprint.service';
 import { LabelService } from '../../../data/services/label.service';
 import { ToastService } from '../../../data/services/toast.service';
+import { PermissionService } from '../../../data/services/permission.service';
 import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping } from '../../../domain/models/enum-mappings';
 
 // Helper interface for displaying incidents with additional computed labels
@@ -126,12 +128,49 @@ export class IncidentsListComponent implements OnInit {
     private labelService: LabelService,
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
-    private router: Router
+    private router: Router,
+    public permissionService: PermissionService
   ) { }
 
   ngOnInit() {
     this.loadIncidents();
     this.loadDropdownData();
+  }
+
+  // Permission helper methods for template use
+  canCreateIncident(): boolean {
+    return this.permissionService.hasPermission(Permissions.INCIDENT_CREATE);
+  }
+
+  canEditIncident(): boolean {
+    return this.permissionService.canUpdateIncidentTitle() ||
+           this.permissionService.canUpdateIncidentDescription() ||
+           this.permissionService.canUpdateIncidentLabels() ||
+           this.permissionService.canUpdateIncidentData();
+  }
+
+  canUpdateTitle(): boolean {
+    return this.permissionService.canUpdateIncidentTitle();
+  }
+
+  canUpdateDescription(): boolean {
+    return this.permissionService.canUpdateIncidentDescription();
+  }
+
+  canUpdateLabels(): boolean {
+    return this.permissionService.canUpdateIncidentLabels();
+  }
+
+  canUpdateData(): boolean {
+    return this.permissionService.canUpdateIncidentData();
+  }
+
+  canDragDrop(): boolean {
+    return this.permissionService.hasPermission(Permissions.INCIDENT_STATUS_UPDATE);
+  }
+
+  canDeleteIncident(): boolean {
+    return this.permissionService.isAdmin();
   }
 
   loadDropdownData() {

@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { NotfoundComponent } from './presentation/components/notfound/notfound.component';
 import { AuthGuard } from './guards/auth.guard';
+import { RoleGuard, AdminRoleGuard } from './guards/role.guard';
+import { Permissions } from './domain/models/permissions.model';
 
 export const routes: Routes = [
   // Default route - redirect to login2
@@ -28,14 +30,53 @@ export const routes: Routes = [
     loadComponent: () => import('../app/presentation/pages/layout/layout.component').then(m => m.LayoutComponent),
     canActivate: [AuthGuard],
     children: [
-      { path: 'dashboard', loadComponent: () => import('./presentation/pages/dashboard/dashboard.component').then(m => m.DashboardComponent) },
-      { path: 'users', loadComponent: () => import('./presentation/pages/users/users-list.component').then(m => m.UsersListComponent) },
-      { path: 'projects', loadComponent: () => import('./presentation/pages/projects/projects-list.component').then(m => m.ProjectsListComponent) },
-      { path: 'projects/:id', loadComponent: () => import('./presentation/pages/projects/project-view.component').then(m => m.ProjectViewComponent) },
-      { path: 'incidents', loadComponent: () => import('./presentation/pages/incidents/incidents-list.component').then(m => m.IncidentsListComponent) },
-      { path: 'incidents/:id', loadComponent: () => import('./presentation/pages/incidents/incident-detail.component').then(m => m.IncidentDetailComponent) },
-      { path: 'audit', loadComponent: () => import('./presentation/pages/audit/audit-list.component').then(m => m.AuditListComponent) },
-      { path: 'admin', loadComponent: () => import('./presentation/pages/admin/admin.component').then(m => m.AdminComponent) },
+      { 
+        path: 'dashboard', 
+        loadComponent: () => import('./presentation/pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
+        canActivate: [RoleGuard],
+        data: { permissions: [Permissions.DASHBOARD_ACCESS] }
+      },
+      { 
+        path: 'users', 
+        loadComponent: () => import('./presentation/pages/users/users-list.component').then(m => m.UsersListComponent),
+        canActivate: [RoleGuard],
+        data: { permissions: [Permissions.USER_VIEW, Permissions.USER_MANAGE] }
+      },
+      { 
+        path: 'projects', 
+        loadComponent: () => import('./presentation/pages/projects/projects-list.component').then(m => m.ProjectsListComponent),
+        canActivate: [RoleGuard],
+        data: { permissions: [Permissions.PROJECT_VIEW] }
+      },
+      { 
+        path: 'projects/:id', 
+        loadComponent: () => import('./presentation/pages/projects/project-view.component').then(m => m.ProjectViewComponent),
+        canActivate: [RoleGuard],
+        data: { permissions: [Permissions.PROJECT_VIEW] }
+      },
+      { 
+        path: 'incidents', 
+        loadComponent: () => import('./presentation/pages/incidents/incidents-list.component').then(m => m.IncidentsListComponent),
+        canActivate: [RoleGuard],
+        data: { permissions: [Permissions.INCIDENT_VIEW] }
+      },
+      { 
+        path: 'incidents/:id', 
+        loadComponent: () => import('./presentation/pages/incidents/incident-detail.component').then(m => m.IncidentDetailComponent),
+        canActivate: [RoleGuard],
+        data: { permissions: [Permissions.INCIDENT_VIEW] }
+      },
+      { 
+        path: 'audit', 
+        loadComponent: () => import('./presentation/pages/audit/audit-list.component').then(m => m.AuditListComponent),
+        canActivate: [RoleGuard],
+        data: { permissions: [Permissions.AUDIT_VIEW] }
+      },
+      { 
+        path: 'admin', 
+        loadComponent: () => import('./presentation/pages/admin/admin.component').then(m => m.AdminComponent),
+        canActivate: [AdminRoleGuard]
+      },
       { path: 'profile', loadComponent: () => import('./presentation/pages/profile/profile.component').then(m => m.ProfileComponent) },
       { path: 'profile/:userId', loadComponent: () => import('./presentation/pages/profile/profile.component').then(m => m.ProfileComponent) },
       
