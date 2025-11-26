@@ -62,12 +62,12 @@
 
           <div class="col-12 md:col-6">
             <div class="field">
-              <label class="font-semibold">Roles</label>
+              <label class="font-semibold">Rol</label>
               <div class="mt-2">
-                <span *ngFor="let userRole of user.userRoles" class="inline-flex align-items-center bg-primary-100 text-primary-700 border-round px-3 py-1 mr-2">
-                  {{ userRole.role.name }}
+                <span *ngIf="user.role" class="inline-flex align-items-center bg-primary-100 text-primary-700 border-round px-3 py-1 mr-2">
+                  {{ user.role.name || (user.role.code | titlecase) }}
                 </span>
-                <span *ngIf="!user.userRoles || user.userRoles.length === 0" class="text-500">Sin roles asignados</span>
+                <span *ngIf="!user.role" class="text-500">Sin rol asignado</span>
               </div>
             </div>
           </div>

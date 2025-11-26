@@ -1,7 +1,10 @@
 // Enum for common role codes - matches C# backend roles
 export enum RoleCode {
   Admin = 'admin',
+  ScrumMaster = 'scrum_master',
   ProductOwner = 'product_owner',
+  Stakeholder = 'stakeholder',
+  TechLead = 'tech_lead',
   Developer = 'developer',
   Tester = 'tester'
 }
@@ -15,8 +18,8 @@ export interface User {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-  userRoles?: UserRole[];
-  roles?: Role[]; // Direct roles array as returned by the API
+  roles?: Role[];
+  role?: Role; // Single role instead of multiple roles
 }
 
 export interface Role {
@@ -24,14 +27,6 @@ export interface Role {
   code: string;
   name: string;
   description?: string;
-}
-
-export interface UserRole {
-  userId: string; // Guid
-  user: User;
-  roleId: string; // Guid
-  role: Role;
-  assignedAt: Date;
 }
 
 // Helper interface for displaying users with simplified role info
@@ -42,5 +37,6 @@ export interface UserDisplay {
   username: string;
   isActive: boolean;
   primaryRole?: string; // Primary role name for display
+  primaryRoleCode?: string;
   createdAt: Date;
 }

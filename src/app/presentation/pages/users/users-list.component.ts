@@ -13,9 +13,10 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
+import { finalize } from 'rxjs/operators';
 import { UserDisplay, RoleCode, Permissions } from '../../../domain/models';
 import { User as DomainUser } from '../../../domain/models/user.model';
-import { UserService } from '../../../data/services/user.service';
+import { UserService, CreateUserRequest, UpdateUserRequest, BaseUserRequest } from '../../../data/services/user.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { PermissionService } from '../../../data/services/permission.service';
 
@@ -58,6 +59,7 @@ export class UsersListComponent implements OnInit {
   displayDialog: boolean = false;
   isEditMode: boolean = false;
   submitted: boolean = false;
+  saving: boolean = false;
   
   // Form data
   userForm: UserFormData = {
@@ -71,11 +73,30 @@ export class UsersListComponent implements OnInit {
   
   // Role options
   roles = [
-    { label: 'Admin', value: 'admin' },
-    { label: 'Product Owner', value: 'product_owner' },
-    { label: 'Developer', value: 'developer' },
-    { label: 'Tester', value: 'tester' }
+    { label: 'Administrador General', value: RoleCode.Admin },
+    { label: 'Scrum Master', value: RoleCode.ScrumMaster },
+    { label: 'Product Owner', value: RoleCode.ProductOwner },
+    { label: 'Stakeholder', value: RoleCode.Stakeholder },
+    { label: 'Líder Técnico', value: RoleCode.TechLead },
+    { label: 'Desarrollador', value: RoleCode.Developer },
+    { label: 'QA/Tester', value: RoleCode.Tester }
   ];
+
+  private readonly roleSynonyms: Record<string, RoleCode> = {
+    administradorgeneral: RoleCode.Admin,
+    administrador: RoleCode.Admin,
+    admin: RoleCode.Admin,
+    scrummaster: RoleCode.ScrumMaster,
+    productowner: RoleCode.ProductOwner,
+    stakeholder: RoleCode.Stakeholder,
+    lidertecnico: RoleCode.TechLead,
+    techlead: RoleCode.TechLead,
+    desarrollador: RoleCode.Developer,
+    developer: RoleCode.Developer,
+    tester: RoleCode.Tester,
+    qatester: RoleCode.Tester,
+    qa: RoleCode.Tester
+  };
 
   constructor(
     private userService: UserService,
@@ -110,20 +131,27 @@ export class UsersListComponent implements OnInit {
     this.userService.getAllUsers().subscribe({
       next: (users: DomainUser[]) => {
         // Transform User[] to UserDisplay[]
-        this.users = users.map(user => ({
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          name: user.name,
-          primaryRole: user.roles?.[0]?.name || user.userRoles?.[0]?.role?.name || 'Sin rol',
-          isActive: user.isActive,
-          createdAt: user.createdAt
-        }));
+        this.users = users.map(user => {
+          const resolvedRole = user.role || user.roles?.[0];
+          const roleCode = resolvedRole?.code || this.getRoleCodeFromLabel(resolvedRole?.name);
+          const roleLabel = this.getRoleLabelFromCode(roleCode) || resolvedRole?.name || 'Sin rol';
+
+          return {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            name: user.name,
+            primaryRole: roleLabel,
+            primaryRoleCode: roleCode,
+            isActive: user.isActive,
+            createdAt: user.createdAt
+          };
+        });
         this.loading = false;
       },
       error: (error) => {
         console.error('Error loading users:', error);
-        this.toastService.showError('Error', 'No se pudieron cargar los usuarios');
+        this.toastService.showError('Error', this.resolveApiErrorMessage(error, 'No se pudieron cargar los usuarios'));
         this.loading = false;
         // Fallback to mock data on error
         this.loadMockUsers();
@@ -139,7 +167,8 @@ export class UsersListComponent implements OnInit {
         username: 'admin',
         email: 'admin@example.com',
         name: 'Admin User',
-        primaryRole: 'Admin',
+        primaryRole: this.getRoleLabelFromCode(RoleCode.Admin) ?? 'Administrador General',
+        primaryRoleCode: RoleCode.Admin,
         isActive: true,
         createdAt: new Date('2024-01-01')
       },
@@ -148,7 +177,8 @@ export class UsersListComponent implements OnInit {
         username: 'developer1',
         email: 'developer1@example.com',
         name: 'John Developer',
-        primaryRole: 'Developer',
+        primaryRole: this.getRoleLabelFromCode(RoleCode.Developer) ?? 'Desarrollador',
+        primaryRoleCode: RoleCode.Developer,
         isActive: true,
         createdAt: new Date('2024-01-15')
       },
@@ -157,23 +187,30 @@ export class UsersListComponent implements OnInit {
         username: 'tester1',
         email: 'tester1@example.com',
         name: 'Jane Tester',
-        primaryRole: 'Tester',
+        primaryRole: this.getRoleLabelFromCode(RoleCode.Tester) ?? 'QA/Tester',
+        primaryRoleCode: RoleCode.Tester,
         isActive: true,
         createdAt: new Date('2024-02-01')
       }
     ];
   }
 
-  getRoleSeverity(role?: string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
-    if (!role) return 'info';
-    switch (role.toLowerCase()) {
-      case 'admin': 
-      case 'administrator': return 'danger';
-      case 'product owner': 
-      case 'productowner': return 'warning';
-      case 'developer': return 'info';
-      case 'tester': return 'success';
-      default: return 'info';
+  getRoleSeverity(roleCode?: string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
+    switch (roleCode) {
+      case RoleCode.Admin:
+        return 'danger';
+      case RoleCode.ProductOwner:
+      case RoleCode.ScrumMaster:
+        return 'warning';
+      case RoleCode.TechLead:
+      case RoleCode.Developer:
+        return 'info';
+      case RoleCode.Tester:
+        return 'success';
+      case RoleCode.Stakeholder:
+        return 'secondary';
+      default:
+        return 'info';
     }
   }
 
@@ -193,7 +230,8 @@ export class UsersListComponent implements OnInit {
       name: user.name,
       email: user.email,
       username: user.username,
-      roleId: user.primaryRole?.toLowerCase().replace(' ', '_') || '',
+      password: '',
+      roleId: user.primaryRoleCode || this.getRoleCodeFromLabel(user.primaryRole) || '',
       isActive: user.isActive
     };
     this.displayDialog = true;
@@ -207,9 +245,21 @@ export class UsersListComponent implements OnInit {
       acceptLabel: 'Sí',
       rejectLabel: 'No',
       accept: () => {
-        // TODO: Implement delete API call
-        this.toastService.showSuccess('Éxito', `Usuario ${user.name} eliminado correctamente`);
-        this.loadUsers();
+        this.loading = true;
+        this.userService.deleteUser(user.id).pipe(
+          finalize(() => {
+            this.loading = false;
+          })
+        ).subscribe({
+          next: () => {
+            this.toastService.showSuccess('Éxito', `Usuario ${user.name} eliminado correctamente`);
+            this.loadUsers();
+          },
+          error: (error) => {
+            console.error('Error deleting user:', error);
+            this.toastService.showError('Error', this.resolveApiErrorMessage(error, 'No se pudo eliminar el usuario'));
+          }
+        });
       }
     });
   }
@@ -217,14 +267,8 @@ export class UsersListComponent implements OnInit {
   onCreate() {
     this.isEditMode = false;
     this.submitted = false;
-    this.userForm = {
-      name: '',
-      email: '',
-      username: '',
-      password: '',
-      roleId: '',
-      isActive: true
-    };
+    this.saving = false;
+    this.resetForm();
     this.displayDialog = true;
   }
   
@@ -235,31 +279,178 @@ export class UsersListComponent implements OnInit {
       this.toastService.showError('Error', 'Por favor complete todos los campos requeridos');
       return;
     }
-    
-    if (this.isEditMode) {
-      // TODO: Implement update API call
-      this.toastService.showSuccess('Éxito', 'Usuario actualizado correctamente');
-    } else {
-      // TODO: Implement create API call
-      this.toastService.showSuccess('Éxito', 'Usuario creado correctamente');
+
+    const baseRequest = this.buildBaseRequest();
+
+    if (this.isEditMode && this.userForm.id) {
+      const updateRequest: UpdateUserRequest = { ...baseRequest };
+      const trimmedPassword = this.userForm.password?.trim();
+      if (trimmedPassword) {
+        updateRequest.password = trimmedPassword;
+      }
+
+      this.saving = true;
+      this.userService.updateUser(this.userForm.id, updateRequest).pipe(
+        finalize(() => {
+          this.saving = false;
+        })
+      ).subscribe({
+        next: () => {
+          this.toastService.showSuccess('Éxito', 'Usuario actualizado correctamente');
+          this.afterSuccessfulSave();
+        },
+        error: (error) => {
+          console.error('Error updating user:', error);
+          this.toastService.showError('Error', this.resolveApiErrorMessage(error, 'No se pudo actualizar el usuario'));
+        }
+      });
+      return;
     }
-    
-    this.displayDialog = false;
-    this.loadUsers();
+
+    const createRequest: CreateUserRequest = {
+      ...baseRequest,
+      password: this.userForm.password!.trim()
+    };
+
+    this.saving = true;
+    this.userService.createUser(createRequest).pipe(
+      finalize(() => {
+        this.saving = false;
+      })
+    ).subscribe({
+      next: () => {
+        this.toastService.showSuccess('Éxito', 'Usuario creado correctamente');
+        this.afterSuccessfulSave();
+      },
+      error: (error) => {
+        console.error('Error creating user:', error);
+        this.toastService.showError('Error', this.resolveApiErrorMessage(error, 'No se pudo crear el usuario'));
+      }
+    });
   }
   
   onCancelDialog() {
     this.displayDialog = false;
     this.submitted = false;
+    this.saving = false;
+    this.resetForm();
   }
   
   validateForm(): boolean {
-    if (!this.userForm.name || !this.userForm.email || !this.userForm.username || !this.userForm.roleId) {
+    if (!this.userForm.name?.trim() || !this.userForm.email?.trim() || !this.userForm.username?.trim() || !this.userForm.roleId) {
       return false;
     }
-    if (!this.isEditMode && !this.userForm.password) {
-      return false;
+
+    if (!this.isEditMode) {
+      const password = this.userForm.password?.trim();
+      if (!password || password.length < 6) {
+        return false;
+      }
     }
+
     return true;
+  }
+
+  private buildBaseRequest(): BaseUserRequest {
+    return {
+      name: this.userForm.name.trim(),
+      email: this.userForm.email.trim(),
+      username: this.userForm.username.trim(),
+      roleCode: this.userForm.roleId,
+      isActive: this.userForm.isActive
+    };
+  }
+
+  private afterSuccessfulSave(): void {
+    this.displayDialog = false;
+    this.submitted = false;
+    this.saving = false;
+    this.isEditMode = false;
+    this.resetForm();
+    this.loadUsers();
+  }
+
+  private resolveApiErrorMessage(error: unknown, fallback: string): string {
+    if (!error || typeof error !== 'object') {
+      return fallback;
+    }
+
+    const httpError = error as { error?: unknown; message?: string };
+
+    if (httpError.error) {
+      if (typeof httpError.error === 'string') {
+        return httpError.error;
+      }
+
+      const errorMessage = (httpError.error as { message?: string })?.message;
+      if (errorMessage) {
+        return errorMessage;
+      }
+
+      const errorTitle = (httpError.error as { title?: string })?.title;
+      if (errorTitle) {
+        return errorTitle;
+      }
+
+      const validationErrors = (httpError.error as { errors?: Record<string, string[]> })?.errors;
+      if (validationErrors) {
+        const firstError = Object.values(validationErrors).find(messages => Array.isArray(messages) && messages.length > 0);
+        if (firstError && firstError[0]) {
+          return firstError[0];
+        }
+      }
+    }
+
+    if (httpError.message) {
+      return httpError.message;
+    }
+
+    return fallback;
+  }
+
+  private getRoleLabelFromCode(code?: string): string | undefined {
+    if (!code) {
+      return undefined;
+    }
+    return this.roles.find(role => role.value === code)?.label;
+  }
+
+  private getRoleCodeFromLabel(label?: string): string | undefined {
+    if (!label) {
+      return undefined;
+    }
+    const normalizedLabel = this.normalizeText(label);
+    const collapsed = normalizedLabel.replace(/\s+/g, '');
+
+    const synonymMatch = this.roleSynonyms[collapsed];
+    if (synonymMatch) {
+      return synonymMatch;
+    }
+
+    return this.roles.find(role => this.normalizeText(role.label) === normalizedLabel)?.value;
+  }
+
+  private normalizeText(value?: string): string {
+    if (!value) {
+      return '';
+    }
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+  }
+
+  private resetForm(): void {
+    this.userForm = {
+      id: undefined,
+      name: '',
+      email: '',
+      username: '',
+      password: '',
+      roleId: '',
+      isActive: true
+    };
   }
 }

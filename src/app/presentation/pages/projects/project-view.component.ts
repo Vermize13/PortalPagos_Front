@@ -429,7 +429,9 @@ export class ProjectViewComponent implements OnInit {
         // Extract unique roles from all users using Set for efficiency
         const uniqueRoles = new Map<string, Role>();
         users.forEach(user => {
-          user.roles?.forEach(role => uniqueRoles.set(role.id, role));
+          if (user.role) {
+            uniqueRoles.set(user.role.id, user.role);
+          }
         });
         this.availableRoles = Array.from(uniqueRoles.values());
         

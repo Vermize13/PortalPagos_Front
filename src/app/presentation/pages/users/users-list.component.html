@@ -38,7 +38,7 @@
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
           <td>
-            <p-tag [value]="user.primaryRole || 'Sin rol'" [severity]="getRoleSeverity(user.primaryRole)"></p-tag>
+            <p-tag [value]="user.primaryRole || 'Sin rol'" [severity]="getRoleSeverity(user.primaryRoleCode)"></p-tag>
           </td>
           <td>
             <p-tag [value]="user.isActive ? 'Activo' : 'Inactivo'" [severity]="getStatusSeverity(user.isActive)"></p-tag>
@@ -167,6 +167,7 @@
           placeholder="Seleccione un rol"
           optionLabel="label"
           optionValue="value"
+          appendTo="body"
           required>
         </p-dropdown>
         <small class="p-error" *ngIf="roleField.invalid && (roleField.dirty || roleField.touched || submitted)">
@@ -197,6 +198,8 @@
       <p-button 
         [label]="isEditMode ? 'Actualizar' : 'Guardar'" 
         icon="pi pi-check" 
+        [loading]="saving"
+        [disabled]="saving"
         (onClick)="onSaveUser()">
       </p-button>
     </ng-template>
