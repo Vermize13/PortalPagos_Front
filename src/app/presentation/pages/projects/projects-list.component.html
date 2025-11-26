@@ -2,7 +2,12 @@
   <p-card>
     <div class="flex justify-content-between align-items-center mb-4">
       <h2 class="m-0">Gestión de Proyectos</h2>
-      <p-button label="Nuevo Proyecto" icon="pi pi-plus" (onClick)="onCreate()"></p-button>
+      <p-button 
+        *ngIf="canCreateProject()"
+        label="Nuevo Proyecto" 
+        icon="pi pi-plus" 
+        (onClick)="onCreate()">
+      </p-button>
     </div>
 
     <p-table 
@@ -43,12 +48,14 @@
               severity="secondary"
               (onClick)="onViewDetails(project)"></p-button>
             <p-button 
+              *ngIf="canEditProject()"
               icon="pi pi-pencil" 
               [rounded]="true" 
               [text]="true" 
               severity="info"
               (onClick)="onEdit(project)"></p-button>
             <p-button 
+              *ngIf="canDeleteProject()"
               icon="pi pi-trash" 
               [rounded]="true" 
               [text]="true" 

@@ -2,7 +2,12 @@
   <p-card>
     <div class="flex justify-content-between align-items-center mb-4">
       <h2 class="m-0">Gestión de Usuarios</h2>
-      <p-button label="Nuevo Usuario" icon="pi pi-plus" (onClick)="onCreate()"></p-button>
+      <p-button 
+        *ngIf="canCreateUser()"
+        label="Nuevo Usuario" 
+        icon="pi pi-plus" 
+        (onClick)="onCreate()">
+      </p-button>
     </div>
 
     <p-table 
@@ -48,12 +53,14 @@
               (onClick)="onViewProfile(user)"
               pTooltip="Ver perfil"></p-button>
             <p-button 
+              *ngIf="canEditUser()"
               icon="pi pi-pencil" 
               [rounded]="true" 
               [text]="true" 
               severity="info"
               (onClick)="onEdit(user)"></p-button>
             <p-button 
+              *ngIf="canDeleteUser()"
               icon="pi pi-trash" 
               [rounded]="true" 
               [text]="true" 

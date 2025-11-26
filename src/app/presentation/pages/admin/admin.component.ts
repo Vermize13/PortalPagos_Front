@@ -15,6 +15,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { AccordionModule } from 'primeng/accordion';
 import { BackupService, BackupResponse, RestoreResponse } from '../../../data/services/backup.service';
 import { ToastService } from '../../../data/services/toast.service';
+import { PermissionService } from '../../../data/services/permission.service';
+import { Permissions } from '../../../domain/models';
 
 /**
  * RF6: System Administration - Backup & Restore and Configuration
@@ -98,12 +100,34 @@ export class AdminComponent implements OnInit {
 
   constructor(
     private backupService: BackupService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    public permissionService: PermissionService
   ) {}
 
   ngOnInit() {
     this.loadBackups();
     this.loadConfiguration();
+  }
+
+  // Permission helper methods for template use
+  canCreateBackup(): boolean {
+    return this.permissionService.hasPermission(Permissions.BACKUP_CREATE) ||
+           this.permissionService.hasPermission(Permissions.ADMIN_FULL);
+  }
+
+  canRestoreBackup(): boolean {
+    return this.permissionService.hasPermission(Permissions.BACKUP_RESTORE) ||
+           this.permissionService.hasPermission(Permissions.ADMIN_FULL);
+  }
+
+  canViewBackups(): boolean {
+    return this.permissionService.hasPermission(Permissions.BACKUP_VIEW) ||
+           this.permissionService.hasPermission(Permissions.ADMIN_ACCESS) ||
+           this.permissionService.hasPermission(Permissions.ADMIN_FULL);
+  }
+
+  canConfigureSystem(): boolean {
+    return this.permissionService.hasPermission(Permissions.ADMIN_FULL);
   }
 
   loadBackups() {

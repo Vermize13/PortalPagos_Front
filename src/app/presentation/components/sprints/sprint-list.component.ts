@@ -7,9 +7,10 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
-import { Sprint } from '../../../domain/models';
+import { Sprint, Permissions } from '../../../domain/models';
 import { SprintService } from '../../../data/services/sprint.service';
 import { ToastService } from '../../../data/services/toast.service';
+import { PermissionService } from '../../../data/services/permission.service';
 import { SprintDialogComponent } from './sprint-dialog.component';
 
 @Component({
@@ -40,13 +41,28 @@ export class SprintListComponent implements OnInit {
   constructor(
     private sprintService: SprintService,
     private toastService: ToastService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    public permissionService: PermissionService
   ) {}
 
   ngOnInit() {
     if (this.projectId) {
       this.loadSprints();
     }
+  }
+
+  // Permission helper methods for template use
+  canCreateSprint(): boolean {
+    return this.permissionService.hasPermission(Permissions.SPRINT_CREATE);
+  }
+
+  canCloseSprint(): boolean {
+    return this.permissionService.hasPermission(Permissions.SPRINT_CLOSE) ||
+           this.permissionService.hasPermission(Permissions.SPRINT_UPDATE);
+  }
+
+  canDeleteSprint(): boolean {
+    return this.permissionService.hasPermission(Permissions.SPRINT_DELETE);
   }
 
   loadSprints() {

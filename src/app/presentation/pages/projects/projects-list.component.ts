@@ -12,9 +12,10 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
-import { Project } from '../../../domain/models';
+import { Project, Permissions } from '../../../domain/models';
 import { ProjectService, CreateProjectRequest, UpdateProjectRequest } from '../../../data/services/project.service';
 import { ToastService } from '../../../data/services/toast.service';
+import { PermissionService } from '../../../data/services/permission.service';
 
 interface ProjectFormData {
   id?: string;
@@ -65,11 +66,26 @@ export class ProjectsListComponent implements OnInit {
     private projectService: ProjectService,
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
-    private router: Router
+    private router: Router,
+    public permissionService: PermissionService
   ) {}
 
   ngOnInit() {
     this.loadProjects();
+  }
+
+  // Permission helper methods for template use
+  canCreateProject(): boolean {
+    return this.permissionService.hasPermission(Permissions.PROJECT_CREATE);
+  }
+
+  canEditProject(): boolean {
+    return this.permissionService.hasPermission(Permissions.PROJECT_UPDATE) ||
+           this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
+  }
+
+  canDeleteProject(): boolean {
+    return this.permissionService.hasPermission(Permissions.PROJECT_DELETE);
   }
 
   loadProjects() {

@@ -130,6 +130,7 @@
         <div class="flex justify-content-between align-items-center mb-4">
           <h3 class="m-0">Copias de Seguridad</h3>
           <p-button 
+            *ngIf="canCreateBackup()"
             label="RF6.1: Nueva Copia de Seguridad" 
             icon="pi pi-save" 
             (onClick)="openCreateDialog()"
@@ -172,7 +173,7 @@
               <th pTooltip="Notas o comentarios sobre la copia de seguridad" tooltipPosition="top">
                 Notas <i class="pi pi-info-circle text-sm" aria-label="Información sobre Notas" role="img"></i>
               </th>
-              <th pTooltip="Acciones disponibles para esta copia de seguridad" tooltipPosition="top">
+              <th *ngIf="canRestoreBackup()" pTooltip="Acciones disponibles para esta copia de seguridad" tooltipPosition="top">
                 Acciones <i class="pi pi-info-circle text-sm" aria-label="Información sobre Acciones" role="img"></i>
               </th>
             </tr>
@@ -196,7 +197,7 @@
               <td>
                 <span class="text-sm">{{ backup.notes || '-' }}</span>
               </td>
-              <td>
+              <td *ngIf="canRestoreBackup()">
                 <p-button 
                   label="RF6.2: Restaurar" 
                   icon="pi pi-replay" 
@@ -214,14 +215,14 @@
           
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="8" class="text-center">No hay copias de seguridad disponibles.</td>
+              <td [attr.colspan]="canRestoreBackup() ? 8 : 7" class="text-center">No hay copias de seguridad disponibles.</td>
             </tr>
           </ng-template>
         </p-table>
       </p-tabPanel>
 
       <!-- Configuration Tab -->
-      <p-tabPanel header="Configuración">
+      <p-tabPanel header="Configuración" [disabled]="!canConfigureSystem()">
         <div class="mb-4">
           <h3 class="m-0 mb-2">Configuración del Sistema</h3>
           <p class="text-600">Ajustes generales y parámetros de operación del sistema</p>

@@ -19,11 +19,12 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmationService } from 'primeng/api';
-import { ProjectWithMembers, ProjectMemberDetail, Label, User, Role } from '../../../domain/models';
+import { ProjectWithMembers, ProjectMemberDetail, Label, User, Role, Permissions } from '../../../domain/models';
 import { ProjectService, UpdateProjectRequest, AddProjectMemberRequest } from '../../../data/services/project.service';
 import { LabelService, CreateLabelRequest } from '../../../data/services/label.service';
 import { UserService } from '../../../data/services/user.service';
 import { ToastService } from '../../../data/services/toast.service';
+import { PermissionService } from '../../../data/services/permission.service';
 import { SprintListComponent } from '../../components/sprints/sprint-list.component';
 
 @Component({
@@ -99,7 +100,8 @@ export class ProjectViewComponent implements OnInit {
     private labelService: LabelService,
     private userService: UserService,
     private toastService: ToastService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    public permissionService: PermissionService
   ) {}
 
   ngOnInit() {
@@ -111,6 +113,32 @@ export class ProjectViewComponent implements OnInit {
         this.loadMembers();
       }
     });
+  }
+
+  // Permission helper methods for template use
+  canEditProject(): boolean {
+    return this.permissionService.hasPermission(Permissions.PROJECT_UPDATE) ||
+           this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
+  }
+
+  canAddMember(): boolean {
+    return this.permissionService.hasPermission(Permissions.PROJECT_MEMBER_ADD) ||
+           this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
+  }
+
+  canRemoveMember(): boolean {
+    return this.permissionService.hasPermission(Permissions.PROJECT_MEMBER_REMOVE) ||
+           this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
+  }
+
+  canManageLabels(): boolean {
+    return this.permissionService.hasPermission(Permissions.PROJECT_UPDATE) ||
+           this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
+  }
+
+  canManageSprints(): boolean {
+    return this.permissionService.hasPermission(Permissions.SPRINT_CREATE) ||
+           this.permissionService.hasPermission(Permissions.SPRINT_UPDATE);
   }
 
   loadProject() {

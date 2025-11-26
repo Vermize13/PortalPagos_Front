@@ -13,10 +13,11 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
-import { UserDisplay, RoleCode } from '../../../domain/models';
+import { UserDisplay, RoleCode, Permissions } from '../../../domain/models';
 import { User as DomainUser } from '../../../domain/models/user.model';
 import { UserService } from '../../../data/services/user.service';
 import { ToastService } from '../../../data/services/toast.service';
+import { PermissionService } from '../../../data/services/permission.service';
 
 interface UserFormData {
   id?: string;
@@ -80,11 +81,28 @@ export class UsersListComponent implements OnInit {
     private userService: UserService,
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
-    private router: Router
+    private router: Router,
+    public permissionService: PermissionService
   ) {}
 
   ngOnInit() {
     this.loadUsers();
+  }
+
+  // Permission helper methods for template use
+  canCreateUser(): boolean {
+    return this.permissionService.hasPermission(Permissions.USER_CREATE) ||
+           this.permissionService.hasPermission(Permissions.USER_MANAGE);
+  }
+
+  canEditUser(): boolean {
+    return this.permissionService.hasPermission(Permissions.USER_UPDATE) ||
+           this.permissionService.hasPermission(Permissions.USER_MANAGE);
+  }
+
+  canDeleteUser(): boolean {
+    return this.permissionService.hasPermission(Permissions.USER_DELETE) ||
+           this.permissionService.hasPermission(Permissions.USER_MANAGE);
   }
 
   loadUsers() {

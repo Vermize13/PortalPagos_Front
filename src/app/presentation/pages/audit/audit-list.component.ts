@@ -7,9 +7,10 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
-import { AuditLogWithUser, AuditAction } from '../../../domain/models';
+import { AuditLogWithUser, AuditAction, Permissions } from '../../../domain/models';
 import { AuditService, AuditLogFilter, AuditLogPagedResponse } from '../../../data/services/audit.service';
 import { ToastService } from '../../../data/services/toast.service';
+import { PermissionService } from '../../../data/services/permission.service';
 import * as XLSX from 'exceljs';
 import { saveAs } from 'file-saver';
 
@@ -50,7 +51,8 @@ export class AuditListComponent implements OnInit {
 
   constructor(
     private auditService: AuditService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    public permissionService: PermissionService
   ) {
     // Initialize action options
     this.actionOptions = Object.values(AuditAction).map(action => ({
@@ -61,6 +63,12 @@ export class AuditListComponent implements OnInit {
 
   ngOnInit() {
     this.loadAuditLogs();
+  }
+
+  // Permission helper methods for template use
+  canExportAudit(): boolean {
+    return this.permissionService.hasPermission(Permissions.AUDIT_EXPORT) ||
+           this.permissionService.hasPermission(Permissions.ADMIN_FULL);
   }
 
   loadAuditLogs() {
