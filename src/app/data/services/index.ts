@@ -12,3 +12,4 @@ export * from './backup.service';
 export * from './dashboard.service';
 export * from './notification.service';
 export * from './permission.service';
+export * from './invitation.service';
