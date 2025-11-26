@@ -93,7 +93,7 @@ export class ProfileComponent implements OnInit {
       } else {
         // Viewing own profile
         this.isViewingOtherUser = false;
-        this.loadUserProfile(currentUser.nameid.toString());
+        this.loadUserProfile(currentUser.nameid);
       }
     });
   }

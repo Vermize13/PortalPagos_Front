@@ -71,7 +71,7 @@ export class UserService {
   }
 
   passwordReset(newPassword:string): Observable<string> {
-    const userId = 20//this.userState?.getUser()?.nameid;
+    const userId = this.userState?.getUser()?.nameid;
     return this.http.post(`${this.urlPass}reset`, {
       userId,
       newPassword
@@ -81,7 +81,7 @@ export class UserService {
   }
 
   passwordChange(currentPassword:string, newPassword:string): Observable<string>{
-    const userId = 20//this.userState?.getUser()?.nameid;
+    const userId = this.userState?.getUser()?.nameid;
     return this.http.post(`${this.urlPass}change`, {
       userId,
       currentPassword,

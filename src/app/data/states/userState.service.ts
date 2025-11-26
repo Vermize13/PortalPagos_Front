@@ -15,7 +15,7 @@ export class UserStateService {
     const normalizedRole = this.normalizeRole(roleClaim);
     const userData: User = {
       token: token,
-      nameid: 20,//Number(decodedToken.nameid),
+      nameid: decodedToken.nameid || decodedToken.sub,
       role: normalizedRole,
       unique_name: decodedToken.unique_name
     };
@@ -54,7 +54,7 @@ export class UserStateService {
         const roleClaim = this.extractRoleClaim(decodedToken);
         return {
           token: token,
-          nameid: 20, // Number(decodedToken.nameid),
+          nameid: decodedToken.nameid || decodedToken.sub,
           role: this.normalizeRole(roleClaim),
           unique_name: decodedToken.unique_name
         };
@@ -148,7 +148,7 @@ export class UserStateService {
 
 export interface User {
   token: string;
-  nameid: number;
+  nameid: string;
   role: string;
   unique_name: string;
 }
