@@ -9,3 +9,4 @@ export * from './audit-log.model';
 export * from './notification.model';
 export * from './backup.model';
 export * from './perfil.model';
+export * from './permissions.model';

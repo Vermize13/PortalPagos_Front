@@ -25,13 +25,15 @@ import {
   LabelInfo,
   Label,
   IncidentWithDetails,
-  IncidentHistory
+  IncidentHistory,
+  Permissions
 } from '../../../domain/models';
 import { IncidentService, AddCommentRequest } from '../../../data/services/incident.service';
 import { AttachmentService } from '../../../data/services/attachment.service';
 import { LabelService } from '../../../data/services/label.service';
 import { AttachmentWithUser } from '../../../domain/models/attachment.model';
 import { ToastService } from '../../../data/services/toast.service';
+import { PermissionService } from '../../../data/services/permission.service';
 import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping } from '../../../domain/models/enum-mappings';
 
 @Component({
@@ -81,7 +83,8 @@ export class IncidentDetailComponent implements OnInit {
     private incidentService: IncidentService,
     private attachmentService: AttachmentService,
     private labelService: LabelService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    public permissionService: PermissionService
   ) {}
 
   ngOnInit() {
@@ -92,6 +95,26 @@ export class IncidentDetailComponent implements OnInit {
       this.loadHistory(id);
       this.loadAttachments(id);
     }
+  }
+
+  // Permission helper methods for template use
+  canEditIncident(): boolean {
+    return this.permissionService.canUpdateIncidentTitle() ||
+           this.permissionService.canUpdateIncidentDescription() ||
+           this.permissionService.canUpdateIncidentLabels() ||
+           this.permissionService.canUpdateIncidentData();
+  }
+
+  canManageLabels(): boolean {
+    return this.permissionService.canUpdateIncidentLabels();
+  }
+
+  canComment(): boolean {
+    return this.permissionService.hasPermission(Permissions.INCIDENT_COMMENT);
+  }
+
+  canManageAttachments(): boolean {
+    return this.permissionService.hasPermission(Permissions.INCIDENT_ATTACHMENT);
   }
 
   loadIncident(id: string) {
