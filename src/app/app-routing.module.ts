@@ -21,6 +21,12 @@ export const routes: Routes = [
   { path: 'login/reestablecer/:id', loadComponent: () => import('./presentation/components/auth/reestablecerPassword/reestablecerPassword.component').then(m => m.ReestablecerPasswordComponent) },
   { path: 'login/cambio', loadComponent: () => import('./presentation/components/auth/cambioPassword/cambioPassword.component').then(m => m.CambioPasswordComponent) },
   
+  // Public registration route for invitation completion
+  {
+    path: 'register',
+    loadComponent: () => import('./presentation/components/auth/register/register.component').then(m => m.RegisterComponent)
+  },
+  
   // Not found route
   { path: 'notfound', component: NotfoundComponent },
   
