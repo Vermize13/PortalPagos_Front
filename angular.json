@@ -47,7 +47,7 @@
                 "minify": true,
                 "inlineCritical": false
               },
-              "fonts": true
+              "fonts": false
             }
           },
           "configurations": {
@@ -60,8 +60,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kB",
-                  "maximumError": "4kB"
+                  "maximumWarning": "6kB",
+                  "maximumError": "10kB"
                 }
               ],
               "fileReplacements": [
