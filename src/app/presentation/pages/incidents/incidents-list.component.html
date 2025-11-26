@@ -197,7 +197,7 @@
               severity="info"
               (onClick)="onEdit(incident)"></p-button>
             <p-button 
-              *ngIf="permissionService.isAdmin()"
+              *ngIf="canDeleteIncident()"
               icon="pi pi-trash" 
               [rounded]="true" 
               [text]="true" 

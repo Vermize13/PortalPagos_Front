@@ -169,6 +169,10 @@ export class IncidentsListComponent implements OnInit {
     return this.permissionService.hasPermission(Permissions.INCIDENT_STATUS_UPDATE);
   }
 
+  canDeleteIncident(): boolean {
+    return this.permissionService.isAdmin();
+  }
+
   loadDropdownData() {
     // Load projects for dropdown
     this.projectService.getAll().subscribe({
