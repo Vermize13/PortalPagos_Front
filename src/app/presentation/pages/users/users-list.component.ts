@@ -14,7 +14,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs/operators';
-import { UserDisplay, RoleCode, Permissions, RolesConfig } from '../../../domain/models';
+import { UserDisplay, RoleCode, Permissions } from '../../../domain/models';
 import { User as DomainUser } from '../../../domain/models/user.model';
 import { UserService, UpdateUserRequest, BaseUserRequest } from '../../../data/services/user.service';
 import { InvitationService, InviteUserRequest } from '../../../data/services/invitation.service';
@@ -96,9 +96,6 @@ export class UsersListComponent implements OnInit {
     { label: 'Desarrollador', value: RoleCode.Developer },
     { label: 'QA/Tester', value: RoleCode.Tester }
   ];
-
-  // Map role codes to role IDs from RolesConfig
-  private roleIdMap: Record<string, string> = {};
 
   private readonly roleSynonyms: Record<string, RoleCode> = {
     administradorgeneral: RoleCode.Admin,
@@ -359,6 +356,10 @@ export class UsersListComponent implements OnInit {
     };
   }
   
+  /**
+   * Handles saving user updates. This method only handles updates to existing users.
+   * New user creation is now done via the invitation flow (onSendInvitation).
+   */
   onSaveUser() {
     this.submitted = true;
     
