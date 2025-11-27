@@ -16,9 +16,16 @@ import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs/operators';
 import { UserDisplay, RoleCode, Permissions } from '../../../domain/models';
 import { User as DomainUser } from '../../../domain/models/user.model';
-import { UserService, CreateUserRequest, UpdateUserRequest, BaseUserRequest } from '../../../data/services/user.service';
+import { UserService, UpdateUserRequest, BaseUserRequest } from '../../../data/services/user.service';
+import { InvitationService, InviteUserRequest } from '../../../data/services/invitation.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { PermissionService } from '../../../data/services/permission.service';
+
+interface InvitationFormData {
+  fullName: string;
+  email: string;
+  roleId: string;
+}
 
 interface UserFormData {
   id?: string;
@@ -57,11 +64,19 @@ export class UsersListComponent implements OnInit {
   
   // Dialog state
   displayDialog: boolean = false;
+  displayInvitationDialog: boolean = false;
   isEditMode: boolean = false;
   submitted: boolean = false;
   saving: boolean = false;
   
-  // Form data
+  // Invitation form data
+  invitationForm: InvitationFormData = {
+    fullName: '',
+    email: '',
+    roleId: ''
+  };
+  
+  // Form data for editing users
   userForm: UserFormData = {
     name: '',
     email: '',
@@ -71,7 +86,7 @@ export class UsersListComponent implements OnInit {
     isActive: true
   };
   
-  // Role options
+  // Role options with IDs for API compatibility
   roles = [
     { label: 'Administrador General', value: RoleCode.Admin },
     { label: 'Scrum Master', value: RoleCode.ScrumMaster },
@@ -100,6 +115,7 @@ export class UsersListComponent implements OnInit {
 
   constructor(
     private userService: UserService,
+    private invitationService: InvitationService,
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
     private router: Router,
@@ -111,7 +127,7 @@ export class UsersListComponent implements OnInit {
   }
 
   // Permission helper methods for template use
-  canCreateUser(): boolean {
+  canInviteUser(): boolean {
     return this.permissionService.hasPermission(Permissions.USER_CREATE) ||
            this.permissionService.hasPermission(Permissions.USER_MANAGE);
   }
@@ -271,7 +287,79 @@ export class UsersListComponent implements OnInit {
     this.resetForm();
     this.displayDialog = true;
   }
+
+  onInviteUser() {
+    this.submitted = false;
+    this.saving = false;
+    this.resetInvitationForm();
+    this.displayInvitationDialog = true;
+  }
+
+  onSendInvitation() {
+    this.submitted = true;
+    
+    if (!this.validateInvitationForm()) {
+      this.toastService.showError('Error', 'Por favor complete todos los campos requeridos');
+      return;
+    }
+
+    const request: InviteUserRequest = {
+      fullName: this.invitationForm.fullName.trim(),
+      email: this.invitationForm.email.trim(),
+      roleId: this.invitationForm.roleId
+    };
+
+    this.saving = true;
+    this.invitationService.inviteUser(request).pipe(
+      finalize(() => {
+        this.saving = false;
+      })
+    ).subscribe({
+      next: (response) => {
+        const successMessage = response.message || `Invitación enviada a ${response.email}`;
+        this.toastService.showSuccess('Invitación Enviada', successMessage);
+        this.afterSuccessfulInvitation();
+      },
+      error: (error) => {
+        console.error('Error sending invitation:', error);
+        this.toastService.showError('Error', this.resolveApiErrorMessage(error, 'No se pudo enviar la invitación'));
+      }
+    });
+  }
+
+  onCancelInvitationDialog() {
+    this.displayInvitationDialog = false;
+    this.submitted = false;
+    this.saving = false;
+    this.resetInvitationForm();
+  }
+
+  validateInvitationForm(): boolean {
+    if (!this.invitationForm.fullName?.trim() || !this.invitationForm.email?.trim() || !this.invitationForm.roleId) {
+      return false;
+    }
+    return true;
+  }
+
+  private afterSuccessfulInvitation(): void {
+    this.displayInvitationDialog = false;
+    this.submitted = false;
+    this.saving = false;
+    this.resetInvitationForm();
+  }
+
+  private resetInvitationForm(): void {
+    this.invitationForm = {
+      fullName: '',
+      email: '',
+      roleId: ''
+    };
+  }
   
+  /**
+   * Handles saving user updates. This method only handles updates to existing users.
+   * New user creation is now done via the invitation flow (onSendInvitation).
+   */
   onSaveUser() {
     this.submitted = true;
     
@@ -282,7 +370,7 @@ export class UsersListComponent implements OnInit {
 
     const baseRequest = this.buildBaseRequest();
 
-    if (this.isEditMode && this.userForm.id) {
+    if (this.userForm.id) {
       const updateRequest: UpdateUserRequest = { ...baseRequest };
       const trimmedPassword = this.userForm.password?.trim();
       if (trimmedPassword) {
@@ -304,29 +392,7 @@ export class UsersListComponent implements OnInit {
           this.toastService.showError('Error', this.resolveApiErrorMessage(error, 'No se pudo actualizar el usuario'));
         }
       });
-      return;
     }
-
-    const createRequest: CreateUserRequest = {
-      ...baseRequest,
-      password: this.userForm.password!.trim()
-    };
-
-    this.saving = true;
-    this.userService.createUser(createRequest).pipe(
-      finalize(() => {
-        this.saving = false;
-      })
-    ).subscribe({
-      next: () => {
-        this.toastService.showSuccess('Éxito', 'Usuario creado correctamente');
-        this.afterSuccessfulSave();
-      },
-      error: (error) => {
-        console.error('Error creating user:', error);
-        this.toastService.showError('Error', this.resolveApiErrorMessage(error, 'No se pudo crear el usuario'));
-      }
-    });
   }
   
   onCancelDialog() {
@@ -339,13 +405,6 @@ export class UsersListComponent implements OnInit {
   validateForm(): boolean {
     if (!this.userForm.name?.trim() || !this.userForm.email?.trim() || !this.userForm.username?.trim() || !this.userForm.roleId) {
       return false;
-    }
-
-    if (!this.isEditMode) {
-      const password = this.userForm.password?.trim();
-      if (!password || password.length < 6) {
-        return false;
-      }
     }
 
     return true;

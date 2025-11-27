@@ -1,0 +1,211 @@
+/* Main container */
+.register-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+/* Left side - Welcome section */
+.register-left {
+  flex: 1;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.welcome-message {
+  max-width: 500px;
+  text-align: left;
+}
+
+.welcome-message h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.welcome-message p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+/* Right side - Registration form */
+.register-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background-color: #f8fafc;
+}
+
+.register-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 450px;
+}
+
+.register-card h2 {
+  color: #1e40af;
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Invitation info styles */
+.invitation-info {
+  background-color: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  color: #0369a1;
+}
+
+.info-item i {
+  font-size: 1rem;
+  color: #0284c7;
+}
+
+.info-item span {
+  font-size: 0.95rem;
+}
+
+/* Form styles */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.field {
+  margin-bottom: 1.25rem;
+}
+
+:host ::ng-deep .p-float-label {
+  display: block;
+  margin-top: 1.5rem;
+}
+
+:host ::ng-deep .p-float-label label {
+  left: 0.5rem;
+  color: #64748b;
+}
+
+:host ::ng-deep .p-inputtext {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+:host ::ng-deep .p-inputtext:enabled:focus {
+  box-shadow: 0 0 0 0.2rem #bfdbfe;
+  border-color: #3b82f6;
+}
+
+:host ::ng-deep .p-password {
+  width: 100%;
+}
+
+:host ::ng-deep .p-password-input {
+  width: 100%;
+}
+
+/* Register button */
+.register-button {
+  background-color: #1e40af !important;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.register-button:hover:not(:disabled) {
+  background-color: #1e3a8a !important;
+  transform: translateY(-1px);
+}
+
+.register-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.register-button:disabled {
+  background-color: #94a3b8 !important;
+  cursor: not-allowed;
+}
+
+/* Login link */
+.login-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.login-link:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Text utilities */
+.text-secondary {
+  color: #64748b;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .register-container {
+    flex-direction: column;
+  }
+  
+  .register-left {
+    padding: 3rem 1.5rem;
+    text-align: center;
+  }
+  
+  .register-right {
+    padding: 2rem 1.5rem;
+  }
+  
+  .register-card {
+    padding: 1.5rem;
+  }
+}
+
+/* Toast notifications */
+:host ::ng-deep .p-toast {
+  margin-top: 1rem;
+}
+
+:host ::ng-deep .p-toast .p-toast-message {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Progress spinner */
+:host ::ng-deep .p-progress-spinner-circle {
+  stroke: #1e40af;
+}
