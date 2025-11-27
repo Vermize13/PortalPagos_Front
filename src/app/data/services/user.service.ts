@@ -144,6 +144,10 @@ export class UserService {
       isActive: request.isActive
     };
 
+    if (request.roleId) {
+      payload.roleId = request.roleId;
+    }
+
     if (request.password) {
       payload.password = request.password;
     }
@@ -158,6 +162,7 @@ export interface BaseUserRequest {
   email: string;
   username: string;
   roleCode: string;
+  roleId?: string;
   isActive: boolean;
   password?: string;
 }
@@ -181,6 +186,7 @@ export interface SaveUserPayload {
   username: string;
   roleCode: string;
   role: string;
+  roleId?: string;
   isActive: boolean;
   password?: string;
 }

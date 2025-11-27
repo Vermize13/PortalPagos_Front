@@ -13,3 +13,4 @@ export * from './dashboard.service';
 export * from './notification.service';
 export * from './permission.service';
 export * from './invitation.service';
+export * from './role.service';

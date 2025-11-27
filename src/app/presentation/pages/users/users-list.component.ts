@@ -14,12 +14,13 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs/operators';
-import { UserDisplay, RoleCode, Permissions } from '../../../domain/models';
+import { UserDisplay, RoleCode, Permissions, Role } from '../../../domain/models';
 import { User as DomainUser } from '../../../domain/models/user.model';
 import { UserService, UpdateUserRequest, BaseUserRequest } from '../../../data/services/user.service';
 import { InvitationService, InviteUserRequest } from '../../../data/services/invitation.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { PermissionService } from '../../../data/services/permission.service';
+import { RoleService } from '../../../data/services/role.service';
 
 interface InvitationFormData {
   fullName: string;
@@ -36,6 +37,43 @@ interface UserFormData {
   roleId: string;
   isActive: boolean;
 }
+
+interface RoleLookupEntry {
+  canonicalCode: string;
+  backendCode: string;
+  backendId: string | null;
+  label: string;
+}
+
+const DEFAULT_ROLE_LABELS: Record<string, string> = {
+  [RoleCode.Admin]: 'Administrador General',
+  [RoleCode.ScrumMaster]: 'Scrum Master',
+  [RoleCode.ProductOwner]: 'Product Owner',
+  [RoleCode.Stakeholder]: 'Stakeholder',
+  [RoleCode.TechLead]: 'Líder Técnico',
+  [RoleCode.Developer]: 'Desarrollador',
+  [RoleCode.Tester]: 'QA/Tester'
+};
+
+const DEFAULT_ROLE_ORDER: string[] = [
+  RoleCode.Admin,
+  RoleCode.ScrumMaster,
+  RoleCode.ProductOwner,
+  RoleCode.Stakeholder,
+  RoleCode.TechLead,
+  RoleCode.Developer,
+  RoleCode.Tester
+];
+
+const FALLBACK_ROLES: Array<{ id: string; code: string; name: string }> = [
+  { id: 'bcb7c990-60f7-4237-9da9-fc6f965aa28b', code: 'admin', name: 'Administrador General' },
+  { id: '6161156c-1bf7-4191-b554-f4228cadc4ea', code: 'scrum_master', name: 'Scrum Master' },
+  { id: '46c3609b-4252-4b78-b4f6-23e705ee0097', code: 'product_owner', name: 'Product Owner' },
+  { id: 'b6633532-f352-4494-b2b0-ab4631884c41', code: 'lider_tecnico', name: 'Líder Técnico' },
+  { id: '0784c6bf-b3e7-4511-8e76-9f874b8cb81c', code: 'desarrollador', name: 'Desarrollador' },
+  { id: '08b73663-b354-4f09-8fd4-6525c824cbc8', code: 'qa_tester', name: 'QA/Tester' },
+  { id: 'bf4a36db-0a0c-465e-9961-3bdf686e154a', code: 'stakeholder', name: 'Stakeholder' }
+];
 
 @Component({
   selector: 'app-users-list',
@@ -86,31 +124,36 @@ export class UsersListComponent implements OnInit {
     isActive: true
   };
   
-  // Role options with IDs for API compatibility
-  roles = [
-    { label: 'Administrador General', value: RoleCode.Admin },
-    { label: 'Scrum Master', value: RoleCode.ScrumMaster },
-    { label: 'Product Owner', value: RoleCode.ProductOwner },
-    { label: 'Stakeholder', value: RoleCode.Stakeholder },
-    { label: 'Líder Técnico', value: RoleCode.TechLead },
-    { label: 'Desarrollador', value: RoleCode.Developer },
-    { label: 'QA/Tester', value: RoleCode.Tester }
-  ];
-
+  // Role options dynamically loaded from the API
+  roles: Array<{ label: string; value: string }> = [];
+  private readonly roleLookup = new Map<string, RoleLookupEntry>();
   private readonly roleSynonyms: Record<string, RoleCode> = {
     administradorgeneral: RoleCode.Admin,
     administrador: RoleCode.Admin,
     admin: RoleCode.Admin,
+    adminrole: RoleCode.Admin,
+    administradorgeneralrole: RoleCode.Admin,
+    administradorrole: RoleCode.Admin,
     scrummaster: RoleCode.ScrumMaster,
+    scrummasterrole: RoleCode.ScrumMaster,
     productowner: RoleCode.ProductOwner,
+    productownerrole: RoleCode.ProductOwner,
     stakeholder: RoleCode.Stakeholder,
+    stakeholderrole: RoleCode.Stakeholder,
     lidertecnico: RoleCode.TechLead,
     techlead: RoleCode.TechLead,
+    techleadrole: RoleCode.TechLead,
+    lidertecnicorole: RoleCode.TechLead,
     desarrollador: RoleCode.Developer,
     developer: RoleCode.Developer,
+    developerrole: RoleCode.Developer,
+    desarrolladorrole: RoleCode.Developer,
     tester: RoleCode.Tester,
     qatester: RoleCode.Tester,
-    qa: RoleCode.Tester
+    testerrole: RoleCode.Tester,
+    qatesterrole: RoleCode.Tester,
+    qa: RoleCode.Tester,
+    qarole: RoleCode.Tester
   };
 
   constructor(
@@ -119,11 +162,12 @@ export class UsersListComponent implements OnInit {
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
     private router: Router,
+    private roleService: RoleService,
     public permissionService: PermissionService
   ) {}
 
   ngOnInit() {
-    this.loadUsers();
+    this.initializeRoles();
   }
 
   // Permission helper methods for template use
@@ -142,15 +186,221 @@ export class UsersListComponent implements OnInit {
            this.permissionService.hasPermission(Permissions.USER_MANAGE);
   }
 
+  private initializeRoles(): void {
+    this.roleService.getRoles().subscribe({
+      next: (roles) => {
+        if (Array.isArray(roles) && roles.length > 0) {
+          this.applyRoleList(roles);
+        } else {
+          this.toastService.showWarn('Advertencia', 'No se recibieron roles desde el servidor. Se utilizará la lista predefinida.');
+          this.applyFallbackRoles();
+        }
+        this.loadUsers();
+      },
+      error: (error) => {
+        console.error('Error loading roles:', error);
+        this.toastService.showWarn('Advertencia', 'No se pudieron cargar los roles desde el servidor. Se utilizará la lista predefinida.');
+        this.applyFallbackRoles();
+        this.loadUsers();
+      }
+    });
+  }
+
+  private applyRoleList(roles: Role[]): void {
+    this.roleLookup.clear();
+    roles.forEach(role => this.upsertRoleOption(role));
+
+    if (this.roleLookup.size === 0) {
+      this.toastService.showWarn('Advertencia', 'No se pudo procesar la lista de roles del servidor. Se utilizará la lista predefinida.');
+      this.applyFallbackRoles();
+      return;
+    }
+
+    this.ensureDefaultRoles();
+    this.refreshRoleDropdownOptions();
+  }
+
+  private applyFallbackRoles(): void {
+    this.roleLookup.clear();
+    FALLBACK_ROLES.forEach(role => this.upsertRoleOption(role));
+    this.ensureDefaultRoles();
+    this.refreshRoleDropdownOptions();
+  }
+
+  private ensureDefaultRoles(): void {
+    for (const code of DEFAULT_ROLE_ORDER) {
+      if (!this.roleLookup.has(code)) {
+        const label = DEFAULT_ROLE_LABELS[code] ?? this.formatRoleLabel(code);
+        this.roleLookup.set(code, {
+          canonicalCode: code,
+          backendCode: code,
+          backendId: null,
+          label
+        });
+      }
+    }
+  }
+
+  private refreshRoleDropdownOptions(): void {
+    const entries = Array.from(this.roleLookup.values());
+    entries.sort((a, b) => {
+      const indexA = DEFAULT_ROLE_ORDER.indexOf(a.canonicalCode);
+      const indexB = DEFAULT_ROLE_ORDER.indexOf(b.canonicalCode);
+
+      if (indexA !== -1 && indexB !== -1 && indexA !== indexB) {
+        return indexA - indexB;
+      }
+
+      if (indexA !== -1) {
+        return -1;
+      }
+
+      if (indexB !== -1) {
+        return 1;
+      }
+
+      return a.label.localeCompare(b.label);
+    });
+
+    this.roles = entries.map(entry => ({
+      label: entry.label,
+      value: entry.canonicalCode
+    }));
+  }
+
+  private upsertRoleOption(roleData: { id?: string | null; code?: string | null; name?: string | null }): boolean {
+    const canonicalCode = this.normalizeRoleCodeString(roleData.code ?? roleData.name ?? '');
+    if (!canonicalCode) {
+      return false;
+    }
+
+    const existing = this.roleLookup.get(canonicalCode);
+    const backendCodeRaw = roleData.code ?? existing?.backendCode ?? canonicalCode;
+    const normalizedBackendCodeCandidate = String(backendCodeRaw ?? '').trim();
+    const normalizedBackendCode = normalizedBackendCodeCandidate.length > 0 ? normalizedBackendCodeCandidate : canonicalCode;
+    const backendId = roleData.id ?? existing?.backendId ?? null;
+    const label = (roleData.name?.trim()) || existing?.label || DEFAULT_ROLE_LABELS[canonicalCode] || this.formatRoleLabel(canonicalCode);
+
+    if (existing && existing.backendCode === normalizedBackendCode && existing.backendId === backendId && existing.label === label) {
+      return false;
+    }
+
+    this.roleLookup.set(canonicalCode, {
+      canonicalCode,
+      backendCode: normalizedBackendCode,
+      backendId,
+      label
+    });
+
+    return true;
+  }
+
+  private getRoleEntry(code?: string): RoleLookupEntry | undefined {
+    if (!code) {
+      return undefined;
+    }
+    const canonical = this.toCanonicalRoleCode(code);
+    if (!canonical) {
+      return undefined;
+    }
+    return this.roleLookup.get(canonical);
+  }
+
+  private toCanonicalRoleCode(raw?: string | null): string | undefined {
+    if (!raw) {
+      return undefined;
+    }
+
+    const direct = this.normalizeRoleCodeString(raw);
+    if (direct) {
+      return direct;
+    }
+
+    const normalizedLabel = this.normalizeText(raw);
+    for (const entry of this.roleLookup.values()) {
+      if (entry.backendCode.toLowerCase() === raw.toLowerCase()) {
+        return entry.canonicalCode;
+      }
+
+      if (this.normalizeText(entry.label) === normalizedLabel) {
+        return entry.canonicalCode;
+      }
+    }
+
+    return undefined;
+  }
+
+  private normalizeRoleCodeString(value?: string | null): string | undefined {
+    if (!value) {
+      return undefined;
+    }
+
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return undefined;
+    }
+
+    const lower = trimmed.toLowerCase();
+    for (const code of Object.values(RoleCode)) {
+      if (code === trimmed || code === lower) {
+        return code as string;
+      }
+    }
+
+    const normalizedText = this.normalizeText(trimmed);
+    const collapsed = normalizedText.replace(/\s+/g, '');
+    const synonymMatch = this.roleSynonyms[collapsed];
+    if (synonymMatch) {
+      return synonymMatch;
+    }
+
+    if (normalizedText) {
+      return normalizedText.replace(/\s+/g, '_').replace(/_+/g, '_');
+    }
+
+    return lower;
+  }
+
+  private formatRoleLabel(code: string): string {
+    if (!code) {
+      return '';
+    }
+
+    const defaultLabel = DEFAULT_ROLE_LABELS[code];
+    if (defaultLabel) {
+      return defaultLabel;
+    }
+
+    const cleaned = code.replace(/[_-]+/g, ' ').trim();
+    if (!cleaned) {
+      return code;
+    }
+
+    return cleaned.split(' ').map(part => part ? part.charAt(0).toUpperCase() + part.slice(1) : '').join(' ');
+  }
+
   loadUsers() {
     this.loading = true;
     this.userService.getAllUsers().subscribe({
       next: (users: DomainUser[]) => {
-        // Transform User[] to UserDisplay[]
+        let roleLookupUpdated = false;
+
         this.users = users.map(user => {
           const resolvedRole = user.role || user.roles?.[0];
-          const roleCode = resolvedRole?.code || this.getRoleCodeFromLabel(resolvedRole?.name);
-          const roleLabel = this.getRoleLabelFromCode(roleCode) || resolvedRole?.name || 'Sin rol';
+          const canonicalRoleCode = this.toCanonicalRoleCode(resolvedRole?.code) ?? this.toCanonicalRoleCode(resolvedRole?.name);
+          const roleEntrySource = resolvedRole ? {
+            id: resolvedRole.id,
+            code: resolvedRole.code ?? canonicalRoleCode,
+            name: resolvedRole.name
+          } : undefined;
+
+          if (canonicalRoleCode && roleEntrySource) {
+            roleLookupUpdated = this.upsertRoleOption(roleEntrySource) || roleLookupUpdated;
+          }
+
+          const roleLabel = canonicalRoleCode
+            ? this.getRoleLabelFromCode(canonicalRoleCode) || resolvedRole?.name || 'Sin rol'
+            : resolvedRole?.name || 'Sin rol';
 
           return {
             id: user.id,
@@ -158,11 +408,17 @@ export class UsersListComponent implements OnInit {
             email: user.email,
             name: user.name,
             primaryRole: roleLabel,
-            primaryRoleCode: roleCode,
+            primaryRoleCode: canonicalRoleCode ?? resolvedRole?.code ?? undefined,
             isActive: user.isActive,
             createdAt: user.createdAt
           };
         });
+
+        if (roleLookupUpdated) {
+          this.ensureDefaultRoles();
+          this.refreshRoleDropdownOptions();
+        }
+
         this.loading = false;
       },
       error: (error) => {
@@ -212,7 +468,9 @@ export class UsersListComponent implements OnInit {
   }
 
   getRoleSeverity(roleCode?: string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
-    switch (roleCode) {
+    const canonical = this.toCanonicalRoleCode(roleCode) ?? this.normalizeRoleCodeString(roleCode);
+
+    switch (canonical) {
       case RoleCode.Admin:
         return 'danger';
       case RoleCode.ProductOwner:
@@ -241,13 +499,14 @@ export class UsersListComponent implements OnInit {
   onEdit(user: UserDisplay) {
     this.isEditMode = true;
     this.submitted = false;
+    const canonicalRole = this.toCanonicalRoleCode(user.primaryRoleCode) || this.getRoleCodeFromLabel(user.primaryRole) || '';
     this.userForm = {
       id: user.id,
       name: user.name,
       email: user.email,
       username: user.username,
       password: '',
-      roleId: user.primaryRoleCode || this.getRoleCodeFromLabel(user.primaryRole) || '',
+      roleId: canonicalRole,
       isActive: user.isActive
     };
     this.displayDialog = true;
@@ -303,10 +562,16 @@ export class UsersListComponent implements OnInit {
       return;
     }
 
+    const selectedRole = this.getRoleEntry(this.invitationForm.roleId);
+    if (!selectedRole?.backendId) {
+      this.toastService.showError('Error', 'El rol seleccionado no es válido.');
+      return;
+    }
+
     const request: InviteUserRequest = {
       fullName: this.invitationForm.fullName.trim(),
       email: this.invitationForm.email.trim(),
-      roleId: this.invitationForm.roleId
+      roleId: selectedRole.backendId
     };
 
     this.saving = true;
@@ -411,11 +676,15 @@ export class UsersListComponent implements OnInit {
   }
 
   private buildBaseRequest(): BaseUserRequest {
+    const canonicalRole = this.toCanonicalRoleCode(this.userForm.roleId) || this.normalizeRoleCodeString(this.userForm.roleId) || this.userForm.roleId;
+    const roleEntry = this.getRoleEntry(canonicalRole);
+
     return {
       name: this.userForm.name.trim(),
       email: this.userForm.email.trim(),
       username: this.userForm.username.trim(),
-      roleCode: this.userForm.roleId,
+      roleCode: roleEntry?.backendCode ?? canonicalRole,
+      roleId: roleEntry?.backendId ?? undefined,
       isActive: this.userForm.isActive
     };
   }
@@ -471,7 +740,18 @@ export class UsersListComponent implements OnInit {
     if (!code) {
       return undefined;
     }
-    return this.roles.find(role => role.value === code)?.label;
+
+    const entry = this.getRoleEntry(code);
+    if (entry) {
+      return entry.label;
+    }
+
+    const canonical = this.normalizeRoleCodeString(code);
+    if (canonical) {
+      return DEFAULT_ROLE_LABELS[canonical] ?? this.formatRoleLabel(canonical);
+    }
+
+    return undefined;
   }
 
   private getRoleCodeFromLabel(label?: string): string | undefined {
@@ -486,7 +766,13 @@ export class UsersListComponent implements OnInit {
       return synonymMatch;
     }
 
-    return this.roles.find(role => this.normalizeText(role.label) === normalizedLabel)?.value;
+    for (const entry of this.roleLookup.values()) {
+      if (this.normalizeText(entry.label) === normalizedLabel) {
+        return entry.canonicalCode;
+      }
+    }
+
+    return undefined;
   }
 
   private normalizeText(value?: string): string {
