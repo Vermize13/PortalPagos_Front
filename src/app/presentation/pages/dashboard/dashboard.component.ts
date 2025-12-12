@@ -53,7 +53,6 @@ export class DashboardComponent implements OnInit {
           incidentsByPriority: [],
           incidentsBySeverity: [],
           incidentsBySprint: [],
-          mttr: 0,
           incidentEvolution: []
         };
       }
