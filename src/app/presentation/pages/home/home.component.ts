@@ -82,6 +82,9 @@ export class HomeComponent implements OnInit {
   loadUserProjects(userId: string): void {
     this.loadingProjects = true;
     
+    // Get all projects and filter by user membership
+    // TODO: This makes N+1 API calls. Consider adding a backend endpoint like
+    // GET /api/Users/{userId}/projects to fetch user's projects in a single call
     this.projectService.getAll().subscribe({
       next: async (projects) => {
         const projectPromises = projects.map(async project => {
