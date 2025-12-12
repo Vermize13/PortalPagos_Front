@@ -65,7 +65,7 @@ export class AdminComponent implements OnInit {
 
   // Configuration properties
   systemConfig = {
-    systemName: 'Portal de Pagos Findeter',
+    systemName: 'Martiniere Ticket Management System',
     maxUploadSize: '10',
     sessionTimeout: '30',
     backupRetentionDays: '30',
@@ -274,7 +274,7 @@ export class AdminComponent implements OnInit {
   resetConfiguration() {
     // Reset to default values
     this.systemConfig = {
-      systemName: 'Portal de Pagos Findeter',
+      systemName: 'Martiniere Ticket Management System',
       maxUploadSize: '10',
       sessionTimeout: '30',
       backupRetentionDays: '30',
