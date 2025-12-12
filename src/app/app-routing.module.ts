@@ -37,6 +37,10 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { 
+        path: 'home', 
+        loadComponent: () => import('./presentation/pages/home/home.component').then(m => m.HomeComponent)
+      },
+      { 
         path: 'dashboard', 
         loadComponent: () => import('./presentation/pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
         canActivate: [RoleGuard],
@@ -86,8 +90,8 @@ export const routes: Routes = [
       { path: 'profile', loadComponent: () => import('./presentation/pages/profile/profile.component').then(m => m.ProfileComponent) },
       { path: 'profile/:userId', loadComponent: () => import('./presentation/pages/profile/profile.component').then(m => m.ProfileComponent) },
       
-      // Redirect empty path to dashboard
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      // Redirect empty path to home
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
     ]
   },
   
