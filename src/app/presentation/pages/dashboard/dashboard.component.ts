@@ -118,7 +118,7 @@ export class DashboardComponent implements OnInit {
       }]
     };
 
-    // RF4.4: Evolution Chart
+    // RF4.3: Evolution Chart
     this.evolutionChartData = {
       labels: this.metrics.incidentEvolution.map(e => e.date),
       datasets: [

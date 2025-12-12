@@ -67,7 +67,7 @@ export class DashboardService {
   /**
    * RF4.1: Get metrics by status, priority, and severity
    * RF4.2: Get open/closed incidents per sprint
-   * RF4.4: Get incident evolution data for charts
+   * RF4.3: Get incident evolution data for charts
    */
   getMetrics(): Observable<DashboardMetrics> {
     // Since the backend doesn't have a dashboard endpoint yet,
