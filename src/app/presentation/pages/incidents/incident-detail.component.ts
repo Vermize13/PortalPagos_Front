@@ -77,7 +77,7 @@ export class IncidentDetailComponent implements OnInit {
   selectedLabelIds: string[] = [];
   loadingLabels: boolean = false;
   
-  // Delay before cleanup to ensure browser initiates download (blob URLs are local)
+  // Delay cleanup to prevent browser from canceling download before it starts
   private readonly DOWNLOAD_URL_REVOKE_DELAY_MS = 250;
 
   constructor(
