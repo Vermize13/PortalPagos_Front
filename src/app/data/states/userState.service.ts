@@ -124,7 +124,7 @@ export class UserStateService {
       administrador: 'admin',
       administrador_general: 'admin',
       administrador_general_role: 'admin',
-      administrador_general_findeter: 'admin',
+      administrador_general_martiniere: 'admin',
       scrum_master: 'scrum_master',
       product_owner: 'product_owner',
       stakeholder: 'stakeholder',

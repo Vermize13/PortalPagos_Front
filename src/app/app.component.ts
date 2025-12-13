@@ -14,7 +14,7 @@ import { MessageService } from 'primeng/api';
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnDestroy {
-  title = 'findeter-portal-pagos';
+  title = 'martiniere-ticket-management-system';
   constructor(private userState: UserStateService, private router: Router) {
   }
 

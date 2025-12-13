@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
-import { AuditLogWithUser, AuditAction, Permissions } from '../../../domain/models';
+import { AuditAction, AuditLog, Permissions } from '../../../domain/models';
 import { AuditService, AuditLogFilter, AuditLogPagedResponse } from '../../../data/services/audit.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { PermissionService } from '../../../data/services/permission.service';
@@ -31,7 +31,7 @@ import { saveAs } from 'file-saver';
   styleUrls: ['./audit-list.component.css']
 })
 export class AuditListComponent implements OnInit {
-  auditLogs: AuditLogWithUser[] = [];
+  auditLogs: AuditLog[] = [];
   loading: boolean = false;
   
   // Pagination
@@ -41,13 +41,20 @@ export class AuditListComponent implements OnInit {
   
   // RF5.2: Filter properties
   filter: AuditLogFilter = {};
-  selectedAction: AuditAction | null = null;
+  selectedAction: string | null = null;
   selectedUserId: string | null = null;
   startDate: Date | null = null;
   endDate: Date | null = null;
   
   // Filter options
-  actionOptions: { label: string; value: AuditAction }[] = [];
+  actionOptions: { label: string; value: string }[] = [];
+  
+  // Valid action values based on API schema
+  private readonly validActions = [
+    'login', 'logout', 'create', 'update', 'delete', 
+    'assign', 'transition', 'upload', 'download', 
+    'backup', 'restore', 'export'
+  ];
 
   constructor(
     private auditService: AuditService,
@@ -118,21 +125,17 @@ export class AuditListComponent implements OnInit {
     this.auditLogs = [
       {
         id: '950e8400-e29b-41d4-a716-446655440001',
-        action: AuditAction.Login,
+        action: 'login',
         actorId: '550e8400-e29b-41d4-a716-446655440001',
-        actor: null,
-        userName: 'Admin User',
-        userEmail: 'admin@example.com',
+        actorUsername: 'admin@example.com',
         entityName: 'System',
         createdAt: new Date('2024-03-15T10:30:00')
       },
       {
         id: '950e8400-e29b-41d4-a716-446655440002',
-        action: AuditAction.Create,
+        action: 'create',
         actorId: '550e8400-e29b-41d4-a716-446655440002',
-        actor: null,
-        userName: 'John Developer',
-        userEmail: 'developer1@example.com',
+        actorUsername: 'developer1@example.com',
         entityName: 'Incident',
         entityId: '750e8400-e29b-41d4-a716-446655440001',
         detailsJson: '{"incidentCode":"PP-1"}',
@@ -140,11 +143,9 @@ export class AuditListComponent implements OnInit {
       },
       {
         id: '950e8400-e29b-41d4-a716-446655440003',
-        action: AuditAction.Assign,
+        action: 'assign',
         actorId: '550e8400-e29b-41d4-a716-446655440001',
-        actor: null,
-        userName: 'Admin User',
-        userEmail: 'admin@example.com',
+        actorUsername: 'admin@example.com',
         entityName: 'Incident',
         entityId: '750e8400-e29b-41d4-a716-446655440001',
         detailsJson: '{"assignedTo":"Jane Tester"}',
@@ -152,11 +153,9 @@ export class AuditListComponent implements OnInit {
       },
       {
         id: '950e8400-e29b-41d4-a716-446655440004',
-        action: AuditAction.Transition,
+        action: 'transition',
         actorId: '550e8400-e29b-41d4-a716-446655440003',
-        actor: null,
-        userName: 'Jane Tester',
-        userEmail: 'tester1@example.com',
+        actorUsername: 'tester1@example.com',
         entityName: 'Incident',
         entityId: '750e8400-e29b-41d4-a716-446655440001',
         detailsJson: '{"from":"Open","to":"InProgress"}',
@@ -240,8 +239,7 @@ export class AuditListComponent implements OnInit {
       // Add headers
       worksheet.columns = [
         { header: 'Fecha/Hora', key: 'createdAt', width: 20 },
-        { header: 'Usuario', key: 'userName', width: 25 },
-        { header: 'Email', key: 'userEmail', width: 30 },
+        { header: 'Usuario', key: 'actorUsername', width: 30 },
         { header: 'Acción', key: 'action', width: 20 },
         { header: 'Entidad', key: 'entityName', width: 20 },
         { header: 'ID Entidad', key: 'entityId', width: 38 },
@@ -252,8 +250,7 @@ export class AuditListComponent implements OnInit {
       this.auditLogs.forEach(log => {
         worksheet.addRow({
           createdAt: log.createdAt,
-          userName: log.userName || '-',
-          userEmail: log.userEmail || '-',
+          actorUsername: log.actorUsername || '-',
           action: this.getActionLabel(log.action),
           entityName: log.entityName || '-',
           entityId: log.entityId || '-',

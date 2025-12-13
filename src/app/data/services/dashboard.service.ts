@@ -16,7 +16,6 @@ export interface DashboardMetrics {
   incidentsByPriority: PriorityMetric[];
   incidentsBySeverity: SeverityMetric[];
   incidentsBySprint: SprintMetric[];
-  mttr: number; // Mean Time To Resolution in hours
   incidentEvolution: IncidentEvolutionMetric[];
 }
 
@@ -68,8 +67,7 @@ export class DashboardService {
   /**
    * RF4.1: Get metrics by status, priority, and severity
    * RF4.2: Get open/closed incidents per sprint
-   * RF4.3: Calculate MTTR (Mean Time To Resolution)
-   * RF4.4: Get incident evolution data for charts
+   * RF4.3: Get incident evolution data for charts
    */
   getMetrics(): Observable<DashboardMetrics> {
     // Since the backend doesn't have a dashboard endpoint yet,
@@ -131,10 +129,6 @@ export class DashboardService {
       };
     });
 
-    // Calculate MTTR (Mean Time To Resolution)
-    const resolvedIncidents = incidents.filter(i => i.closedAt);
-    const mttr = this.calculateMTTR(resolvedIncidents);
-
     // Calculate incident evolution (last 30 days)
     const incidentEvolution = this.calculateIncidentEvolution(incidents);
 
@@ -149,23 +143,8 @@ export class DashboardService {
       incidentsByPriority,
       incidentsBySeverity,
       incidentsBySprint,
-      mttr,
       incidentEvolution
     };
-  }
-
-  private calculateMTTR(resolvedIncidents: any[]): number {
-    if (resolvedIncidents.length === 0) return 0;
-
-    const totalResolutionTime = resolvedIncidents.reduce((sum, incident) => {
-      const created = new Date(incident.createdAt).getTime();
-      const closed = new Date(incident.closedAt).getTime();
-      const diff = closed - created;
-      return sum + diff;
-    }, 0);
-
-    // Return MTTR in hours
-    return Math.round((totalResolutionTime / resolvedIncidents.length) / (1000 * 60 * 60));
   }
 
   private calculateIncidentEvolution(incidents: any[]): IncidentEvolutionMetric[] {

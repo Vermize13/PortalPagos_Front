@@ -178,9 +178,9 @@ export class ProjectViewComponent implements OnInit {
   loadMockProject() {
     this.project = {
       id: this.projectId,
-      name: 'Portal de Pagos',
-      code: 'PP',
-      description: 'Sistema integral de gestión de pagos para la organización. Permite administrar facturas, realizar pagos, generar reportes y mantener un histórico completo de transacciones.',
+      name: 'Martiniere Ticket Management System',
+      code: 'MTMS',
+      description: 'Sistema integral de gestión de tickets e incidencias para la organización. Permite administrar incidencias, realizar seguimiento, generar reportes y mantener un histórico completo de eventos.',
       isActive: true,
       createdBy: '550e8400-e29b-41d4-a716-446655440001',
       creator: {

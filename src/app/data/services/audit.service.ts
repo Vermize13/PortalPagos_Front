@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AuditLog, AuditLogWithUser, AuditAction, AuditEntityType } from '../../domain/models';
+import { AuditLog } from '../../domain/models';
 
 export interface AuditLogFilter {
   userId?: string;
-  action?: AuditAction;
+  action?: string;
   startDate?: Date;
   endDate?: Date;
   page?: number;
@@ -15,7 +15,7 @@ export interface AuditLogFilter {
 
 export interface AuditFilterRequest {
   userId?: string;
-  action?: AuditAction;
+  action?: string;
   startDate?: string;
   endDate?: string;
   page?: number;
@@ -23,10 +23,11 @@ export interface AuditFilterRequest {
 }
 
 export interface AuditLogPagedResponse {
-  logs: AuditLogWithUser[];
+  logs: AuditLog[];
   totalCount: number;
   page: number;
   pageSize: number;
+  totalPages: number;
 }
 
 @Injectable({
