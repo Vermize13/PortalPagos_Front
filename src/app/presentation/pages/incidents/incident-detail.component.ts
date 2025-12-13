@@ -254,6 +254,7 @@ export class IncidentDetailComponent implements OnInit {
         const link = document.createElement('a');
         link.href = url;
         link.download = attachment.fileName;
+        link.style.display = 'none';
         document.body.appendChild(link);
         link.click();
         // Delay cleanup to ensure browser has time to start the download
