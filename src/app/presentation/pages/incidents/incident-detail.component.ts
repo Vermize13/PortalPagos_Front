@@ -226,6 +226,7 @@ export class IncidentDetailComponent implements OnInit {
     this.attachmentService.upload(incidentId, file).subscribe({
       next: () => {
         this.toastService.showSuccess('Éxito', 'Archivo subido correctamente');
+        this.loadAttachments(incidentId);
       },
       error: () => {
         this.toastService.showError('Error', 'No se pudo subir el archivo');
@@ -245,8 +246,13 @@ export class IncidentDetailComponent implements OnInit {
         const link = document.createElement('a');
         link.href = url;
         link.download = attachment.fileName;
+        document.body.appendChild(link);
         link.click();
-        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+        // Delay URL revocation to ensure download starts
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 100);
         this.toastService.showSuccess('Éxito', 'Archivo descargado');
       },
       error: (error) => {
