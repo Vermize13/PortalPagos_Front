@@ -77,13 +77,7 @@ export class IncidentDetailComponent implements OnInit {
   selectedLabelIds: string[] = [];
   loadingLabels: boolean = false;
   
-  // Delay before revoking blob URL and cleaning up link to ensure browser starts download
-  // 250ms provides sufficient time for the browser to initiate the download process
-  // This delay accounts for:
-  // - Browser's internal download mechanism: Time needed to process the download trigger
-  // - DOM event processing: Ensuring the click event is fully processed
-  // - Device performance: Lower-end devices may process operations more slowly
-  // Note: Blob URLs are local browser objects, so network latency is not a factor
+  // Delay before cleanup to ensure browser initiates download (blob URLs are local)
   private readonly DOWNLOAD_URL_REVOKE_DELAY_MS = 250;
 
   constructor(
