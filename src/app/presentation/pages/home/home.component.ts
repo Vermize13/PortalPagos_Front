@@ -21,6 +21,7 @@ export class HomeComponent implements OnInit {
     const usuario = this.userState.getUser();
     if (usuario === null) {
       this.router.navigate(['/login']);
+      return;
     }
   }
 

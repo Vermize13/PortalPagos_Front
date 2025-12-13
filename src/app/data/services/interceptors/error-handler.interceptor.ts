@@ -8,6 +8,15 @@ import { ToastService } from "../toast.service";
 // Flag to prevent multiple simultaneous logout operations
 let isLoggingOut = false;
 
+/**
+ * Extract error message from API response
+ * @param error The HTTP error response
+ * @returns Extracted error message or null
+ */
+function extractApiErrorMessage(error: HttpErrorResponse): string | null {
+  return error.error?.title || error.error?.detail || error.error?.message || null;
+}
+
 export const ErrorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const userStateService = inject(UserStateService);
@@ -51,9 +60,7 @@ export const ErrorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
       } else if (error.status === 400) {
         // Bad Request
         errorTitle = 'Solicitud Inválida';
-        // Try to extract error message from API response
-        const apiMessage = error.error?.title || error.error?.detail || error.error?.message;
-        errorMessage = apiMessage || 'Los datos enviados son inválidos';
+        errorMessage = extractApiErrorMessage(error) || 'Los datos enviados son inválidos';
         toastService.showError(errorTitle, errorMessage);
       } else if (error.status === 500) {
         // Internal Server Error
@@ -73,8 +80,7 @@ export const ErrorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
       } else {
         // Other server-side errors
         errorTitle = 'Error';
-        const apiMessage = error.error?.title || error.error?.detail || error.error?.message;
-        errorMessage = apiMessage || `Error del servidor (${error.status})`;
+        errorMessage = extractApiErrorMessage(error) || `Error del servidor (${error.status})`;
         toastService.showError(errorTitle, errorMessage);
       }
       

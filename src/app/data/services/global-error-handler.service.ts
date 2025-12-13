@@ -8,11 +8,15 @@ import { ToastService } from './toast.service';
  */
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
+  private toastService: ToastService | null = null;
+
   constructor(private injector: Injector) {}
 
   handleError(error: Error | HttpErrorResponse): void {
-    // Get ToastService using injector to avoid circular dependency issues
-    const toastService = this.injector.get(ToastService);
+    // Get ToastService using injector (cached after first call)
+    if (!this.toastService) {
+      this.toastService = this.injector.get(ToastService);
+    }
     
     // Log the error to console for debugging
     console.error('Global error caught:', error);
@@ -21,16 +25,16 @@ export class GlobalErrorHandler implements ErrorHandler {
       // HTTP errors are already handled by the interceptor
       // This is a fallback in case the interceptor didn't catch it
       if (!navigator.onLine) {
-        toastService.showError('Sin Conexión', 'No hay conexión a internet');
+        this.toastService.showError('Sin Conexión', 'No hay conexión a internet');
       } else {
-        toastService.showError('Error HTTP', 'Ocurrió un error de comunicación con el servidor');
+        this.toastService.showError('Error HTTP', 'Ocurrió un error de comunicación con el servidor');
       }
     } else {
       // Client-side or application error
       const errorMessage = error?.message || 'Ocurrió un error inesperado';
       
       // Show user-friendly error message
-      toastService.showError('Error de Aplicación', 'Ocurrió un error inesperado. Por favor, recargue la página');
+      this.toastService.showError('Error de Aplicación', 'Ocurrió un error inesperado. Por favor, recargue la página');
       
       // In development, show more detailed error info in console
       if (isDevMode()) {
