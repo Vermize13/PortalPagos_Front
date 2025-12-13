@@ -11,6 +11,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DividerModule } from 'primeng/divider';
 import { ToastModule } from 'primeng/toast';
 import { UserStateService } from '../../../../data/states/userState.service';
+import { ToastService } from '../../../../data/services/toast.service';
 
 @Component({
   selector: 'app-cambio-password',
@@ -95,7 +96,13 @@ export class CambioPasswordComponent {
 
   cambiarPassForm: FormGroup = new FormGroup({});
 
-  constructor(private router: Router, private fb: FormBuilder, private userService: UserService, private userState: UserStateService) {
+  constructor(
+    private router: Router, 
+    private fb: FormBuilder, 
+    private userService: UserService, 
+    private userState: UserStateService,
+    private toastService: ToastService
+  ) {
     this.formInit();
     this.user = this.userState.getUser();
 
@@ -173,15 +180,20 @@ export class CambioPasswordComponent {
     if (this.cambiarPassForm.valid) {
       const currentPassword = this.oldPasswordControl?.value
       const newPassword = this.newPasswordControl?.value
-      this.userService.passwordChange(currentPassword,newPassword).subscribe(res=>{
-        // this.toastr.success('Contraseña cambiada correctamente');
-        setTimeout(() => {
-        this.router.navigate(['/login']);
-      }, 2000);
-    })
+      this.userService.passwordChange(currentPassword, newPassword).subscribe({
+        next: (res) => {
+          this.toastService.showSuccess('Éxito', 'Contraseña cambiada correctamente');
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000);
+        },
+        error: (err) => {
+          console.error('Error changing password:', err);
+          this.toastService.showError('Error', 'No se pudo cambiar la contraseña. Verifique su contraseña actual');
+        }
+      });
     } else {
-      //Implementar toast
-      //this.toastr.error('El formulario no es válido');
+      this.toastService.showWarn('Formulario Inválido', 'Por favor complete todos los campos correctamente');
     }
   }
 

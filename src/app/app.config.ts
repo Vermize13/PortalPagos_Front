@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, importProvidersFrom, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -6,6 +6,7 @@ import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-br
 import { routes } from './app-routing.module';
 import { ErrorHandlerInterceptor } from './data/services/interceptors/error-handler.interceptor';
 import { JwtInterceptor } from './data/services/interceptors/jwt.interceptor';
+import { GlobalErrorHandler } from './data/services/global-error-handler.service';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
 
@@ -19,6 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([JwtInterceptor, ErrorHandlerInterceptor])),
     importProvidersFrom([BrowserAnimationsModule]),
     MessageService,
-    { provide: LOCALE_ID, useValue: 'es' }
+    { provide: LOCALE_ID, useValue: 'es' },
+    { provide: ErrorHandler, useClass: GlobalErrorHandler }
   ]
 };

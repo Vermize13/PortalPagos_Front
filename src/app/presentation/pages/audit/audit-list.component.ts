@@ -61,12 +61,12 @@ export class AuditListComponent implements OnInit {
     private toastService: ToastService,
     public permissionService: PermissionService
   ) {
-    // Initialize action options - filter numeric values only for numeric enums
-    this.actionOptions = Object.values(AuditAction)
-      .filter(value => typeof value === 'number')
-      .map(action => ({
-        label: this.getActionLabel(action as AuditAction),
-        value: action as AuditAction
+    // Initialize action options
+    this.actionOptions = Object.keys(AuditAction)
+      .filter(key => isNaN(Number(key)))
+      .map(key => ({
+        label: this.getActionLabel(AuditAction[key as keyof typeof AuditAction]),
+        value: key.toLowerCase()
       }));
   }
 
@@ -189,8 +189,22 @@ export class AuditListComponent implements OnInit {
     }
   }
 
-  getActionSeverity(action: AuditAction): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
-    switch (action) {
+  private toAuditAction(action: string): AuditAction {
+    if (!action) return AuditAction.Unknown; // Return AuditAction.Unknown for invalid actions
+    const capitalizedAction = action.charAt(0).toUpperCase() + action.slice(1);
+    const enumValue = AuditAction[capitalizedAction as keyof typeof AuditAction];
+
+    // Check if the mapped enum value is a valid numeric enum value
+    if (typeof enumValue === 'number' && Object.values(AuditAction).includes(enumValue)) {
+      return enumValue;
+    }
+
+    return AuditAction.Unknown; // Return Unknown if not found or invalid
+  }
+
+  getActionSeverity(action: AuditAction | string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
+    const actionEnum = typeof action === 'string' ? this.toAuditAction(action) : action;
+    switch (actionEnum) {
       case AuditAction.Login: return 'info';
       case AuditAction.Logout: return 'info';
       case AuditAction.Create: return 'success';
@@ -208,8 +222,9 @@ export class AuditListComponent implements OnInit {
     }
   }
 
-  getActionLabel(action: AuditAction): string {
-    const labels: { [key in AuditAction]: string } = {
+  getActionLabel(action: AuditAction | string): string {
+    const actionEnum = typeof action === 'string' ? this.toAuditAction(action) : action;
+    const labels: { [key in AuditAction]?: string } = {
       [AuditAction.Login]: 'Inicio de Sesión',
       [AuditAction.Logout]: 'Cierre de Sesión',
       [AuditAction.Create]: 'Crear',
@@ -222,9 +237,10 @@ export class AuditListComponent implements OnInit {
       [AuditAction.Backup]: 'Copia de Seguridad',
       [AuditAction.Restore]: 'Restaurar',
       [AuditAction.Export]: 'Exportar',
-      [AuditAction.Comment]: 'Comentar'
+      [AuditAction.Comment]: 'Comentar',
+      [AuditAction.Unknown]: 'Desconocido'
     };
-    return labels[action] || action.toString();
+    return labels[actionEnum] || (typeof action === 'string' ? action : AuditAction[action]) || 'Desconocido';
   }
 
   // RF5.3: Export audit logs

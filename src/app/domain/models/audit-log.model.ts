@@ -11,7 +11,8 @@ export enum AuditAction {
   Upload = 9,
   Download = 10,
   Export = 11,
-  Comment = 12
+  Comment = 12,
+  Unknown = 99
 }
 
 export enum AuditEntityType {
