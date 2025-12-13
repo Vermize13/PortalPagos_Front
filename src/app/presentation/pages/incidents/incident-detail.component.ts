@@ -78,7 +78,11 @@ export class IncidentDetailComponent implements OnInit {
   loadingLabels: boolean = false;
   
   // Delay before revoking blob URL and cleaning up link to ensure browser starts download
-  // Using 1000ms to ensure reliability across different devices and network conditions
+  // 1000ms provides sufficient time for the browser to initiate the download process
+  // even on slower devices or poor network conditions. This delay is based on:
+  // - Browser behavior: Modern browsers need time to process the download trigger
+  // - Network latency: Slower connections may need more time to start the request
+  // - Device performance: Lower-end devices may process DOM operations more slowly
   private readonly DOWNLOAD_URL_REVOKE_DELAY_MS = 1000;
 
   constructor(
@@ -254,7 +258,10 @@ export class IncidentDetailComponent implements OnInit {
         link.click();
         // Delay cleanup to ensure browser has time to start the download
         setTimeout(() => {
-          document.body.removeChild(link);
+          // Check if link is still in DOM before removing to prevent errors
+          if (document.body.contains(link)) {
+            document.body.removeChild(link);
+          }
           window.URL.revokeObjectURL(url);
         }, this.DOWNLOAD_URL_REVOKE_DELAY_MS);
         this.toastService.showSuccess('Éxito', 'Archivo descargado');
