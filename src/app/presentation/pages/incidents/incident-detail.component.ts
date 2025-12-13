@@ -76,6 +76,9 @@ export class IncidentDetailComponent implements OnInit {
   availableLabels: Label[] = [];
   selectedLabelIds: string[] = [];
   loadingLabels: boolean = false;
+  
+  // Delay before revoking blob URL to ensure browser starts download
+  private readonly DOWNLOAD_URL_REVOKE_DELAY_MS = 100;
 
   constructor(
     private route: ActivatedRoute,
@@ -249,10 +252,10 @@ export class IncidentDetailComponent implements OnInit {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        // Delay URL revocation to ensure download starts
+        // Delay URL revocation to ensure browser has time to start the download
         setTimeout(() => {
           window.URL.revokeObjectURL(url);
-        }, 100);
+        }, this.DOWNLOAD_URL_REVOKE_DELAY_MS);
         this.toastService.showSuccess('Éxito', 'Archivo descargado');
       },
       error: (error) => {
