@@ -54,11 +54,13 @@ export class AuditListComponent implements OnInit {
     private toastService: ToastService,
     public permissionService: PermissionService
   ) {
-    // Initialize action options
-    this.actionOptions = Object.values(AuditAction).map(action => ({
-      label: this.getActionLabel(action),
-      value: action
-    }));
+    // Initialize action options - filter numeric values only for numeric enums
+    this.actionOptions = Object.values(AuditAction)
+      .filter(value => typeof value === 'number')
+      .map(action => ({
+        label: this.getActionLabel(action as AuditAction),
+        value: action as AuditAction
+      }));
   }
 
   ngOnInit() {
@@ -199,6 +201,7 @@ export class AuditListComponent implements OnInit {
       case AuditAction.Restore: return 'warning';
       case AuditAction.Upload: return 'info';
       case AuditAction.Download: return 'info';
+      case AuditAction.Comment: return 'info';
       default: return 'secondary';
     }
   }
@@ -216,9 +219,10 @@ export class AuditListComponent implements OnInit {
       [AuditAction.Download]: 'Descargar Archivo',
       [AuditAction.Backup]: 'Copia de Seguridad',
       [AuditAction.Restore]: 'Restaurar',
-      [AuditAction.Export]: 'Exportar'
+      [AuditAction.Export]: 'Exportar',
+      [AuditAction.Comment]: 'Comentar'
     };
-    return labels[action] || action;
+    return labels[action] || action.toString();
   }
 
   // RF5.3: Export audit logs
