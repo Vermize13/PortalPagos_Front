@@ -36,7 +36,6 @@ import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping
 // Helper interface for displaying incidents with additional computed labels
 interface IncidentDisplay extends IncidentWithDetails {
   // Additional computed display properties for UI rendering
-  projectName?: string;
   sprintName?: string;
   statusLabel?: string;
   priorityLabel?: string;
