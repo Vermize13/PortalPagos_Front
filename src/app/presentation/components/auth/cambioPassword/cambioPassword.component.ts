@@ -27,7 +27,7 @@ import { ToastService } from '../../../../data/services/toast.service';
     DividerModule,
     ToastModule,
   ],
-  providers: [ToastService],
+  providers: [],
   template: `
     <div class="login-container">
       <div class="login-left">

@@ -1,4 +1,4 @@
-import { ErrorHandler, Injectable, Injector } from '@angular/core';
+import { ErrorHandler, Injectable, Injector, isDevMode } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastService } from './toast.service';
 
@@ -32,8 +32,8 @@ export class GlobalErrorHandler implements ErrorHandler {
       // Show user-friendly error message
       toastService.showError('Error de Aplicación', 'Ocurrió un error inesperado. Por favor, recargue la página');
       
-      // In development, you might want to show more detailed error info
-      if (this.isDevelopmentMode()) {
+      // In development, show more detailed error info in console
+      if (isDevMode()) {
         console.error('Detailed error:', {
           message: error.message,
           stack: error.stack,
@@ -41,15 +41,5 @@ export class GlobalErrorHandler implements ErrorHandler {
         });
       }
     }
-  }
-
-  private isDevelopmentMode(): boolean {
-    // Check if running in development mode
-    return !this.isProductionMode();
-  }
-
-  private isProductionMode(): boolean {
-    // Simple check for production mode
-    return typeof window !== 'undefined' && window.location.hostname !== 'localhost';
   }
 }
