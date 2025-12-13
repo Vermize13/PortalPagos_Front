@@ -84,6 +84,7 @@ export class LoginComponent implements OnInit {
       error: (err: any) => {
         console.error('Login error', err);
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Credenciales inválidas o error del servidor', key: 'global-toast' });
+        this.loading = false;
       },
       complete: () => {
         this.loading = false;
