@@ -79,10 +79,11 @@ export class IncidentDetailComponent implements OnInit {
   
   // Delay before revoking blob URL and cleaning up link to ensure browser starts download
   // 1000ms provides sufficient time for the browser to initiate the download process
-  // even on slower devices or poor network conditions. This delay is based on:
-  // - Browser behavior: Modern browsers need time to process the download trigger
-  // - Network latency: Slower connections may need more time to start the request
-  // - Device performance: Lower-end devices may process DOM operations more slowly
+  // even on slower devices. This delay accounts for:
+  // - Browser's internal download mechanism: Time needed to process the download trigger
+  // - DOM event processing: Ensuring the click event is fully processed
+  // - Device performance: Lower-end devices may process operations more slowly
+  // Note: Network latency is not a factor as blob URLs are local browser objects
   private readonly DOWNLOAD_URL_REVOKE_DELAY_MS = 1000;
 
   constructor(
@@ -261,7 +262,7 @@ export class IncidentDetailComponent implements OnInit {
         setTimeout(() => {
           // Check if link is still in DOM before removing to prevent errors
           if (document.body.contains(link)) {
-            document.body.removeChild(link);
+            link.remove();
           }
           window.URL.revokeObjectURL(url);
         }, this.DOWNLOAD_URL_REVOKE_DELAY_MS);
