@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'findeter-portal-pagos' title`, () => {
+  it(`should have the 'martiniere-ticket-management-system' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('findeter-portal-pagos');
+    expect(app.title).toEqual('martiniere-ticket-management-system');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, findeter-portal-pagos');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, martiniere-ticket-management-system');
   });
 });

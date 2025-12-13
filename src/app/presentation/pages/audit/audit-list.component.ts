@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
-import { AuditLogWithUser, AuditAction, Permissions } from '../../../domain/models';
+import { AuditAction, AuditLog, Permissions } from '../../../domain/models';
 import { AuditService, AuditLogFilter, AuditLogPagedResponse } from '../../../data/services/audit.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { PermissionService } from '../../../data/services/permission.service';
@@ -31,7 +31,7 @@ import { saveAs } from 'file-saver';
   styleUrls: ['./audit-list.component.css']
 })
 export class AuditListComponent implements OnInit {
-  auditLogs: AuditLogWithUser[] = [];
+  auditLogs: AuditLog[] = [];
   loading: boolean = false;
   
   // Pagination
@@ -41,13 +41,20 @@ export class AuditListComponent implements OnInit {
   
   // RF5.2: Filter properties
   filter: AuditLogFilter = {};
-  selectedAction: AuditAction | null = null;
+  selectedAction: string | null = null;
   selectedUserId: string | null = null;
   startDate: Date | null = null;
   endDate: Date | null = null;
   
   // Filter options
-  actionOptions: { label: string; value: AuditAction }[] = [];
+  actionOptions: { label: string; value: string }[] = [];
+  
+  // Valid action values based on API schema
+  private readonly validActions = [
+    'login', 'logout', 'create', 'update', 'delete', 
+    'assign', 'transition', 'upload', 'download', 
+    'backup', 'restore', 'export'
+  ];
 
   constructor(
     private auditService: AuditService,
@@ -55,10 +62,12 @@ export class AuditListComponent implements OnInit {
     public permissionService: PermissionService
   ) {
     // Initialize action options
-    this.actionOptions = Object.values(AuditAction).map(action => ({
-      label: this.getActionLabel(action),
-      value: action
-    }));
+    this.actionOptions = Object.keys(AuditAction)
+      .filter(key => isNaN(Number(key)))
+      .map(key => ({
+        label: this.getActionLabel(AuditAction[key as keyof typeof AuditAction]),
+        value: key.toLowerCase()
+      }));
   }
 
   ngOnInit() {
@@ -116,21 +125,17 @@ export class AuditListComponent implements OnInit {
     this.auditLogs = [
       {
         id: '950e8400-e29b-41d4-a716-446655440001',
-        action: AuditAction.Login,
+        action: 'login',
         actorId: '550e8400-e29b-41d4-a716-446655440001',
-        actor: null,
-        userName: 'Admin User',
-        userEmail: 'admin@example.com',
+        actorUsername: 'admin@example.com',
         entityName: 'System',
         createdAt: new Date('2024-03-15T10:30:00')
       },
       {
         id: '950e8400-e29b-41d4-a716-446655440002',
-        action: AuditAction.Create,
+        action: 'create',
         actorId: '550e8400-e29b-41d4-a716-446655440002',
-        actor: null,
-        userName: 'John Developer',
-        userEmail: 'developer1@example.com',
+        actorUsername: 'developer1@example.com',
         entityName: 'Incident',
         entityId: '750e8400-e29b-41d4-a716-446655440001',
         detailsJson: '{"incidentCode":"PP-1"}',
@@ -138,11 +143,9 @@ export class AuditListComponent implements OnInit {
       },
       {
         id: '950e8400-e29b-41d4-a716-446655440003',
-        action: AuditAction.Assign,
+        action: 'assign',
         actorId: '550e8400-e29b-41d4-a716-446655440001',
-        actor: null,
-        userName: 'Admin User',
-        userEmail: 'admin@example.com',
+        actorUsername: 'admin@example.com',
         entityName: 'Incident',
         entityId: '750e8400-e29b-41d4-a716-446655440001',
         detailsJson: '{"assignedTo":"Jane Tester"}',
@@ -150,11 +153,9 @@ export class AuditListComponent implements OnInit {
       },
       {
         id: '950e8400-e29b-41d4-a716-446655440004',
-        action: AuditAction.Transition,
+        action: 'transition',
         actorId: '550e8400-e29b-41d4-a716-446655440003',
-        actor: null,
-        userName: 'Jane Tester',
-        userEmail: 'tester1@example.com',
+        actorUsername: 'tester1@example.com',
         entityName: 'Incident',
         entityId: '750e8400-e29b-41d4-a716-446655440001',
         detailsJson: '{"from":"Open","to":"InProgress"}',
@@ -188,23 +189,42 @@ export class AuditListComponent implements OnInit {
     }
   }
 
-  getActionSeverity(action: AuditAction): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
-    switch (action) {
+  private toAuditAction(action: string): AuditAction {
+    if (!action) return AuditAction.Unknown; // Return AuditAction.Unknown for invalid actions
+    const capitalizedAction = action.charAt(0).toUpperCase() + action.slice(1);
+    const enumValue = AuditAction[capitalizedAction as keyof typeof AuditAction];
+
+    // Check if the mapped enum value is a valid numeric enum value
+    if (typeof enumValue === 'number' && Object.values(AuditAction).includes(enumValue)) {
+      return enumValue;
+    }
+
+    return AuditAction.Unknown; // Return Unknown if not found or invalid
+  }
+
+  getActionSeverity(action: AuditAction | string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
+    const actionEnum = typeof action === 'string' ? this.toAuditAction(action) : action;
+    switch (actionEnum) {
       case AuditAction.Login: return 'info';
+      case AuditAction.Logout: return 'info';
       case AuditAction.Create: return 'success';
       case AuditAction.Update: return 'warning';
       case AuditAction.Delete: return 'danger';
+      case AuditAction.Assign: return 'info';
       case AuditAction.Transition: return 'info';
       case AuditAction.Backup: return 'secondary';
       case AuditAction.Restore: return 'warning';
       case AuditAction.Upload: return 'info';
       case AuditAction.Download: return 'info';
+      case AuditAction.Export: return 'success';
+      case AuditAction.Comment: return 'info';
       default: return 'secondary';
     }
   }
 
-  getActionLabel(action: AuditAction): string {
-    const labels: { [key in AuditAction]: string } = {
+  getActionLabel(action: AuditAction | string): string {
+    const actionEnum = typeof action === 'string' ? this.toAuditAction(action) : action;
+    const labels: { [key in AuditAction]?: string } = {
       [AuditAction.Login]: 'Inicio de Sesión',
       [AuditAction.Logout]: 'Cierre de Sesión',
       [AuditAction.Create]: 'Crear',
@@ -216,9 +236,11 @@ export class AuditListComponent implements OnInit {
       [AuditAction.Download]: 'Descargar Archivo',
       [AuditAction.Backup]: 'Copia de Seguridad',
       [AuditAction.Restore]: 'Restaurar',
-      [AuditAction.Export]: 'Exportar'
+      [AuditAction.Export]: 'Exportar',
+      [AuditAction.Comment]: 'Comentar',
+      [AuditAction.Unknown]: 'Desconocido'
     };
-    return labels[action] || action;
+    return labels[actionEnum] || (typeof action === 'string' ? action : AuditAction[action]) || 'Desconocido';
   }
 
   // RF5.3: Export audit logs
@@ -233,8 +255,7 @@ export class AuditListComponent implements OnInit {
       // Add headers
       worksheet.columns = [
         { header: 'Fecha/Hora', key: 'createdAt', width: 20 },
-        { header: 'Usuario', key: 'userName', width: 25 },
-        { header: 'Email', key: 'userEmail', width: 30 },
+        { header: 'Usuario', key: 'actorUsername', width: 30 },
         { header: 'Acción', key: 'action', width: 20 },
         { header: 'Entidad', key: 'entityName', width: 20 },
         { header: 'ID Entidad', key: 'entityId', width: 38 },
@@ -245,8 +266,7 @@ export class AuditListComponent implements OnInit {
       this.auditLogs.forEach(log => {
         worksheet.addRow({
           createdAt: log.createdAt,
-          userName: log.userName || '-',
-          userEmail: log.userEmail || '-',
+          actorUsername: log.actorUsername || '-',
           action: this.getActionLabel(log.action),
           entityName: log.entityName || '-',
           entityId: log.entityId || '-',

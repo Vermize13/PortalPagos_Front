@@ -83,6 +83,7 @@ export interface IncidentComment {
 export interface IncidentWithDetails {
   id: string;
   projectId: string;
+  projectName?: string;
   sprintId?: string;
   code: string;
   title: string;

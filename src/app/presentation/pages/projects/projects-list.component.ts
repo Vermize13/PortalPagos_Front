@@ -110,9 +110,9 @@ export class ProjectsListComponent implements OnInit {
     this.projects = [
       {
         id: '650e8400-e29b-41d4-a716-446655440001',
-        name: 'Portal de Pagos',
-        code: 'PP',
-        description: 'Sistema de gestión de pagos',
+        name: 'Martiniere Ticket Management System',
+        code: 'MTMS',
+        description: 'Sistema de gestión de tickets e incidencias',
         isActive: true,
         createdBy: '550e8400-e29b-41d4-a716-446655440001',
         creator: null,

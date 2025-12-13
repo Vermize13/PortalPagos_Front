@@ -93,8 +93,7 @@
         <tr>
           <td>{{ log.createdAt | date:'short' }}</td>
           <td>
-            <div class="font-semibold">{{ log.userName }}</div>
-            <div class="text-sm text-gray-500">{{ log.userEmail }}</div>
+            <div class="font-semibold">{{ log.actorUsername || '-' }}</div>
           </td>
           <td>
             <p-tag [value]="getActionLabel(log.action)" [severity]="getActionSeverity(log.action)"></p-tag>

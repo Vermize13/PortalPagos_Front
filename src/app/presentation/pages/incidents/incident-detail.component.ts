@@ -76,6 +76,9 @@ export class IncidentDetailComponent implements OnInit {
   availableLabels: Label[] = [];
   selectedLabelIds: string[] = [];
   loadingLabels: boolean = false;
+  
+  // Delay cleanup to prevent browser from canceling download before it starts
+  private readonly DOWNLOAD_URL_REVOKE_DELAY_MS = 250;
 
   constructor(
     private route: ActivatedRoute,
@@ -226,6 +229,7 @@ export class IncidentDetailComponent implements OnInit {
     this.attachmentService.upload(incidentId, file).subscribe({
       next: () => {
         this.toastService.showSuccess('Éxito', 'Archivo subido correctamente');
+        this.loadAttachments(incidentId);
       },
       error: () => {
         this.toastService.showError('Error', 'No se pudo subir el archivo');
@@ -245,9 +249,18 @@ export class IncidentDetailComponent implements OnInit {
         const link = document.createElement('a');
         link.href = url;
         link.download = attachment.fileName;
+        link.style.display = 'none';
+        document.body.appendChild(link);
         link.click();
-        window.URL.revokeObjectURL(url);
-        this.toastService.showSuccess('Éxito', 'Archivo descargado');
+        this.toastService.showSuccess('Éxito', 'Descarga iniciada');
+        // Delay cleanup to ensure browser has time to start the download
+        setTimeout(() => {
+          // Check if link is still in DOM before removing to prevent errors
+          if (document.body.contains(link)) {
+            link.remove();
+          }
+          window.URL.revokeObjectURL(url);
+        }, this.DOWNLOAD_URL_REVOKE_DELAY_MS);
       },
       error: (error) => {
         console.error('Error downloading file:', error);

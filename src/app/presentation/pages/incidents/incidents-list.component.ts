@@ -36,7 +36,6 @@ import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping
 // Helper interface for displaying incidents with additional computed labels
 interface IncidentDisplay extends IncidentWithDetails {
   // Additional computed display properties for UI rendering
-  projectName?: string;
   sprintName?: string;
   statusLabel?: string;
   priorityLabel?: string;
@@ -203,7 +202,7 @@ export class IncidentsListComponent implements OnInit {
           statusLabel: IncidentStatusMapping.find((s: { label: string; value: IncidentStatus }) => s.value === inc.status)?.label ?? 'Desconocido',
           priorityLabel: IncidentPriorityMapping.find((p: { label: string; value: IncidentPriority }) => p.value === inc.priority)?.label ?? 'Desconocido',
           severityLabel: IncidentSeverityMapping.find((sev: { label: string; value: IncidentSeverity }) => sev.value === inc.severity)?.label ?? 'Desconocido',
-          projectName: inc.project?.name,
+          projectName: inc.projectName || inc.project?.name,
           sprintName: inc.sprint?.name,
           reporterName: inc.reporterName || inc.reporter?.name,
           assigneeName: inc.assigneeName || inc.assignee?.name
@@ -226,11 +225,11 @@ export class IncidentsListComponent implements OnInit {
         id: '750e8400-e29b-41d4-a716-446655440001',
         projectId: '650e8400-e29b-41d4-a716-446655440001',
         project: null,
-        projectName: 'Portal de Pagos',
+        projectName: 'Martiniere Ticket Management System',
         sprintId: '850e8400-e29b-41d4-a716-446655440001',
         sprint: null,
         sprintName: 'Sprint 1',
-        code: 'PP-1',
+        code: 'MTMS-1',
         title: 'Error en el formulario de login',
         description: 'El usuario no puede iniciar sesión',
         status: IncidentStatus.Abierto,
@@ -255,8 +254,8 @@ export class IncidentsListComponent implements OnInit {
         id: '750e8400-e29b-41d4-a716-446655440002',
         projectId: '650e8400-e29b-41d4-a716-446655440001',
         project: null,
-        projectName: 'Portal de Pagos',
-        code: 'PP-2',
+        projectName: 'Martiniere Ticket Management System',
+        code: 'MTMS-2',
         title: 'Optimizar consulta de base de datos',
         description: 'Las consultas son muy lentas',
         status: IncidentStatus.EnProgreso,

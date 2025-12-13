@@ -1,16 +1,18 @@
 export enum AuditAction {
-  Create = 'Create',
-  Update = 'Update',
-  Delete = 'Delete',
-  Login = 'Login',
-  Logout = 'Logout',
-  Assign = 'Assign',
-  Transition = 'Transition',
-  Backup = 'Backup',
-  Restore = 'Restore',
-  Upload = 'Upload',
-  Download = 'Download',
-  Export = 'Export'
+  Login = 0,
+  Logout = 1,
+  Create = 2,
+  Update = 3,
+  Delete = 4,
+  Assign = 5,
+  Transition = 6,
+  Backup = 7,
+  Restore = 8,
+  Upload = 9,
+  Download = 10,
+  Export = 11,
+  Comment = 12,
+  Unknown = 99
 }
 
 export enum AuditEntityType {
@@ -25,19 +27,19 @@ export enum AuditEntityType {
 
 export interface AuditLog {
   id: string; // Guid
-  action: AuditAction;
+  action: string;
   actorId?: string; // Guid
-  actor?: any; // User reference
+  actorUsername?: string;
   entityName?: string;
   entityId?: string; // Guid
-  requestId?: string; // Guid
   ipAddress?: string;
   userAgent?: string;
   detailsJson?: string;
   createdAt: Date;
-}
-
-export interface AuditLogWithUser extends AuditLog {
-  userName: string;
-  userEmail: string;
+  httpMethod?: string;
+  httpPath?: string;
+  httpStatusCode?: number;
+  durationMs?: number;
+  sqlCommand?: string;
+  sqlParameters?: string;
 }
