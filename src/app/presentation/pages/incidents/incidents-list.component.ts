@@ -36,7 +36,6 @@ import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping
 // Helper interface for displaying incidents with additional computed labels
 interface IncidentDisplay extends IncidentWithDetails {
   // Additional computed display properties for UI rendering
-  projectName?: string;
   sprintName?: string;
   statusLabel?: string;
   priorityLabel?: string;
@@ -203,7 +202,7 @@ export class IncidentsListComponent implements OnInit {
           statusLabel: IncidentStatusMapping.find((s: { label: string; value: IncidentStatus }) => s.value === inc.status)?.label ?? 'Desconocido',
           priorityLabel: IncidentPriorityMapping.find((p: { label: string; value: IncidentPriority }) => p.value === inc.priority)?.label ?? 'Desconocido',
           severityLabel: IncidentSeverityMapping.find((sev: { label: string; value: IncidentSeverity }) => sev.value === inc.severity)?.label ?? 'Desconocido',
-          projectName: inc.project?.name,
+          projectName: inc.projectName || inc.project?.name,
           sprintName: inc.sprint?.name,
           reporterName: inc.reporterName || inc.reporter?.name,
           assigneeName: inc.assigneeName || inc.assignee?.name
