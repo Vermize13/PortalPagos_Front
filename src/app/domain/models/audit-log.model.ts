@@ -41,8 +41,3 @@ export interface AuditLog {
   sqlCommand?: string;
   sqlParameters?: string;
 }
-
-export interface AuditLogWithUser extends AuditLog {
-  userName: string;
-  userEmail: string;
-}

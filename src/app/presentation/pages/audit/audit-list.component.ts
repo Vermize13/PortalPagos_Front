@@ -144,7 +144,7 @@ export class AuditListComponent implements OnInit {
       },
       {
         id: '950e8400-e29b-41d4-a716-446655440004',
-        action: 'update',
+        action: 'transition',
         actorId: '550e8400-e29b-41d4-a716-446655440003',
         actorUsername: 'tester1@example.com',
         entityName: 'Incident',
@@ -180,8 +180,12 @@ export class AuditListComponent implements OnInit {
     }
   }
 
+  private normalizeAction(action: string): string {
+    return action?.toLowerCase() || '';
+  }
+
   getActionSeverity(action: string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
-    const actionLower = action?.toLowerCase();
+    const actionLower = this.normalizeAction(action);
     switch (actionLower) {
       case 'login': return 'info';
       case 'create': return 'success';
@@ -197,7 +201,7 @@ export class AuditListComponent implements OnInit {
   }
 
   getActionLabel(action: string): string {
-    const actionLower = action?.toLowerCase();
+    const actionLower = this.normalizeAction(action);
     const labels: { [key: string]: string } = {
       'login': 'Inicio de Sesión',
       'logout': 'Cierre de Sesión',
