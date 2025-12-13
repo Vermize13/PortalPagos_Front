@@ -193,14 +193,17 @@ export class AuditListComponent implements OnInit {
   getActionSeverity(action: AuditAction): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
     switch (action) {
       case AuditAction.Login: return 'info';
+      case AuditAction.Logout: return 'info';
       case AuditAction.Create: return 'success';
       case AuditAction.Update: return 'warning';
       case AuditAction.Delete: return 'danger';
+      case AuditAction.Assign: return 'info';
       case AuditAction.Transition: return 'info';
       case AuditAction.Backup: return 'secondary';
       case AuditAction.Restore: return 'warning';
       case AuditAction.Upload: return 'info';
       case AuditAction.Download: return 'info';
+      case AuditAction.Export: return 'success';
       case AuditAction.Comment: return 'info';
       default: return 'secondary';
     }
