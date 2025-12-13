@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
-import { AuditLog, AuditAction, Permissions } from '../../../domain/models';
+import { AuditLog, Permissions } from '../../../domain/models';
 import { AuditService, AuditLogFilter, AuditLogPagedResponse } from '../../../data/services/audit.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { PermissionService } from '../../../data/services/permission.service';
@@ -48,6 +48,13 @@ export class AuditListComponent implements OnInit {
   
   // Filter options
   actionOptions: { label: string; value: string }[] = [];
+  
+  // Valid action values based on API schema
+  private readonly validActions = [
+    'login', 'logout', 'create', 'update', 'delete', 
+    'assign', 'transition', 'upload', 'download', 
+    'backup', 'restore', 'export'
+  ];
 
   constructor(
     private auditService: AuditService,
@@ -55,9 +62,9 @@ export class AuditListComponent implements OnInit {
     public permissionService: PermissionService
   ) {
     // Initialize action options
-    this.actionOptions = Object.values(AuditAction).map(action => ({
+    this.actionOptions = this.validActions.map(action => ({
       label: this.getActionLabel(action),
-      value: action.toLowerCase()
+      value: action
     }));
   }
 

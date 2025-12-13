@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AuditLog, AuditAction, AuditEntityType } from '../../domain/models';
+import { AuditLog } from '../../domain/models';
 
 export interface AuditLogFilter {
   userId?: string;
