@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
-import { AuditLog, Permissions } from '../../../domain/models';
+import { AuditAction, AuditLog, Permissions } from '../../../domain/models';
 import { AuditService, AuditLogFilter, AuditLogPagedResponse } from '../../../data/services/audit.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { PermissionService } from '../../../data/services/permission.service';
@@ -61,11 +61,13 @@ export class AuditListComponent implements OnInit {
     private toastService: ToastService,
     public permissionService: PermissionService
   ) {
-    // Initialize action options
-    this.actionOptions = this.validActions.map(action => ({
-      label: this.getActionLabel(action),
-      value: action
-    }));
+    // Initialize action options - filter numeric values only for numeric enums
+    this.actionOptions = Object.values(AuditAction)
+      .filter(value => typeof value === 'number')
+      .map(action => ({
+        label: this.getActionLabel(action as AuditAction),
+        value: action as AuditAction
+      }));
   }
 
   ngOnInit() {
@@ -187,43 +189,42 @@ export class AuditListComponent implements OnInit {
     }
   }
 
-  private normalizeAction(action: string): string {
-    return action?.toLowerCase() || '';
-  }
-
-  getActionSeverity(action: string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
-    const actionLower = this.normalizeAction(action);
-    switch (actionLower) {
-      case 'login': return 'info';
-      case 'create': return 'success';
-      case 'update': return 'warning';
-      case 'delete': return 'danger';
-      case 'transition': return 'info';
-      case 'backup': return 'secondary';
-      case 'restore': return 'warning';
-      case 'upload': return 'info';
-      case 'download': return 'info';
+  getActionSeverity(action: AuditAction): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
+    switch (action) {
+      case AuditAction.Login: return 'info';
+      case AuditAction.Logout: return 'info';
+      case AuditAction.Create: return 'success';
+      case AuditAction.Update: return 'warning';
+      case AuditAction.Delete: return 'danger';
+      case AuditAction.Assign: return 'info';
+      case AuditAction.Transition: return 'info';
+      case AuditAction.Backup: return 'secondary';
+      case AuditAction.Restore: return 'warning';
+      case AuditAction.Upload: return 'info';
+      case AuditAction.Download: return 'info';
+      case AuditAction.Export: return 'success';
+      case AuditAction.Comment: return 'info';
       default: return 'secondary';
     }
   }
 
-  getActionLabel(action: string): string {
-    const actionLower = this.normalizeAction(action);
-    const labels: { [key: string]: string } = {
-      'login': 'Inicio de Sesión',
-      'logout': 'Cierre de Sesión',
-      'create': 'Crear',
-      'update': 'Actualizar',
-      'delete': 'Eliminar',
-      'assign': 'Asignar',
-      'transition': 'Cambio de Estado',
-      'upload': 'Subir Archivo',
-      'download': 'Descargar Archivo',
-      'backup': 'Copia de Seguridad',
-      'restore': 'Restaurar',
-      'export': 'Exportar'
+  getActionLabel(action: AuditAction): string {
+    const labels: { [key in AuditAction]: string } = {
+      [AuditAction.Login]: 'Inicio de Sesión',
+      [AuditAction.Logout]: 'Cierre de Sesión',
+      [AuditAction.Create]: 'Crear',
+      [AuditAction.Update]: 'Actualizar',
+      [AuditAction.Delete]: 'Eliminar',
+      [AuditAction.Assign]: 'Asignar',
+      [AuditAction.Transition]: 'Cambio de Estado',
+      [AuditAction.Upload]: 'Subir Archivo',
+      [AuditAction.Download]: 'Descargar Archivo',
+      [AuditAction.Backup]: 'Copia de Seguridad',
+      [AuditAction.Restore]: 'Restaurar',
+      [AuditAction.Export]: 'Exportar',
+      [AuditAction.Comment]: 'Comentar'
     };
-    return labels[actionLower] || action;
+    return labels[action] || action.toString();
   }
 
   // RF5.3: Export audit logs
