@@ -6,7 +6,7 @@ import { AuditLog, AuditAction, AuditEntityType } from '../../domain/models';
 
 export interface AuditLogFilter {
   userId?: string;
-  action?: AuditAction;
+  action?: string;
   startDate?: Date;
   endDate?: Date;
   page?: number;
@@ -15,7 +15,7 @@ export interface AuditLogFilter {
 
 export interface AuditFilterRequest {
   userId?: string;
-  action?: AuditAction;
+  action?: string;
   startDate?: string;
   endDate?: string;
   page?: number;

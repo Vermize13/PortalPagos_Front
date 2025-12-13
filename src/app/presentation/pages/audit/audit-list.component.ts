@@ -41,13 +41,13 @@ export class AuditListComponent implements OnInit {
   
   // RF5.2: Filter properties
   filter: AuditLogFilter = {};
-  selectedAction: AuditAction | null = null;
+  selectedAction: string | null = null;
   selectedUserId: string | null = null;
   startDate: Date | null = null;
   endDate: Date | null = null;
   
   // Filter options
-  actionOptions: { label: string; value: AuditAction }[] = [];
+  actionOptions: { label: string; value: string }[] = [];
 
   constructor(
     private auditService: AuditService,
@@ -57,7 +57,7 @@ export class AuditListComponent implements OnInit {
     // Initialize action options
     this.actionOptions = Object.values(AuditAction).map(action => ({
       label: this.getActionLabel(action),
-      value: action
+      value: action.toLowerCase()
     }));
   }
 
