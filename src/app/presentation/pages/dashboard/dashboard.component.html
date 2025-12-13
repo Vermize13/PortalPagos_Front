@@ -32,16 +32,6 @@
         </div>
       </p-card>
     </div>
-    
-    <div class="col-12 md:col-6 lg:col-3">
-      <p-card>
-        <div class="text-center">
-          <i class="pi pi-clock text-4xl text-purple-500"></i>
-          <h3 class="mt-2">MTTR (horas)</h3>
-          <p class="text-3xl font-bold">{{ metrics?.mttr || 0 }}</p>
-        </div>
-      </p-card>
-    </div>
   </div>
 
   <!-- RF4.1: Charts by Status, Priority, and Severity -->
@@ -65,7 +55,7 @@
     </div>
   </div>
 
-  <!-- RF4.4: Incident Evolution Chart -->
+  <!-- RF4.3: Incident Evolution Chart -->
   <div class="grid mt-4">
     <div class="col-12">
       <p-card header="Evolución de Incidencias (Últimos 30 días)">
