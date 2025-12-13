@@ -25,16 +25,21 @@ export enum AuditEntityType {
 
 export interface AuditLog {
   id: string; // Guid
-  action: AuditAction;
+  action: string;
   actorId?: string; // Guid
-  actor?: any; // User reference
+  actorUsername?: string;
   entityName?: string;
   entityId?: string; // Guid
-  requestId?: string; // Guid
   ipAddress?: string;
   userAgent?: string;
   detailsJson?: string;
   createdAt: Date;
+  httpMethod?: string;
+  httpPath?: string;
+  httpStatusCode?: number;
+  durationMs?: number;
+  sqlCommand?: string;
+  sqlParameters?: string;
 }
 
 export interface AuditLogWithUser extends AuditLog {
