@@ -10,14 +10,17 @@ export class UserStateService {
 
   setUser(token: string) {
     sessionStorage.setItem('token', token);
-    const decodedToken:any = jwtDecode(token);
+    const decodedToken: any = jwtDecode(token);
+    console.log('DEBUG: Decoded token claims:', decodedToken); // DEBUG
     const roleClaim = this.extractRoleClaim(decodedToken);
     const normalizedRole = this.normalizeRole(roleClaim);
+    const userId = this.extractUserIdClaim(decodedToken);
+    console.log('DEBUG: Extracted userId:', userId); // DEBUG
     const userData: User = {
       token: token,
-      nameid: decodedToken.nameid || decodedToken.sub,
+      nameid: userId || '',
       role: normalizedRole,
-      unique_name: decodedToken.unique_name
+      unique_name: decodedToken.unique_name || decodedToken.name || decodedToken.email
     };
     this.user.set(userData);
     // Store the complete user data in sessionStorage
@@ -45,7 +48,7 @@ export class UserStateService {
         console.error('Error parsing user data from sessionStorage', e);
       }
     }
-    
+
     // Fallback: reconstruct from token if user data is not available
     const token = sessionStorage.getItem('token');
     if (token) {
@@ -93,6 +96,32 @@ export class UserStateService {
           return value[0];
         }
         return value as string;
+      }
+    }
+
+    return null;
+  }
+
+  private extractUserIdClaim(decodedToken: any): string | null {
+    if (!decodedToken) {
+      return null;
+    }
+
+    // Check multiple possible claim names for user ID
+    const possibleKeys = [
+      'nameid',
+      'sub',
+      'userId',
+      'user_id',
+      'id',
+      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier',
+      'http://schemas.microsoft.com/ws/2008/06/identity/claims/nameidentifier'
+    ];
+
+    for (const key of possibleKeys) {
+      const value = decodedToken[key];
+      if (value) {
+        return String(value);
       }
     }
 

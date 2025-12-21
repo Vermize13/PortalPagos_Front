@@ -11,11 +11,11 @@ export class AdminGuard implements CanActivate {
     private userStateService: UserStateService,
     private router: Router,
     private toastService: ToastService
-  ) {}
+  ) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     const user = this.userStateService.getUser();
-    
+
     if (!user) {
       this.router.navigate(['/login']);
       return false;

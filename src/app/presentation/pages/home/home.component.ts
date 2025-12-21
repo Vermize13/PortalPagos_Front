@@ -64,7 +64,7 @@ export class HomeComponent implements OnInit {
 
   loadUserProfile(userId: string): void {
     this.loading = true;
-    
+
     this.userService.getUserById(userId).subscribe({
       next: (user) => {
         this.user = user;
@@ -81,7 +81,7 @@ export class HomeComponent implements OnInit {
 
   loadUserProjects(userId: string): void {
     this.loadingProjects = true;
-    
+
     // Get all projects and filter by user membership
     // TODO: This makes N+1 API calls. Consider adding a backend endpoint like
     // GET /api/Users/{userId}/projects to fetch user's projects in a single call
@@ -92,8 +92,8 @@ export class HomeComponent implements OnInit {
             const members = await firstValueFrom(this.projectService.getMembers(project.id));
             const userMember = members?.find(m => m.userId === userId);
             if (userMember) {
-              return { 
-                project: project, 
+              return {
+                project: project,
                 role: userMember.roleName || 'Sin rol'
               };
             }
