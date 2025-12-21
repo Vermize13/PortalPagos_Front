@@ -1,4 +1,4 @@
-<p-sidebar #sidebarRef [visible]="!collapsed" [modal]="false" [styleClass]="collapsed ? 'collapsed-sidebar' : ''" (onHide)="toggleCollapsed()">
+<p-sidebar #sidebarRef [visible]="!collapsed" [modal]="false" [dismissible]="false" [showCloseIcon]="false" [closeOnEscape]="false" [styleClass]="collapsed ? 'collapsed-sidebar' : ''" (onHide)="toggleCollapsed()">
   <ng-template pTemplate="headless">
     <div class="flex flex-column h-full">
       <div class="flex align-items-center justify-content-between px-4 pt-3 flex-shrink-0">
