@@ -26,6 +26,10 @@ export interface CreateIncidentRequest {
   sprintId?: string;
   title: string;
   description?: string;
+  testData?: string;
+  evidence?: string;
+  expectedBehavior?: string;
+  bugType?: number;
   severity: IncidentSeverity;
   priority: IncidentPriority;
   assigneeId?: string;
@@ -37,6 +41,10 @@ export interface CreateIncidentRequest {
 export interface UpdateIncidentRequest {
   title?: string;
   description?: string;
+  testData?: string;
+  evidence?: string;
+  expectedBehavior?: string;
+  bugType?: number;
   severity?: IncidentSeverity;
   priority?: IncidentPriority;
   status?: IncidentStatus;

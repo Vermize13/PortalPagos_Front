@@ -299,6 +299,68 @@
         </small>
       </div>
 
+      <!-- Test Data field -->
+      <div class="field mb-3">
+        <label for="testData">Datos de Pruebas</label>
+        <textarea 
+          id="testData"
+          name="testData"
+          #testDataField="ngModel" 
+          pInputTextarea 
+          [(ngModel)]="incidentForm.testData"
+          placeholder="Datos utilizados para las pruebas"
+          [disabled]="isEditMode && !canUpdateDescription()"
+          rows="3">
+        </textarea>
+      </div>
+
+      <!-- Evidence field -->
+      <div class="field mb-3">
+        <label for="evidence">Evidencias</label>
+        <textarea 
+          id="evidence"
+          name="evidence"
+          #evidenceField="ngModel" 
+          pInputTextarea 
+          [(ngModel)]="incidentForm.evidence"
+          placeholder="Evidencias del problema (enlaces, capturas, etc.)"
+          [disabled]="isEditMode && !canUpdateDescription()"
+          rows="3">
+        </textarea>
+      </div>
+
+      <!-- Expected Behavior field -->
+      <div class="field mb-3">
+        <label for="expectedBehavior">Comportamiento Esperado</label>
+        <textarea 
+          id="expectedBehavior"
+          name="expectedBehavior"
+          #expectedBehaviorField="ngModel" 
+          pInputTextarea 
+          [(ngModel)]="incidentForm.expectedBehavior"
+          placeholder="Comportamiento esperado del sistema"
+          [disabled]="isEditMode && !canUpdateDescription()"
+          rows="3">
+        </textarea>
+      </div>
+
+      <!-- Bug Type field -->
+      <div class="field mb-3">
+        <label for="bugType">Tipo de Bug</label>
+        <p-dropdown 
+          id="bugType"
+          name="bugType"
+          #bugTypeField="ngModel"
+          [options]="bugTypes"
+          [(ngModel)]="incidentForm.bugType"
+          placeholder="Seleccione tipo de bug"
+          appendTo="body"
+          [disabled]="isEditMode && !canUpdateData()"
+          optionLabel="label"
+          optionValue="value">
+        </p-dropdown>
+      </div>
+
       <div class="grid">
         <div class="col-6">
           <div class="field mb-3">

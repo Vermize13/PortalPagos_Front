@@ -22,7 +22,8 @@ import {
   IncidentWithDetails,
   LabelInfo,
   Label,
-  Permissions
+  Permissions,
+  BugType
 } from '../../../domain/models';
 import { IncidentService, IncidentFilter, CreateIncidentRequest, UpdateIncidentRequest } from '../../../data/services/incident.service';
 import { ProjectService } from '../../../data/services/project.service';
@@ -31,7 +32,7 @@ import { SprintService } from '../../../data/services/sprint.service';
 import { LabelService } from '../../../data/services/label.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { PermissionService } from '../../../data/services/permission.service';
-import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping } from '../../../domain/models/enum-mappings';
+import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping, BugTypeMapping } from '../../../domain/models/enum-mappings';
 
 // Helper interface for displaying incidents with additional computed labels
 interface IncidentDisplay extends IncidentWithDetails {
@@ -48,6 +49,10 @@ interface IncidentFormData {
   sprintId?: string;
   title: string;
   description: string;
+  testData?: string;
+  evidence?: string;
+  expectedBehavior?: string;
+  bugType?: number;
   severity: IncidentSeverity;
   priority: IncidentPriority;
   status?: IncidentStatus;
@@ -86,6 +91,7 @@ export class IncidentsListComponent implements OnInit {
   priorities = IncidentPriorityMapping;
   severities = IncidentSeverityMapping;
   statusOptions = IncidentStatusMapping;
+  bugTypes = BugTypeMapping;
   selectedStatus: string = '';
 
   // View mode
@@ -105,6 +111,10 @@ export class IncidentsListComponent implements OnInit {
     projectId: '',
     title: '',
     description: '',
+    testData: '',
+    evidence: '',
+    expectedBehavior: '',
+    bugType: BugType.Funcional,
     severity: IncidentSeverity.Medio,
     priority: IncidentPriority.DeberíaHacer,
     labelIds: []
@@ -339,6 +349,10 @@ export class IncidentsListComponent implements OnInit {
       sprintId: incident.sprintId,
       title: incident.title,
       description: incident.description || '',
+      testData: incident.testData || '',
+      evidence: incident.evidence || '',
+      expectedBehavior: incident.expectedBehavior || '',
+      bugType: incident.bugType ?? BugType.Funcional,
       severity: incident.severity,
       priority: incident.priority,
       status: incident.status,
@@ -383,6 +397,10 @@ export class IncidentsListComponent implements OnInit {
       projectId: '',
       title: '',
       description: '',
+      testData: '',
+      evidence: '',
+      expectedBehavior: '',
+      bugType: BugType.Funcional,
       severity: IncidentSeverity.Medio,
       priority: IncidentPriority.DeberíaHacer,
       labelIds: []
@@ -444,6 +462,10 @@ export class IncidentsListComponent implements OnInit {
       const updateRequest: UpdateIncidentRequest = {
         title: this.incidentForm.title,
         description: this.incidentForm.description,
+        testData: this.incidentForm.testData,
+        evidence: this.incidentForm.evidence,
+        expectedBehavior: this.incidentForm.expectedBehavior,
+        bugType: this.incidentForm.bugType,
         severity: this.incidentForm.severity,
         priority: this.incidentForm.priority,
         status: this.incidentForm.status,
@@ -475,6 +497,10 @@ export class IncidentsListComponent implements OnInit {
         sprintId: this.incidentForm.sprintId,
         title: this.incidentForm.title,
         description: this.incidentForm.description,
+        testData: this.incidentForm.testData,
+        evidence: this.incidentForm.evidence,
+        expectedBehavior: this.incidentForm.expectedBehavior,
+        bugType: this.incidentForm.bugType,
         severity: this.incidentForm.severity,
         priority: this.incidentForm.priority,
         assigneeId: this.incidentForm.assigneeId,
