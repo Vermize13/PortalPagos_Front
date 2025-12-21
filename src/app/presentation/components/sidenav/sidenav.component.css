@@ -63,8 +63,8 @@ a {
 .collapsed-bar {
   position: fixed;
   left: 0;
-  top: 56px;
-  height: calc(100vh - 56px);
+  top: var(--topbar-height);
+  height: calc(100vh - var(--topbar-height));
   width: 72px;
   background: #ffffff;
   z-index: 1000;

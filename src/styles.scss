@@ -3,6 +3,11 @@
 // should be after your bootstrap imports, it uses bs4 variables, mixins, functions
 
 
+/* CSS Custom Properties */
+:root {
+  --topbar-height: 56px;
+}
+
 /* Otros estilos globales */
 html {
   font-size: 14px;
