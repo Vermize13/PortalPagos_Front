@@ -21,6 +21,14 @@ export enum IncidentPriority {
   DebeHacer = 3
 }
 
+export enum BugType {
+  Funcional = 0,
+  Visual = 1,
+  Performance = 2,
+  Security = 3,
+  Other = 4
+}
+
 export interface Incident {
   id: string; // Guid
   projectId: string; // Guid
@@ -30,6 +38,10 @@ export interface Incident {
   code: string;
   title: string;
   description?: string;
+  testData?: string;
+  evidence?: string;
+  expectedBehavior?: string;
+  bugType?: BugType;
   severity: IncidentSeverity;
   priority: IncidentPriority;
   status: IncidentStatus;
@@ -88,6 +100,10 @@ export interface IncidentWithDetails {
   code: string;
   title: string;
   description?: string;
+  testData?: string;
+  evidence?: string;
+  expectedBehavior?: string;
+  bugType?: BugType;
   severity: IncidentSeverity;
   priority: IncidentPriority;
   status: IncidentStatus;

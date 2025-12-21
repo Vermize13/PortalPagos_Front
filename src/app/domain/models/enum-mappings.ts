@@ -20,3 +20,11 @@ export const IncidentStatusMapping = [
   { label: 'Rechazado', value: 4 },
   { label: 'Duplicado', value: 5 },
 ];
+
+export const BugTypeMapping = [
+  { label: 'Funcional', value: 0 },
+  { label: 'Visual', value: 1 },
+  { label: 'Performance', value: 2 },
+  { label: 'Seguridad', value: 3 },
+  { label: 'Otro', value: 4 },
+];
