@@ -70,7 +70,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     const currentUser = this.userStateService.getUser();
-    if (!currentUser) {
+    if (!currentUser || !currentUser.nameid) {
       this.router.navigate(['/login']);
       return;
     }

@@ -54,7 +54,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     const currentUser = this.userStateService.getUser();
-    if (!currentUser) {
+    if (!currentUser || !currentUser.nameid) {
       this.router.navigate(['/login']);
       return;
     }
