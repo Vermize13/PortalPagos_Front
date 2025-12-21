@@ -6,13 +6,14 @@
   }
 
   .topbar {
-    height: 56px;
+    height: var(--topbar-height);
     display: flex;
     align-items: center;
     border-bottom: 1px solid rgba(0,0,0,0.04);
     background: #fff;
-    position: relative;
-    z-index: 1050;
+    position: sticky;
+    top: 0;
+    z-index: 1150;
   }
 
   .topbar .left-actions {
@@ -39,6 +40,10 @@
   /* Ensure toggle button is always visible and above collapsed sidebar */
   .left-actions {
     position: relative;
+    z-index: 1200;
+  }
+
+  .toggle-button {
     z-index: 1200;
   }
   
