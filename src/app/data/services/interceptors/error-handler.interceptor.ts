@@ -21,31 +21,32 @@ export const ErrorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const userStateService = inject(UserStateService);
   const toastService = inject(ToastService);
-  
+
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       let errorMessage = '';
       let errorTitle = 'Error';
-      
+
       // Handle 401 Unauthorized - logout and redirect to login
       if (error.status === 401) {
         // Prevent multiple simultaneous logout operations
         if (!isLoggingOut) {
           isLoggingOut = true;
-          
+
           // Clear user session
           userStateService.clearUser();
-          
+
           // Show toast notification
           toastService.showError('Sesión Expirada', 'Por favor, inicie sesión nuevamente');
-          
+
           // Redirect to login page
           router.navigate(['/login']).then(() => {
+            console.log('Navigated to login');
             // Reset flag after navigation completes
             isLoggingOut = false;
           });
         }
-        
+
         errorMessage = 'Sesión expirada. Por favor, inicie sesión nuevamente.';
       } else if (error.status === 403) {
         // Forbidden
@@ -83,13 +84,13 @@ export const ErrorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
         errorMessage = extractApiErrorMessage(error) || `Error del servidor (${error.status})`;
         toastService.showError(errorTitle, errorMessage);
       }
-      
+
       // Return the error for components that want to handle it specifically
-      return throwError(() => ({ 
-        status: error.status, 
+      return throwError(() => ({
+        status: error.status,
         message: errorMessage,
         title: errorTitle,
-        originalError: error 
+        originalError: error
       }));
     })
   );
