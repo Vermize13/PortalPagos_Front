@@ -55,15 +55,15 @@ export class ProfileComponent implements OnInit {
   loading = false;
   loadingIncidents = false;
   loadingProjects = false;
-  
+
   assignedIncidents: IncidentWithDetails[] = [];
   reportedIncidents: IncidentWithDetails[] = [];
   userProjects: UserProjectInfo[] = [];
   projectsMap: Map<string, string> = new Map(); // projectId -> projectName
-  
+
   isViewingOtherUser = false;
   isAdmin = false;
-  
+
   get currentUser() {
     return this.userStateService.getUser();
   }
@@ -77,7 +77,7 @@ export class ProfileComponent implements OnInit {
 
     // Check if current user is admin
     this.isAdmin = !!(currentUser.role && currentUser.role.toLowerCase() === 'admin');
-    
+
     // Get userId from route parameter or use current user
     this.route.paramMap.subscribe(params => {
       const userId = params.get('userId');
@@ -100,7 +100,7 @@ export class ProfileComponent implements OnInit {
 
   loadUserProfile(userId: string): void {
     this.loading = true;
-    
+
     this.userService.getUserById(userId).subscribe({
       next: (user) => {
         this.user = user;
@@ -120,7 +120,7 @@ export class ProfileComponent implements OnInit {
 
   loadUserIncidents(userId: string): void {
     this.loadingIncidents = true;
-    
+
     // Load both assigned and reported incidents in parallel
     forkJoin({
       assigned: this.incidentService.getAll({ assigneeId: userId }),
@@ -141,7 +141,7 @@ export class ProfileComponent implements OnInit {
 
   loadUserProjects(userId: string): void {
     this.loadingProjects = true;
-    
+
     // Get all projects and filter by user membership
     // TODO: This makes N+1 API calls. Consider adding a backend endpoint like
     // GET /api/Users/{userId}/projects to fetch user's projects in a single call
@@ -158,9 +158,9 @@ export class ProfileComponent implements OnInit {
             const members = await firstValueFrom(this.projectService.getMembers(project.id));
             const userMember = members?.find(m => m.userId === userId);
             if (userMember) {
-              return { 
-                project: project, 
-                role: userMember.roleName || 'Sin rol'
+              return {
+                project: project,
+                role: userMember.role.name || 'Sin rol'
               };
             }
             return null;

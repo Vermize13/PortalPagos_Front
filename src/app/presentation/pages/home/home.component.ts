@@ -94,7 +94,7 @@ export class HomeComponent implements OnInit {
             if (userMember) {
               return {
                 project: project,
-                role: userMember.roleName || 'Sin rol'
+                role: userMember.role.name || 'Sin rol'
               };
             }
             return null;
