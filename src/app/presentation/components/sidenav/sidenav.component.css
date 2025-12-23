@@ -63,8 +63,8 @@ a {
 .collapsed-bar {
   position: fixed;
   left: 0;
-  top: var(--topbar-height);
-  height: calc(100vh - var(--topbar-height));
+  top: 0;
+  height: 100vh;
   width: 72px;
   background: #ffffff;
   z-index: 1000;
@@ -72,7 +72,28 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 16px;
+  padding-top: 0;
+}
+
+/* Collapsed header with logo and expand button */
+.collapsed-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px;
+  gap: 8px;
+  border-bottom: 1px solid #e5e7eb;
+  width: 100%;
+}
+
+.collapsed-logo {
+  width: 48px;
+  height: auto;
+  object-fit: contain;
+}
+
+.collapsed-header .expand-btn {
+  margin-top: 4px;
 }
 .collapsed-bar .collapsed-list {
   display: flex;
