@@ -1,4 +1,4 @@
-<div class="container-fluid p-4">
+<div class="p-4 container-fluid">
   <p-card>
     <div class="mb-4">
       <div class="flex justify-content-between align-items-center">
@@ -6,13 +6,8 @@
           <h2 class="m-0 mb-2">Administración del Sistema</h2>
           <p class="text-600">Gestión de copias de seguridad, restauración y configuración del sistema</p>
         </div>
-        <p-button 
-          icon="pi pi-question-circle" 
-          [outlined]="true"
-          severity="help"
-          label="Manual de Ayuda"
-          (onClick)="showHelpManual = !showHelpManual"
-          pTooltip="Ver manual de ayuda y guía de usuario"
+        <p-button icon="pi pi-question-circle" [outlined]="true" severity="help" label="Manual de Ayuda"
+          (onClick)="showHelpManual = !showHelpManual" pTooltip="Ver manual de ayuda y guía de usuario"
           tooltipPosition="left">
         </p-button>
       </div>
@@ -26,99 +21,108 @@
             Esta sección permite a los administradores gestionar aspectos críticos del sistema:
           </p>
           <ul class="mt-2">
-            <li><strong>Copias de Seguridad (Backup):</strong> Crear copias de seguridad de la base de datos para proteger la información.</li>
-            <li><strong>Restauración:</strong> Recuperar datos desde una copia de seguridad previa en caso de pérdida de información.</li>
-            <li><strong>Configuración:</strong> Ajustar parámetros del sistema como tiempos de sesión, tamaños de archivos, y notificaciones.</li>
+            <li><strong>Copias de Seguridad (Backup):</strong> Crear copias de seguridad de la base de datos para
+              proteger la información.</li>
+            <li><strong>Restauración:</strong> Recuperar datos desde una copia de seguridad previa en caso de pérdida de
+              información.</li>
+            <li><strong>Configuración:</strong> Ajustar parámetros del sistema como tiempos de sesión, tamaños de
+              archivos, y notificaciones.</li>
           </ul>
         </p-accordionTab>
-        
+
         <p-accordionTab header="¿Cómo crear una copia de seguridad?">
           <ol class="m-0">
-            <li>Haga clic en el botón <strong>"RF6.1: Nueva Copia de Seguridad"</strong></li>
+            <li>Haga clic en el botón <strong>"Nueva Copia de Seguridad"</strong></li>
             <li>Ingrese notas descriptivas sobre el motivo de la copia (ej: "Backup antes de actualización")</li>
             <li>Haga clic en <strong>"Crear Backup"</strong></li>
             <li>El sistema creará la copia y la mostrará en la tabla con su estado</li>
           </ol>
           <p class="mt-2 text-600">
-            <strong>Nota:</strong> Las copias de seguridad pueden tardar varios minutos dependiendo del tamaño de la base de datos.
+            <strong>Nota:</strong> Las copias de seguridad pueden tardar varios minutos dependiendo del tamaño de la
+            base de datos.
           </p>
         </p-accordionTab>
-        
+
         <p-accordionTab header="¿Cómo restaurar una copia de seguridad?">
           <ol class="m-0">
             <li>Localice la copia de seguridad deseada en la tabla</li>
-            <li>Haga clic en el botón <strong>"RF6.2: Restaurar"</strong></li>
+            <li>Haga clic en el botón <strong>"Restaurar"</strong></li>
             <li>Revise la información del backup a restaurar</li>
             <li>Opcionalmente, ingrese notas sobre el motivo de la restauración</li>
             <li>Haga clic en <strong>"Restaurar"</strong></li>
           </ol>
-          <div class="mt-2 bg-yellow-50 border-l-4 border-yellow-400 p-3">
+          <div class="p-3 mt-2 border-l-4 border-yellow-400 bg-yellow-50">
             <p class="m-0 text-yellow-700">
-              <i class="pi pi-exclamation-triangle mr-2"></i>
-              <strong>¡Advertencia!</strong> La restauración sobrescribirá los datos actuales. Todos los cambios posteriores a la fecha de la copia se perderán.
+              <i class="mr-2 pi pi-exclamation-triangle"></i>
+              <strong>¡Advertencia!</strong> La restauración sobrescribirá los datos actuales. Todos los cambios
+              posteriores a la fecha de la copia se perderán.
             </p>
           </div>
         </p-accordionTab>
-        
+
         <p-accordionTab header="Descripción de las columnas de la tabla">
           <dl class="m-0">
             <dt><strong>ID:</strong></dt>
             <dd>Identificador único de la copia de seguridad (se muestra parcialmente)</dd>
-            
+
             <dt><strong>Fecha/Hora:</strong></dt>
             <dd>Momento en que se inició la creación de la copia de seguridad</dd>
-            
+
             <dt><strong>Creado Por:</strong></dt>
             <dd>Usuario que solicitó la creación de la copia de seguridad</dd>
-            
+
             <dt><strong>Estado:</strong></dt>
             <dd>Indica si la copia está completada, en progreso, o falló</dd>
-            
+
             <dt><strong>Tamaño:</strong></dt>
             <dd>Tamaño del archivo de la copia de seguridad en disco</dd>
-            
+
             <dt><strong>Duración:</strong></dt>
             <dd>Tiempo que tomó crear la copia de seguridad</dd>
-            
+
             <dt><strong>Notas:</strong></dt>
             <dd>Descripción o comentarios sobre la copia de seguridad</dd>
-            
+
             <dt><strong>Acciones:</strong></dt>
             <dd>Botones para restaurar la copia de seguridad</dd>
           </dl>
         </p-accordionTab>
-        
+
         <p-accordionTab header="Configuración del Sistema">
-          <p class="m-0 mb-3">La pestaña de <strong>Configuración</strong> permite ajustar los siguientes parámetros:</p>
-          
+          <p class="m-0 mb-3">La pestaña de <strong>Configuración</strong> permite ajustar los siguientes parámetros:
+          </p>
+
           <div class="mb-3">
             <h4 class="mt-0">Nombre del Sistema</h4>
             <p class="text-600">Nombre descriptivo que aparecerá en la interfaz del sistema.</p>
           </div>
-          
+
           <div class="mb-3">
             <h4 class="mt-0">Tamaño Máximo de Carga</h4>
             <p class="text-600">Límite de tamaño para archivos que los usuarios pueden subir al sistema.</p>
           </div>
-          
+
           <div class="mb-3">
             <h4 class="mt-0">Tiempo de Sesión</h4>
             <p class="text-600">Duración de inactividad antes de cerrar automáticamente la sesión del usuario.</p>
           </div>
-          
+
           <div class="mb-3">
             <h4 class="mt-0">Retención de Backups</h4>
-            <p class="text-600">Número de días que se conservarán las copias de seguridad antes de ser eliminadas automáticamente.</p>
+            <p class="text-600">Número de días que se conservarán las copias de seguridad antes de ser eliminadas
+              automáticamente.</p>
           </div>
-          
+
           <div class="mb-3">
             <h4 class="mt-0">Notificaciones por Email</h4>
-            <p class="text-600">Habilita o deshabilita el envío de notificaciones por correo electrónico a los usuarios.</p>
+            <p class="text-600">Habilita o deshabilita el envío de notificaciones por correo electrónico a los usuarios.
+            </p>
           </div>
-          
+
           <div class="mb-3">
             <h4 class="mt-0">Modo de Mantenimiento</h4>
-            <p class="text-600">Cuando está activo, solo los administradores pueden acceder al sistema. Útil durante actualizaciones.</p>
+            <p class="text-600">Cuando está activo, solo los administradores pueden acceder al sistema. Útil durante
+              actualizaciones.</p>
           </div>
         </p-accordionTab>
       </p-accordion>
@@ -126,59 +130,53 @@
 
     <p-tabView [(activeIndex)]="activeTabIndex">
       <!-- Backup & Restore Tab -->
-      <p-tabPanel header="Backup & Restore">
-        <div class="flex justify-content-between align-items-center mb-4">
+      <p-tabPanel header="Respaldo y Restauración">
+        <div class="flex mb-4 justify-content-between align-items-center">
           <h3 class="m-0">Copias de Seguridad</h3>
-          <p-button 
-            *ngIf="canCreateBackup()"
-            label="RF6.1: Nueva Copia de Seguridad" 
-            icon="pi pi-save" 
-            (onClick)="openCreateDialog()"
-            [disabled]="loading"
+          <p-button *ngIf="canCreateBackup()" label="Nueva Copia de Seguridad" icon="pi pi-save"
+            (onClick)="openCreateDialog()" [disabled]="loading"
             pTooltip="Crear una nueva copia de seguridad de la base de datos. Se recomienda realizar backups antes de cambios importantes."
             tooltipPosition="left">
           </p-button>
         </div>
 
-        <p-table 
-          [value]="backups" 
-          [loading]="loading"
-          [paginator]="true" 
-          [rows]="10"
-          [showCurrentPageReport]="true"
+        <p-table [value]="backups" [loading]="loading" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
           currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} copias de seguridad"
-          [rowsPerPageOptions]="[10, 25, 50]"
-          styleClass="p-datatable-striped">
-          
+          [rowsPerPageOptions]="[10, 25, 50]" styleClass="p-datatable-striped">
+
           <ng-template pTemplate="header">
             <tr>
               <th pTooltip="Identificador único de la copia de seguridad" tooltipPosition="top">
-                ID <i class="pi pi-info-circle text-sm" aria-label="Información sobre ID" role="img"></i>
+                ID <i class="text-sm pi pi-info-circle" aria-label="Información sobre ID" role="img"></i>
               </th>
               <th pTooltip="Fecha y hora de inicio de la copia de seguridad" tooltipPosition="top">
-                Fecha/Hora <i class="pi pi-info-circle text-sm" aria-label="Información sobre Fecha/Hora" role="img"></i>
+                Fecha/Hora <i class="text-sm pi pi-info-circle" aria-label="Información sobre Fecha/Hora"
+                  role="img"></i>
               </th>
               <th pTooltip="Usuario que creó la copia de seguridad" tooltipPosition="top">
-                Creado Por <i class="pi pi-info-circle text-sm" aria-label="Información sobre Creado Por" role="img"></i>
+                Creado Por <i class="text-sm pi pi-info-circle" aria-label="Información sobre Creado Por"
+                  role="img"></i>
               </th>
-              <th pTooltip="Estado actual del proceso de backup (Completado, En Progreso, Fallido)" tooltipPosition="top">
-                Estado <i class="pi pi-info-circle text-sm" aria-label="Información sobre Estado" role="img"></i>
+              <th pTooltip="Estado actual del proceso de backup (Completado, En Progreso, Fallido)"
+                tooltipPosition="top">
+                Estado <i class="text-sm pi pi-info-circle" aria-label="Información sobre Estado" role="img"></i>
               </th>
               <th pTooltip="Tamaño del archivo de la copia de seguridad" tooltipPosition="top">
-                Tamaño <i class="pi pi-info-circle text-sm" aria-label="Información sobre Tamaño" role="img"></i>
+                Tamaño <i class="text-sm pi pi-info-circle" aria-label="Información sobre Tamaño" role="img"></i>
               </th>
               <th pTooltip="Tiempo que tardó en completarse la copia de seguridad" tooltipPosition="top">
-                Duración <i class="pi pi-info-circle text-sm" aria-label="Información sobre Duración" role="img"></i>
+                Duración <i class="text-sm pi pi-info-circle" aria-label="Información sobre Duración" role="img"></i>
               </th>
               <th pTooltip="Notas o comentarios sobre la copia de seguridad" tooltipPosition="top">
-                Notas <i class="pi pi-info-circle text-sm" aria-label="Información sobre Notas" role="img"></i>
+                Notas <i class="text-sm pi pi-info-circle" aria-label="Información sobre Notas" role="img"></i>
               </th>
-              <th *ngIf="canRestoreBackup()" pTooltip="Acciones disponibles para esta copia de seguridad" tooltipPosition="top">
-                Acciones <i class="pi pi-info-circle text-sm" aria-label="Información sobre Acciones" role="img"></i>
+              <th *ngIf="canRestoreBackup()" pTooltip="Acciones disponibles para esta copia de seguridad"
+                tooltipPosition="top">
+                Acciones <i class="text-sm pi pi-info-circle" aria-label="Información sobre Acciones" role="img"></i>
               </th>
             </tr>
           </ng-template>
-          
+
           <ng-template pTemplate="body" let-backup>
             <tr>
               <td>
@@ -187,9 +185,7 @@
               <td>{{ backup.startedAt | date:'short' }}</td>
               <td>{{ backup.creatorName || 'Sistema' }}</td>
               <td>
-                <p-tag 
-                  [value]="backup.status || 'Completado'" 
-                  [severity]="getStatusSeverity(backup.status)">
+                <p-tag [value]="backup.status || 'Completado'" [severity]="getStatusSeverity(backup.status)">
                 </p-tag>
               </td>
               <td>{{ formatBytes(backup.sizeBytes) }}</td>
@@ -198,24 +194,19 @@
                 <span class="text-sm">{{ backup.notes || '-' }}</span>
               </td>
               <td *ngIf="canRestoreBackup()">
-                <p-button 
-                  label="RF6.2: Restaurar" 
-                  icon="pi pi-replay" 
-                  [outlined]="true"
-                  size="small"
-                  severity="warning"
-                  (onClick)="openRestoreDialog(backup)"
-                  [disabled]="loading"
+                <p-button label="Restaurar" icon="pi pi-replay" [outlined]="true" size="small" severity="warning"
+                  (onClick)="openRestoreDialog(backup)" [disabled]="loading"
                   pTooltip="Restaurar la base de datos a esta copia de seguridad. ADVERTENCIA: Los datos actuales serán reemplazados."
                   tooltipPosition="left">
                 </p-button>
               </td>
             </tr>
           </ng-template>
-          
+
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td [attr.colspan]="canRestoreBackup() ? 8 : 7" class="text-center">No hay copias de seguridad disponibles.</td>
+              <td [attr.colspan]="canRestoreBackup() ? 8 : 7" class="text-center">No hay copias de seguridad
+                disponibles.</td>
             </tr>
           </ng-template>
         </p-table>
@@ -231,53 +222,37 @@
         <div class="grid">
           <!-- System Information Section -->
           <div class="col-12">
-            <div class="surface-card p-4 border-round mb-3">
-              <h4 class="mb-3"><i class="pi pi-info-circle mr-2"></i>Información General</h4>
-              
-              <div class="field mb-3">
+            <div class="p-4 mb-3 surface-card border-round">
+              <h4 class="mb-3"><i class="mr-2 pi pi-info-circle"></i>Información General</h4>
+
+              <div class="mb-3 field">
                 <label for="systemName" class="block mb-2 font-semibold">
-                  Nombre del Sistema 
-                  <i class="pi pi-info-circle text-sm ml-1" 
-                     pTooltip="Nombre que se mostrará en la interfaz del sistema para identificar la aplicación"
-                     tooltipPosition="right"
-                     aria-label="Información sobre Nombre del Sistema"
-                     role="img"></i>
+                  Nombre del Sistema
+                  <i class="ml-1 text-sm pi pi-info-circle"
+                    pTooltip="Nombre que se mostrará en la interfaz del sistema para identificar la aplicación"
+                    tooltipPosition="right" aria-label="Información sobre Nombre del Sistema" role="img"></i>
                 </label>
-                <input 
-                  id="systemName"
-                  type="text" 
-                  pInputText 
-                  [(ngModel)]="systemConfig.systemName" 
-                  (ngModelChange)="onConfigChange()"
-                  class="w-full"
-                  placeholder="Ingrese el nombre del sistema">
+                <input id="systemName" type="text" pInputText [(ngModel)]="systemConfig.systemName"
+                  (ngModelChange)="onConfigChange()" class="w-full" placeholder="Ingrese el nombre del sistema">
               </div>
             </div>
           </div>
 
           <!-- File Upload Settings -->
           <div class="col-12 md:col-6">
-            <div class="surface-card p-4 border-round mb-3">
-              <h4 class="mb-3"><i class="pi pi-upload mr-2"></i>Configuración de Archivos</h4>
-              
-              <div class="field mb-3">
+            <div class="p-4 mb-3 surface-card border-round">
+              <h4 class="mb-3"><i class="mr-2 pi pi-upload"></i>Configuración de Archivos</h4>
+
+              <div class="mb-3 field">
                 <label for="maxUploadSize" class="block mb-2 font-semibold">
                   Tamaño Máximo de Carga
-                  <i class="pi pi-info-circle text-sm ml-1" 
-                     pTooltip="Define el tamaño máximo de archivos que los usuarios pueden subir. Archivos más grandes serán rechazados."
-                     tooltipPosition="right"
-                     aria-label="Información sobre Tamaño Máximo de Carga"
-                     role="img"></i>
+                  <i class="ml-1 text-sm pi pi-info-circle"
+                    pTooltip="Define el tamaño máximo de archivos que los usuarios pueden subir. Archivos más grandes serán rechazados."
+                    tooltipPosition="right" aria-label="Información sobre Tamaño Máximo de Carga" role="img"></i>
                 </label>
-                <p-dropdown 
-                  id="maxUploadSize"
-                  [options]="uploadSizeOptions" 
-                  [(ngModel)]="systemConfig.maxUploadSize"
-                  (ngModelChange)="onConfigChange()"
-                  optionLabel="label" 
-                  optionValue="value"
-                  placeholder="Seleccione tamaño máximo"
-                  [style]="{'width': '100%'}">
+                <p-dropdown id="maxUploadSize" [options]="uploadSizeOptions" [(ngModel)]="systemConfig.maxUploadSize"
+                  (ngModelChange)="onConfigChange()" optionLabel="label" optionValue="value"
+                  placeholder="Seleccione tamaño máximo" [style]="{'width': '100%'}">
                 </p-dropdown>
                 <small class="text-600">Tamaño máximo permitido para archivos adjuntos</small>
               </div>
@@ -286,27 +261,19 @@
 
           <!-- Session Settings -->
           <div class="col-12 md:col-6">
-            <div class="surface-card p-4 border-round mb-3">
-              <h4 class="mb-3"><i class="pi pi-clock mr-2"></i>Configuración de Sesión</h4>
-              
-              <div class="field mb-3">
+            <div class="p-4 mb-3 surface-card border-round">
+              <h4 class="mb-3"><i class="mr-2 pi pi-clock"></i>Configuración de Sesión</h4>
+
+              <div class="mb-3 field">
                 <label for="sessionTimeout" class="block mb-2 font-semibold">
                   Tiempo de Sesión
-                  <i class="pi pi-info-circle text-sm ml-1" 
-                     pTooltip="Tiempo de inactividad permitido antes de que el sistema cierre automáticamente la sesión del usuario por seguridad"
-                     tooltipPosition="right"
-                     aria-label="Información sobre Tiempo de Sesión"
-                     role="img"></i>
+                  <i class="ml-1 text-sm pi pi-info-circle"
+                    pTooltip="Tiempo de inactividad permitido antes de que el sistema cierre automáticamente la sesión del usuario por seguridad"
+                    tooltipPosition="right" aria-label="Información sobre Tiempo de Sesión" role="img"></i>
                 </label>
-                <p-dropdown 
-                  id="sessionTimeout"
-                  [options]="sessionTimeoutOptions" 
-                  [(ngModel)]="systemConfig.sessionTimeout"
-                  (ngModelChange)="onConfigChange()"
-                  optionLabel="label" 
-                  optionValue="value"
-                  placeholder="Seleccione tiempo de sesión"
-                  [style]="{'width': '100%'}">
+                <p-dropdown id="sessionTimeout" [options]="sessionTimeoutOptions"
+                  [(ngModel)]="systemConfig.sessionTimeout" (ngModelChange)="onConfigChange()" optionLabel="label"
+                  optionValue="value" placeholder="Seleccione tiempo de sesión" [style]="{'width': '100%'}">
                 </p-dropdown>
                 <small class="text-600">Tiempo de inactividad antes de cerrar sesión automáticamente</small>
               </div>
@@ -315,27 +282,19 @@
 
           <!-- Backup Settings -->
           <div class="col-12 md:col-6">
-            <div class="surface-card p-4 border-round mb-3">
-              <h4 class="mb-3"><i class="pi pi-database mr-2"></i>Configuración de Backups</h4>
-              
-              <div class="field mb-3">
+            <div class="p-4 mb-3 surface-card border-round">
+              <h4 class="mb-3"><i class="mr-2 pi pi-database"></i>Configuración de Backups</h4>
+
+              <div class="mb-3 field">
                 <label for="backupRetention" class="block mb-2 font-semibold">
                   Retención de Backups
-                  <i class="pi pi-info-circle text-sm ml-1" 
-                     pTooltip="Número de días que se conservarán las copias de seguridad antes de ser eliminadas automáticamente del sistema"
-                     tooltipPosition="right"
-                     aria-label="Información sobre Retención de Backups"
-                     role="img"></i>
+                  <i class="ml-1 text-sm pi pi-info-circle"
+                    pTooltip="Número de días que se conservarán las copias de seguridad antes de ser eliminadas automáticamente del sistema"
+                    tooltipPosition="right" aria-label="Información sobre Retención de Backups" role="img"></i>
                 </label>
-                <p-dropdown 
-                  id="backupRetention"
-                  [options]="retentionOptions" 
-                  [(ngModel)]="systemConfig.backupRetentionDays"
-                  (ngModelChange)="onConfigChange()"
-                  optionLabel="label" 
-                  optionValue="value"
-                  placeholder="Seleccione período de retención"
-                  [style]="{'width': '100%'}">
+                <p-dropdown id="backupRetention" [options]="retentionOptions"
+                  [(ngModel)]="systemConfig.backupRetentionDays" (ngModelChange)="onConfigChange()" optionLabel="label"
+                  optionValue="value" placeholder="Seleccione período de retención" [style]="{'width': '100%'}">
                 </p-dropdown>
                 <small class="text-600">Días que se conservarán las copias de seguridad</small>
               </div>
@@ -344,40 +303,31 @@
 
           <!-- Notification Settings -->
           <div class="col-12 md:col-6">
-            <div class="surface-card p-4 border-round mb-3">
-              <h4 class="mb-3"><i class="pi pi-bell mr-2"></i>Notificaciones</h4>
-              
-              <div class="field-checkbox mb-3">
-                <p-checkbox 
-                  inputId="emailNotifications" 
-                  [(ngModel)]="systemConfig.emailNotifications"
-                  (ngModelChange)="onConfigChange()"
-                  [binary]="true">
+            <div class="p-4 mb-3 surface-card border-round">
+              <h4 class="mb-3"><i class="mr-2 pi pi-bell"></i>Notificaciones</h4>
+
+              <div class="mb-3 field-checkbox">
+                <p-checkbox inputId="emailNotifications" [(ngModel)]="systemConfig.emailNotifications"
+                  (ngModelChange)="onConfigChange()" [binary]="true">
                 </p-checkbox>
                 <label for="emailNotifications" class="ml-2">
                   Habilitar notificaciones por correo electrónico
-                  <i class="pi pi-info-circle text-sm ml-1" 
-                     pTooltip="Permite enviar notificaciones automáticas por email a los usuarios sobre eventos importantes del sistema"
-                     tooltipPosition="right"
-                     aria-label="Información sobre notificaciones por correo electrónico"
-                     role="img"></i>
+                  <i class="ml-1 text-sm pi pi-info-circle"
+                    pTooltip="Permite enviar notificaciones automáticas por email a los usuarios sobre eventos importantes del sistema"
+                    tooltipPosition="right" aria-label="Información sobre notificaciones por correo electrónico"
+                    role="img"></i>
                 </label>
               </div>
-              
+
               <div class="field-checkbox">
-                <p-checkbox 
-                  inputId="maintenanceMode" 
-                  [(ngModel)]="systemConfig.maintenanceMode"
-                  (ngModelChange)="onConfigChange()"
-                  [binary]="true">
+                <p-checkbox inputId="maintenanceMode" [(ngModel)]="systemConfig.maintenanceMode"
+                  (ngModelChange)="onConfigChange()" [binary]="true">
                 </p-checkbox>
                 <label for="maintenanceMode" class="ml-2">
                   Modo de mantenimiento
-                  <i class="pi pi-info-circle text-sm ml-1" 
-                     pTooltip="Activa el modo de mantenimiento. Solo administradores podrán acceder mientras se realizan actualizaciones o mantenimiento"
-                     tooltipPosition="right"
-                     aria-label="Información sobre modo de mantenimiento"
-                     role="img"></i>
+                  <i class="ml-1 text-sm pi pi-info-circle"
+                    pTooltip="Activa el modo de mantenimiento. Solo administradores podrán acceder mientras se realizan actualizaciones o mantenimiento"
+                    tooltipPosition="right" aria-label="Información sobre modo de mantenimiento" role="img"></i>
                 </label>
               </div>
               <small class="text-600">Cuando está activo, solo los administradores pueden acceder al sistema</small>
@@ -386,22 +336,14 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex justify-content-end gap-2 mt-4">
-          <p-button 
-            label="Restablecer" 
-            icon="pi pi-refresh" 
-            [outlined]="true"
-            severity="secondary"
+        <div class="flex gap-2 mt-4 justify-content-end">
+          <p-button label="Restablecer" icon="pi pi-refresh" [outlined]="true" severity="secondary"
             (onClick)="resetConfiguration()"
             pTooltip="Restaurar todos los valores de configuración a sus valores predeterminados"
             tooltipPosition="left">
           </p-button>
-          <p-button 
-            label="Guardar Configuración" 
-            icon="pi pi-save" 
-            (onClick)="saveConfiguration()"
-            [disabled]="!configModified"
-            pTooltip="Guardar todos los cambios realizados en la configuración del sistema"
+          <p-button label="Guardar Configuración" icon="pi pi-save" (onClick)="saveConfiguration()"
+            [disabled]="!configModified" pTooltip="Guardar todos los cambios realizados en la configuración del sistema"
             tooltipPosition="left">
           </p-button>
         </div>
@@ -411,73 +353,49 @@
 </div>
 
 <!-- Create Backup Dialog -->
-<p-dialog 
-  header="RF6.1: Crear Copia de Seguridad" 
-  [(visible)]="showCreateDialog" 
-  [modal]="true"
-  [style]="{width: '500px'}"
-  [draggable]="false"
-  [resizable]="false">
-  
+<p-dialog header="Crear Copia de Seguridad" [(visible)]="showCreateDialog" [modal]="true" [style]="{width: '500px'}"
+  [draggable]="false" [resizable]="false">
+
   <div class="field">
     <label for="backupNotes" class="block mb-2 font-semibold">
       Notas
-      <i class="pi pi-info-circle text-sm ml-1" 
-         pTooltip="Ingrese una descripción del motivo de esta copia de seguridad para futuras referencias"
-         tooltipPosition="right"
-         aria-label="Información sobre Notas de Backup"
-         role="img"></i>
+      <i class="ml-1 text-sm pi pi-info-circle"
+        pTooltip="Ingrese una descripción del motivo de esta copia de seguridad para futuras referencias"
+        tooltipPosition="right" aria-label="Información sobre Notas de Backup" role="img"></i>
     </label>
-    <textarea 
-      id="backupNotes"
-      pInputTextarea 
-      [(ngModel)]="backupNotes" 
-      rows="5" 
-      class="w-full"
+    <textarea id="backupNotes" pInputTextarea [(ngModel)]="backupNotes" rows="5" class="w-full"
       placeholder="Ingrese notas sobre esta copia de seguridad (ej: Backup antes de migración)">
     </textarea>
   </div>
-  
+
   <ng-template pTemplate="footer">
-    <p-button 
-      label="Cancelar" 
-      icon="pi pi-times" 
-      [outlined]="true"
-      (onClick)="showCreateDialog = false">
+    <p-button label="Cancelar" icon="pi pi-times" [outlined]="true" (onClick)="showCreateDialog = false">
     </p-button>
-    <p-button 
-      label="Crear Backup" 
-      icon="pi pi-save" 
-      (onClick)="createBackup()"
-      [loading]="loading">
+    <p-button label="Crear Backup" icon="pi pi-save" (onClick)="createBackup()" [loading]="loading">
     </p-button>
   </ng-template>
 </p-dialog>
 
 <!-- Restore Backup Dialog -->
-<p-dialog 
-  header="RF6.2: Restaurar Copia de Seguridad" 
-  [(visible)]="showRestoreDialog" 
-  [modal]="true"
-  [style]="{width: '500px'}"
-  [draggable]="false"
-  [resizable]="false">
-  
+<p-dialog header="Restaurar Copia de Seguridad" [(visible)]="showRestoreDialog" [modal]="true"
+  [style]="{width: '500px'}" [draggable]="false" [resizable]="false">
+
   <div class="mb-4">
-    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+    <div class="p-4 mb-4 border-l-4 border-yellow-400 bg-yellow-50">
       <div class="flex">
         <div class="flex-shrink-0">
-          <i class="pi pi-exclamation-triangle text-yellow-400"></i>
+          <i class="text-yellow-400 pi pi-exclamation-triangle"></i>
         </div>
         <div class="ml-3">
           <p class="text-sm text-yellow-700">
-            <strong>Advertencia:</strong> Esta acción restaurará la base de datos al estado de la copia de seguridad seleccionada. 
+            <strong>Advertencia:</strong> Esta acción restaurará la base de datos al estado de la copia de seguridad
+            seleccionada.
             Todos los cambios realizados después de esa fecha se perderán.
           </p>
         </div>
       </div>
     </div>
-    
+
     <div *ngIf="selectedBackup" class="mb-3">
       <p><strong>Backup ID:</strong> {{ selectedBackup.id }}</p>
       <p><strong>Fecha:</strong> {{ selectedBackup.startedAt | date:'medium' }}</p>
@@ -485,39 +403,23 @@
       <p><strong>Creado por:</strong> {{ selectedBackup.creatorName || 'Sistema' }}</p>
     </div>
   </div>
-  
+
   <div class="field">
     <label for="restoreNotes" class="block mb-2 font-semibold">
       Notas de Restauración
-      <i class="pi pi-info-circle text-sm ml-1" 
-         pTooltip="Ingrese el motivo por el cual se está restaurando esta copia de seguridad para mantener un registro"
-         tooltipPosition="right"
-         aria-label="Información sobre Notas de Restauración"
-         role="img"></i>
+      <i class="ml-1 text-sm pi pi-info-circle"
+        pTooltip="Ingrese el motivo por el cual se está restaurando esta copia de seguridad para mantener un registro"
+        tooltipPosition="right" aria-label="Información sobre Notas de Restauración" role="img"></i>
     </label>
-    <textarea 
-      id="restoreNotes"
-      pInputTextarea 
-      [(ngModel)]="restoreNotes" 
-      rows="3" 
-      class="w-full"
+    <textarea id="restoreNotes" pInputTextarea [(ngModel)]="restoreNotes" rows="3" class="w-full"
       placeholder="Ingrese el motivo de la restauración (opcional)">
     </textarea>
   </div>
-  
+
   <ng-template pTemplate="footer">
-    <p-button 
-      label="Cancelar" 
-      icon="pi pi-times" 
-      [outlined]="true"
-      (onClick)="showRestoreDialog = false">
+    <p-button label="Cancelar" icon="pi pi-times" [outlined]="true" (onClick)="showRestoreDialog = false">
     </p-button>
-    <p-button 
-      label="Restaurar" 
-      icon="pi pi-replay" 
-      severity="warning"
-      (onClick)="restoreBackup()"
-      [loading]="loading">
+    <p-button label="Restaurar" icon="pi pi-replay" severity="warning" (onClick)="restoreBackup()" [loading]="loading">
     </p-button>
   </ng-template>
 </p-dialog>
