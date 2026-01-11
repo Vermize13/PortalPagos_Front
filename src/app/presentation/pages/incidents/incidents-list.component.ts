@@ -13,6 +13,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { FileUploadModule } from 'primeng/fileupload';
 import { ConfirmationService } from 'primeng/api';
 import {
   Incident,
@@ -30,6 +31,7 @@ import { ProjectService } from '../../../data/services/project.service';
 import { UserService } from '../../../data/services/user.service';
 import { SprintService } from '../../../data/services/sprint.service';
 import { LabelService } from '../../../data/services/label.service';
+import { AttachmentService } from '../../../data/services/attachment.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { PermissionService } from '../../../data/services/permission.service';
 import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping, BugTypeMapping } from '../../../domain/models/enum-mappings';
@@ -77,7 +79,8 @@ interface IncidentFormData {
     InputTextareaModule,
     CalendarModule,
     ConfirmDialogModule,
-    MultiSelectModule
+    MultiSelectModule,
+    FileUploadModule
   ],
   providers: [ConfirmationService],
   templateUrl: './incidents-list.component.html',
@@ -129,12 +132,18 @@ export class IncidentsListComponent implements OnInit {
   selectedProjectId: string = '';
   selectedSprintId: string = '';
 
+  // Pending files for upload after incident creation
+  pendingFiles: File[] = [];
+  isUploading: boolean = false;
+  lastCreatedIncidentId: string | null = null;;
+
   constructor(
     private incidentService: IncidentService,
     private projectService: ProjectService,
     private userService: UserService,
     private sprintService: SprintService,
     private labelService: LabelService,
+    private attachmentService: AttachmentService,
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
     private router: Router,
@@ -153,9 +162,9 @@ export class IncidentsListComponent implements OnInit {
 
   canEditIncident(): boolean {
     return this.permissionService.canUpdateIncidentTitle() ||
-           this.permissionService.canUpdateIncidentDescription() ||
-           this.permissionService.canUpdateIncidentLabels() ||
-           this.permissionService.canUpdateIncidentData();
+      this.permissionService.canUpdateIncidentDescription() ||
+      this.permissionService.canUpdateIncidentLabels() ||
+      this.permissionService.canUpdateIncidentData();
   }
 
   canUpdateTitle(): boolean {
@@ -393,6 +402,8 @@ export class IncidentsListComponent implements OnInit {
   onCreate() {
     this.isEditMode = false;
     this.submitted = false;
+    this.pendingFiles = [];
+    this.lastCreatedIncidentId = null;
     this.incidentForm = {
       projectId: '',
       title: '',
@@ -450,7 +461,7 @@ export class IncidentsListComponent implements OnInit {
     return labels[status];
   }
 
-  onSaveIncident() {
+  onSaveIncident(createAnother: boolean = false) {
     this.submitted = true;
 
     if (!this.validateForm()) {
@@ -473,12 +484,6 @@ export class IncidentsListComponent implements OnInit {
         assigneeId: this.incidentForm.assigneeId,
         dueDate: this.incidentForm.dueDate?.toISOString().split('T')[0]
       };
-
-      // Note: Labels are not updated through the edit modal in this flow.
-      // Labels must be managed separately via the "Gestionar" button in the detail view,
-      // which uses the addLabel/removeLabel API endpoints.
-      // This is due to API design: the update endpoint doesn't support label updates,
-      // and labels shown in the edit form are for reference only.
 
       this.incidentService.update(this.incidentForm.id, updateRequest).subscribe({
         next: () => {
@@ -509,10 +514,15 @@ export class IncidentsListComponent implements OnInit {
       };
 
       this.incidentService.create(createRequest).subscribe({
-        next: () => {
-          this.toastService.showSuccess('Éxito', 'Incidencia creada correctamente');
-          this.displayDialog = false;
-          this.loadIncidents();
+        next: (createdIncident) => {
+          this.lastCreatedIncidentId = createdIncident.id;
+
+          // Upload pending files if any
+          if (this.pendingFiles.length > 0) {
+            this.uploadPendingFiles(createdIncident.id, createAnother);
+          } else {
+            this.handlePostCreate(createAnother);
+          }
         },
         error: (error) => {
           console.error('Error creating incident:', error);
@@ -522,9 +532,70 @@ export class IncidentsListComponent implements OnInit {
     }
   }
 
+  private uploadPendingFiles(incidentId: string, createAnother: boolean) {
+    this.isUploading = true;
+    let uploadCount = 0;
+    let errorCount = 0;
+
+    this.pendingFiles.forEach((file) => {
+      this.attachmentService.upload(incidentId, file).subscribe({
+        next: () => {
+          uploadCount++;
+          if (uploadCount + errorCount === this.pendingFiles.length) {
+            this.isUploading = false;
+            if (errorCount > 0) {
+              this.toastService.showWarn('Advertencia', `${errorCount} archivo(s) no se pudieron subir`);
+            }
+            this.handlePostCreate(createAnother);
+          }
+        },
+        error: (error) => {
+          console.error('Error uploading file:', error);
+          errorCount++;
+          if (uploadCount + errorCount === this.pendingFiles.length) {
+            this.isUploading = false;
+            this.toastService.showWarn('Advertencia', `${errorCount} archivo(s) no se pudieron subir`);
+            this.handlePostCreate(createAnother);
+          }
+        }
+      });
+    });
+  }
+
+  private handlePostCreate(createAnother: boolean) {
+    this.toastService.showSuccess('Éxito', 'Incidencia creada correctamente');
+
+    if (createAnother) {
+      // Reset form but keep project selected
+      const currentProjectId = this.incidentForm.projectId;
+      this.submitted = false;
+      this.pendingFiles = [];
+      this.incidentForm = {
+        projectId: currentProjectId,
+        title: '',
+        description: '',
+        testData: '',
+        evidence: '',
+        expectedBehavior: '',
+        bugType: BugType.Funcional,
+        severity: IncidentSeverity.Medio,
+        priority: IncidentPriority.DeberíaHacer,
+        labelIds: []
+      };
+    } else {
+      // Close dialog and redirect to created incident
+      this.displayDialog = false;
+      this.loadIncidents();
+      if (this.lastCreatedIncidentId) {
+        this.router.navigate(['/inicio/incidents', this.lastCreatedIncidentId]);
+      }
+    }
+  }
+
   onCancelDialog() {
     this.displayDialog = false;
     this.submitted = false;
+    this.pendingFiles = [];
   }
 
   validateForm(): boolean {
@@ -545,7 +616,7 @@ export class IncidentsListComponent implements OnInit {
     if (!projectId) {
       return;
     }
-    
+
     this.loadSprintsByProject(projectId);
     this.loadLabelsByProject(projectId);
     this.projectMembers = [];
@@ -670,5 +741,32 @@ export class IncidentsListComponent implements OnInit {
     }
 
     this.draggedIncident = null;
+  }
+
+  // File handling methods for attachments sidebar
+  onPendingFileSelect(event: any) {
+    const files = event.files || event.target?.files;
+    if (!files) return;
+
+    for (const file of files) {
+      const validation = this.attachmentService.validateFile(file);
+      if (validation.valid) {
+        this.pendingFiles.push(file);
+      } else {
+        this.toastService.showError('Error', validation.error || 'Archivo no válido');
+      }
+    }
+  }
+
+  removePendingFile(index: number) {
+    this.pendingFiles.splice(index, 1);
+  }
+
+  formatFileSize(bytes: number): string {
+    return this.attachmentService.formatFileSize(bytes);
+  }
+
+  getMaxFileSizeMB(): number {
+    return this.attachmentService.getMaxFileSizeMB();
   }
 }

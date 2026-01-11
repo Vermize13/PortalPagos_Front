@@ -1,51 +1,26 @@
-<div class="container-fluid p-4">
+<div class="p-4 container-fluid">
   <p-card>
-    <div class="flex justify-content-between align-items-center mb-4">
+    <div class="flex mb-4 justify-content-between align-items-center">
       <h2 class="m-0">Gestión de Incidencias</h2>
       <div class="flex gap-2">
-        <p-button 
-          label="Tablero" 
-          icon="pi pi-th-large" 
-          [outlined]="viewMode !== 'board'"
+        <p-button label="Tablero" icon="pi pi-th-large" [outlined]="viewMode !== 'board'"
           (onClick)="toggleView('board')"></p-button>
-        <p-button 
-          label="Tabla" 
-          icon="pi pi-table" 
-          [outlined]="viewMode !== 'table'"
+        <p-button label="Tabla" icon="pi pi-table" [outlined]="viewMode !== 'table'"
           (onClick)="toggleView('table')"></p-button>
-        <p-button 
-          *ngIf="canCreateIncident()"
-          label="Nueva Incidencia" 
-          icon="pi pi-plus" 
+        <p-button *ngIf="canCreateIncident()" label="Nueva Incidencia" icon="pi pi-plus"
           (onClick)="onCreate()"></p-button>
       </div>
     </div>
 
-    <div class="mb-3 flex gap-2" *ngIf="viewMode === 'table'">
-      <p-dropdown 
-        [options]="projects" 
-        [(ngModel)]="selectedProjectId" 
-        placeholder="Filtrar por proyecto"
-        [showClear]="true"
-        optionLabel="label"
-        optionValue="value"
-        (onChange)="onFilterByProject()">
+    <div class="flex gap-2 mb-3" *ngIf="viewMode === 'table'">
+      <p-dropdown [options]="projects" [(ngModel)]="selectedProjectId" placeholder="Filtrar por proyecto"
+        [showClear]="true" optionLabel="label" optionValue="value" (onChange)="onFilterByProject()">
       </p-dropdown>
-      <p-dropdown 
-        *ngIf="selectedProjectId && sprints.length > 0"
-        [options]="sprints" 
-        [(ngModel)]="selectedSprintId" 
-        placeholder="Filtrar por sprint"
-        [showClear]="true"
-        optionLabel="label"
-        optionValue="value"
+      <p-dropdown *ngIf="selectedProjectId && sprints.length > 0" [options]="sprints" [(ngModel)]="selectedSprintId"
+        placeholder="Filtrar por sprint" [showClear]="true" optionLabel="label" optionValue="value"
         (onChange)="onFilterBySprint()">
       </p-dropdown>
-      <p-dropdown 
-        [options]="statuses" 
-        [(ngModel)]="selectedStatus" 
-        placeholder="Filtrar por estado"
-        [showClear]="true"
+      <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Filtrar por estado" [showClear]="true"
         (onChange)="onFilterByStatus()">
       </p-dropdown>
     </div>
@@ -53,39 +28,32 @@
     <!-- Board View -->
     <div *ngIf="viewMode === 'board'" class="board-container">
       <div class="board-columns">
-        <div class="board-column" 
-             *ngFor="let status of statuses"
-             (dragover)="canDragDrop() ? onDragOver($event) : null"
-             (drop)="canDragDrop() ? onDrop($event, status) : null">
+        <div class="board-column" *ngFor="let status of statuses" (dragover)="canDragDrop() ? onDragOver($event) : null"
+          (drop)="canDragDrop() ? onDrop($event, status) : null">
           <div class="column-header">
             <h3 class="column-title">{{ getStatusLabel(status) }}</h3>
             <span class="incident-count">{{ getIncidentsByStatus(status).length }}</span>
           </div>
           <div class="column-content">
-            <div class="incident-card" 
-                 *ngFor="let incident of getIncidentsByStatus(status)"
-                 [attr.draggable]="canDragDrop()"
-                 (dragstart)="canDragDrop() ? onDragStart($event, incident) : null"
-                 (dragend)="canDragDrop() ? onDragEnd($event) : null">
+            <div class="incident-card" *ngFor="let incident of getIncidentsByStatus(status)"
+              [attr.draggable]="canDragDrop()" (dragstart)="canDragDrop() ? onDragStart($event, incident) : null"
+              (dragend)="canDragDrop() ? onDragEnd($event) : null">
               <div class="card-header">
                 <span class="incident-code">{{ incident.code }}</span>
-                <p-tag 
-                  [value]="incident.priorityLabel" 
-                  [severity]="getPrioritySeverity(incident.priority)"
+                <p-tag [value]="incident.priorityLabel" [severity]="getPrioritySeverity(incident.priority)"
                   styleClass="text-xs"></p-tag>
               </div>
               <h4 class="card-title">{{ incident.title }}</h4>
-              <p class="card-description">{{ incident.description | slice:0:80 }}{{ incident.description && incident.description.length > 80 ? '...' : '' }}</p>
-              
+              <p class="card-description">{{ incident.description | slice:0:80 }}{{ incident.description &&
+                incident.description.length > 80 ? '...' : '' }}</p>
+
               <!-- Labels Display -->
-              <div class="card-labels mb-2" *ngIf="incident.labels && incident.labels.length > 0">
-                <p-tag 
-                  *ngFor="let label of incident.labels" 
-                  [value]="label.name"
+              <div class="mb-2 card-labels" *ngIf="incident.labels && incident.labels.length > 0">
+                <p-tag *ngFor="let label of incident.labels" [value]="label.name"
                   [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
                   styleClass="text-xs mr-1"></p-tag>
               </div>
-              
+
               <div class="card-footer">
                 <div class="card-meta">
                   <div class="reporter" *ngIf="incident.reporterName">
@@ -102,21 +70,10 @@
                   </div>
                 </div>
                 <div class="card-actions">
-                  <p-button 
-                    icon="pi pi-eye" 
-                    [rounded]="true" 
-                    [text]="true" 
-                    severity="secondary"
-                    size="small"
+                  <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="secondary" size="small"
                     (onClick)="onViewDetails(incident)"></p-button>
-                  <p-button 
-                    *ngIf="canEditIncident()"
-                    icon="pi pi-pencil" 
-                    [rounded]="true" 
-                    [text]="true" 
-                    severity="info"
-                    size="small"
-                    (onClick)="onEdit(incident)"></p-button>
+                  <p-button *ngIf="canEditIncident()" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="info"
+                    size="small" (onClick)="onEdit(incident)"></p-button>
                 </div>
               </div>
             </div>
@@ -130,16 +87,11 @@
     </div>
 
     <!-- Table View -->
-    <p-table *ngIf="viewMode === 'table'" 
-      [value]="incidents" 
-      [loading]="loading"
-      [paginator]="true" 
-      [rows]="10"
+    <p-table *ngIf="viewMode === 'table'" [value]="incidents" [loading]="loading" [paginator]="true" [rows]="10"
       [showCurrentPageReport]="true"
       currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} incidencias"
-      [rowsPerPageOptions]="[10, 25, 50]"
-      styleClass="p-datatable-striped">
-      
+      [rowsPerPageOptions]="[10, 25, 50]" styleClass="p-datatable-striped">
+
       <ng-template pTemplate="header">
         <tr>
           <th>ID</th>
@@ -154,7 +106,7 @@
           <th>Acciones</th>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="body" let-incident>
         <tr>
           <td>{{ incident.code }}</td>
@@ -164,9 +116,7 @@
           </td>
           <td>
             <div class="flex flex-wrap gap-1">
-              <p-tag 
-                *ngFor="let label of incident.labels" 
-                [value]="label.name"
+              <p-tag *ngFor="let label of incident.labels" [value]="label.name"
                 [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
                 styleClass="text-xs"></p-tag>
               <span *ngIf="!incident.labels || incident.labels.length === 0" class="text-sm text-gray-400">-</span>
@@ -183,30 +133,16 @@
           <td>{{ incident.assigneeName || 'Sin asignar' }}</td>
           <td>{{ incident.createdAt | date:'short' }}</td>
           <td>
-            <p-button 
-              icon="pi pi-eye" 
-              [rounded]="true" 
-              [text]="true" 
-              severity="secondary"
+            <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="secondary"
               (onClick)="onViewDetails(incident)"></p-button>
-            <p-button 
-              *ngIf="canEditIncident()"
-              icon="pi pi-pencil" 
-              [rounded]="true" 
-              [text]="true" 
-              severity="info"
+            <p-button *ngIf="canEditIncident()" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="info"
               (onClick)="onEdit(incident)"></p-button>
-            <p-button 
-              *ngIf="canDeleteIncident()"
-              icon="pi pi-trash" 
-              [rounded]="true" 
-              [text]="true" 
-              severity="danger"
+            <p-button *ngIf="canDeleteIncident()" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
               (onClick)="onDelete(incident)"></p-button>
           </td>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="10" class="text-center">No se encontraron incidencias.</td>
@@ -216,310 +152,243 @@
   </p-card>
 
   <!-- Incident Create/Edit Dialog -->
-  <p-dialog 
-    [(visible)]="displayDialog" 
-    [header]="isEditMode ? 'Editar Incidencia' : 'Nueva Incidencia'"
-    [modal]="true"
-    [style]="{width: '730px'}"
-    [baseZIndex]="10"
-    [closable]="true">
-    
-    <form #incidentFormRef="ngForm" class="p-fluid">
-      <div class="field mb-3">
-        <label for="project">Proyecto *</label>
-        <p-dropdown 
-          id="project"
-          name="project"
-          #projectField="ngModel"
-          [options]="projects"
-          [(ngModel)]="incidentForm.projectId"
-          name="projectId"
-          (onChange)="onProjectChange($event.value)"
-          placeholder="Seleccione un proyecto"
-          [disabled]="isEditMode"
-          optionLabel="label"
-          optionValue="value"
-          required>
-        </p-dropdown>
-        <small class="p-error" *ngIf="projectField.invalid && (projectField.dirty || projectField.touched || submitted)">
-          El proyecto es requerido
-        </small>
-      </div>
+  <p-dialog [(visible)]="displayDialog" [header]="isEditMode ? 'Editar Incidencia' : 'Nueva Incidencia'" [modal]="true"
+    [style]="{width: isEditMode ? '730px' : '1100px'}" [baseZIndex]="10" [closable]="true">
 
-      <div class="field mb-3" *ngIf="incidentForm.projectId && sprints.length > 0">
-        <label for="sprint">Sprint</label>
-        <p-dropdown 
-          id="sprint"
-          name="sprint"
-          [options]="sprints"
-          [(ngModel)]="incidentForm.sprintId"
-          placeholder="Seleccione un sprint (opcional)"
-          [showClear]="true"
-          optionLabel="label"
-          optionValue="value">
-        </p-dropdown>
-      </div>
-
-      <!-- Title field - only editable if user has permission -->
-      <div class="field mb-3">
-        <label for="title">Título *</label>
-        <input 
-          id="title" 
-          name="title"
-          #titleField="ngModel"
-          type="text" 
-          pInputText 
-          [(ngModel)]="incidentForm.title"
-          placeholder="Título de la incidencia"
-          [disabled]="isEditMode && !canUpdateTitle()"
-          required />
-        <small class="p-error" *ngIf="titleField.invalid && (titleField.dirty || titleField.touched || submitted)">
-          El título es requerido
-        </small>
-        <small class="text-gray-500" *ngIf="isEditMode && !canUpdateTitle()">
-          No tiene permisos para modificar el título
-        </small>
-      </div>
-
-      <!-- Description field - only editable if user has permission -->
-      <div class="field mb-3">
-        <label for="description">Descripción</label>
-        <textarea 
-          id="description"
-          name="description"
-          #descriptionField="ngModel" 
-          pInputTextarea 
-          [(ngModel)]="incidentForm.description"
-          placeholder="Descripción detallada de la incidencia"
-          [disabled]="isEditMode && !canUpdateDescription()"
-          rows="4">
-        </textarea>
-        <small class="text-gray-500" *ngIf="isEditMode && !canUpdateDescription()">
-          No tiene permisos para modificar la descripción
-        </small>
-      </div>
-
-      <!-- Test Data field -->
-      <div class="field mb-3">
-        <label for="testData">Datos de Pruebas</label>
-        <textarea 
-          id="testData"
-          name="testData"
-          #testDataField="ngModel" 
-          pInputTextarea 
-          [(ngModel)]="incidentForm.testData"
-          placeholder="Datos utilizados para las pruebas"
-          [disabled]="isEditMode && !canUpdateDescription()"
-          rows="3">
-        </textarea>
-      </div>
-
-      <!-- Evidence field -->
-      <div class="field mb-3">
-        <label for="evidence">Evidencias</label>
-        <textarea 
-          id="evidence"
-          name="evidence"
-          #evidenceField="ngModel" 
-          pInputTextarea 
-          [(ngModel)]="incidentForm.evidence"
-          placeholder="Evidencias del problema (enlaces, capturas, etc.)"
-          [disabled]="isEditMode && !canUpdateDescription()"
-          rows="3">
-        </textarea>
-      </div>
-
-      <!-- Expected Behavior field -->
-      <div class="field mb-3">
-        <label for="expectedBehavior">Comportamiento Esperado</label>
-        <textarea 
-          id="expectedBehavior"
-          name="expectedBehavior"
-          #expectedBehaviorField="ngModel" 
-          pInputTextarea 
-          [(ngModel)]="incidentForm.expectedBehavior"
-          placeholder="Comportamiento esperado del sistema"
-          [disabled]="isEditMode && !canUpdateDescription()"
-          rows="3">
-        </textarea>
-      </div>
-
-      <!-- Bug Type field -->
-      <div class="field mb-3">
-        <label for="bugType">Tipo de Bug</label>
-        <p-dropdown 
-          id="bugType"
-          name="bugType"
-          #bugTypeField="ngModel"
-          [options]="bugTypes"
-          [(ngModel)]="incidentForm.bugType"
-          placeholder="Seleccione tipo de bug"
-          appendTo="body"
-          [disabled]="isEditMode && !canUpdateData()"
-          optionLabel="label"
-          optionValue="value">
-        </p-dropdown>
-      </div>
-
-      <div class="grid">
-        <div class="col-6">
-          <div class="field mb-3">
-            <label for="severity">Severidad *</label>
-            <p-dropdown 
-              id="severity"
-              name="severity"
-              #severityField="ngModel"
-              [options]="severities"
-              [(ngModel)]="incidentForm.severity"
-              placeholder="Seleccione severidad"
-              appendTo="body"
-              [disabled]="isEditMode && !canUpdateData()"
-              optionLabel="label"
-              optionValue="value"
+    <div class="modal-content-wrapper">
+      <!-- Form Section -->
+      <div class="form-section" [class.full-width]="isEditMode">
+        <form #incidentFormRef="ngForm" class="p-fluid">
+          <div class="mb-3 field">
+            <label for="project">Proyecto *</label>
+            <p-dropdown id="project" name="project" #projectField="ngModel" [options]="projects"
+              [(ngModel)]="incidentForm.projectId" name="projectId" (onChange)="onProjectChange($event.value)"
+              placeholder="Seleccione un proyecto" [disabled]="isEditMode" optionLabel="label" optionValue="value"
               required>
             </p-dropdown>
-            <small class="p-error" *ngIf="severityField.invalid && (severityField.dirty || severityField.touched || submitted)">
-              La severidad es requerida
+            <small class="p-error"
+              *ngIf="projectField.invalid && (projectField.dirty || projectField.touched || submitted)">
+              El proyecto es requerido
             </small>
           </div>
-        </div>
 
-        <div class="col-6">
-          <div class="field mb-3">
-            <label for="priority">Prioridad *</label>
-            <p-dropdown 
-              id="priority"
-              name="priority"
-              #priorityField="ngModel"
-              [options]="priorities"
-              [(ngModel)]="incidentForm.priority"
-              placeholder="Seleccione prioridad"
-              optionLabel="label"
-              appendTo="body"
-              [disabled]="isEditMode && !canUpdateData()"
-              optionValue="value"
-              required>
+          <div class="mb-3 field" *ngIf="incidentForm.projectId && sprints.length > 0">
+            <label for="sprint">Sprint</label>
+            <p-dropdown id="sprint" name="sprint" [options]="sprints" [(ngModel)]="incidentForm.sprintId"
+              placeholder="Seleccione un sprint (opcional)" [showClear]="true" optionLabel="label" optionValue="value">
             </p-dropdown>
-            <small class="p-error" *ngIf="priorityField.invalid && (priorityField.dirty || priorityField.touched || submitted)">
-              La prioridad es requerida
+          </div>
+
+          <!-- Title field - only editable if user has permission -->
+          <div class="mb-3 field">
+            <label for="title">Título *</label>
+            <input id="title" name="title" #titleField="ngModel" type="text" pInputText [(ngModel)]="incidentForm.title"
+              placeholder="Título de la incidencia" [disabled]="isEditMode && !canUpdateTitle()" required />
+            <small class="p-error" *ngIf="titleField.invalid && (titleField.dirty || titleField.touched || submitted)">
+              El título es requerido
+            </small>
+            <small class="text-gray-500" *ngIf="isEditMode && !canUpdateTitle()">
+              No tiene permisos para modificar el título
             </small>
           </div>
-        </div>
-      </div>
 
-      <div class="grid" *ngIf="isEditMode">
-        <div class="col-12">
-          <div class="field mb-3">
-            <label for="status">Estado *</label>
-            <p-dropdown 
-              id="status"
-              [options]="statusOptions"
-              [(ngModel)]="incidentForm.status"
-              placeholder="Seleccione estado"
-              appendTo="body"
-              [disabled]="!canUpdateData()"
-              optionLabel="label"
-              optionValue="value">
-            </p-dropdown>
-            <small class="text-gray-500" *ngIf="!canUpdateData()">
-              No tiene permisos para modificar el estado
-            </small>
-          </div>
-        </div>
-      </div>
-
-      <div class="field mb-3" *ngIf="!isEditMode && incidentForm.projectId && labels.length > 0">
-        <label for="labels">Etiquetas</label>
-        <p-multiSelect 
-          id="labels"
-          name="labels"
-          #labelsField="ngModel"
-          [options]="labels"
-          [(ngModel)]="incidentForm.labelIds"
-          placeholder="Seleccione etiquetas"
-          [showClear]="true"
-          appendTo="body"
-          optionLabel="name"
-          optionValue="id"
-          [style]="{'width': '100%'}">
-          <ng-template let-label pTemplate="item">
-            <div class="flex align-items-center gap-2">
-              <span 
-                class="label-color-indicator" 
-                [style.background-color]="label.colorHex || '#6c757d'">
-              </span>
-              <span>{{ label.name }}</span>
+          <!-- Description field - only editable if user has permission -->
+          <div class="grid">
+            <div class="col-6 field">
+              <label for="description">Descripción</label>
+              <textarea id="description" name="description" #descriptionField="ngModel" pInputTextarea
+                [(ngModel)]="incidentForm.description" placeholder="Descripción detallada de la incidencia"
+                [disabled]="isEditMode && !canUpdateDescription()" rows="4">
+        </textarea>
+              <small class="text-gray-500" *ngIf="isEditMode && !canUpdateDescription()">
+                No tiene permisos para modificar la descripción
+              </small>
             </div>
-          </ng-template>
-          <ng-template let-label pTemplate="selectedItem">
-            <p-tag 
-              [value]="label.name"
-              [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
-              styleClass="text-xs mr-1">
-            </p-tag>
-          </ng-template>
-        </p-multiSelect>
-        <small class="text-gray-500">Puede seleccionar múltiples etiquetas</small>
+            <div class="col-6 field">
+              <label for="testData">Datos de Pruebas</label>
+              <textarea id="testData" name="testData" #testDataField="ngModel" pInputTextarea
+                [(ngModel)]="incidentForm.testData" placeholder="Datos utilizados para las pruebas"
+                [disabled]="isEditMode && !canUpdateDescription()" rows="4">
+        </textarea>
+            </div>
+          </div>
+
+          <!-- Evidence field -->
+          <div class="grid">
+            <div class="col-6 field">
+              <label for="evidence">Evidencias</label>
+              <textarea id="evidence" name="evidence" #evidenceField="ngModel" pInputTextarea
+                [(ngModel)]="incidentForm.evidence" placeholder="Evidencias del problema (enlaces, capturas, etc.)"
+                [disabled]="isEditMode && !canUpdateDescription()" rows="3">
+              </textarea>
+            </div>
+            <!-- Expected Behavior field -->
+            <div class="col-6 field">
+              <label for="expectedBehavior">Comportamiento Esperado</label>
+              <textarea id="expectedBehavior" name="expectedBehavior" #expectedBehaviorField="ngModel" pInputTextarea
+                [(ngModel)]="incidentForm.expectedBehavior" placeholder="Comportamiento esperado del sistema"
+                [disabled]="isEditMode && !canUpdateDescription()" rows="3">
+        </textarea>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="col-4">
+              <div class="mb-3 field">
+                <label for="bugType">Tipo de Bug</label>
+                <p-dropdown id="bugType" name="bugType" #bugTypeField="ngModel" [options]="bugTypes"
+                  [(ngModel)]="incidentForm.bugType" placeholder="Seleccione tipo de bug" appendTo="body"
+                  [disabled]="isEditMode && !canUpdateData()" optionLabel="label" optionValue="value">
+                </p-dropdown>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="mb-3 field">
+                <label for="severity">Severidad *</label>
+                <p-dropdown id="severity" name="severity" #severityField="ngModel" [options]="severities"
+                  [(ngModel)]="incidentForm.severity" placeholder="Seleccione severidad" appendTo="body"
+                  [disabled]="isEditMode && !canUpdateData()" optionLabel="label" optionValue="value" required>
+                </p-dropdown>
+                <small class="p-error"
+                  *ngIf="severityField.invalid && (severityField.dirty || severityField.touched || submitted)">
+                  La severidad es requerida
+                </small>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="mb-3 field">
+                <label for="priority">Prioridad *</label>
+                <p-dropdown id="priority" name="priority" #priorityField="ngModel" [options]="priorities"
+                  [(ngModel)]="incidentForm.priority" placeholder="Seleccione prioridad" optionLabel="label"
+                  appendTo="body" [disabled]="isEditMode && !canUpdateData()" optionValue="value" required>
+                </p-dropdown>
+                <small class="p-error"
+                  *ngIf="priorityField.invalid && (priorityField.dirty || priorityField.touched || submitted)">
+                  La prioridad es requerida
+                </small>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid" *ngIf="isEditMode">
+            <div class="col-12">
+              <div class="mb-3 field">
+                <label for="status">Estado *</label>
+                <p-dropdown id="status" [options]="statusOptions" [(ngModel)]="incidentForm.status"
+                  placeholder="Seleccione estado" appendTo="body" [disabled]="!canUpdateData()" optionLabel="label"
+                  optionValue="value">
+                </p-dropdown>
+                <small class="text-gray-500" *ngIf="!canUpdateData()">
+                  No tiene permisos para modificar el estado
+                </small>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 field" *ngIf="!isEditMode && incidentForm.projectId && labels.length > 0">
+            <label for="labels">Etiquetas</label>
+            <p-multiSelect id="labels" name="labels" #labelsField="ngModel" [options]="labels"
+              [(ngModel)]="incidentForm.labelIds" placeholder="Seleccione etiquetas" [showClear]="true" appendTo="body"
+              optionLabel="name" optionValue="id" [style]="{'width': '100%'}">
+              <ng-template let-label pTemplate="item">
+                <div class="flex gap-2 align-items-center">
+                  <span class="label-color-indicator" [style.background-color]="label.colorHex || '#6c757d'">
+                  </span>
+                  <span>{{ label.name }}</span>
+                </div>
+              </ng-template>
+              <ng-template let-label pTemplate="selectedItem">
+                <p-tag [value]="label.name" [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
+                  styleClass="text-xs mr-1">
+                </p-tag>
+              </ng-template>
+            </p-multiSelect>
+            <small class="text-gray-500">Puede seleccionar múltiples etiquetas</small>
+          </div>
+
+          <div class="grid">
+            <div class="col-6">
+              <div class="mb-3 field">
+                <label for="assignee">Asignado a</label>
+                <p-dropdown id="assignee" name="assignee" #assigneeField="ngModel" [options]="projectMembers"
+                  [(ngModel)]="incidentForm.assigneeId" placeholder="Seleccione un miembro del proyecto"
+                  [showClear]="true"
+                  [disabled]="!incidentForm.projectId || projectMembers.length === 0 || (isEditMode && !canUpdateData())"
+                  appendTo="body" optionLabel="label" optionValue="value">
+                </p-dropdown>
+                <small class="text-gray-500" *ngIf="incidentForm.projectId && projectMembers.length === 0">
+                  No hay miembros en este proyecto
+                </small>
+                <small class="text-gray-500" *ngIf="!incidentForm.projectId">
+                  Primero seleccione un proyecto
+                </small>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="mb-3 field">
+                <label for="dueDate">Fecha Límite</label>
+                <p-calendar id="dueDate" name="dueDate" #dueDateField="ngModel" [(ngModel)]="incidentForm.dueDate"
+                  [showIcon]="true" placeholder="Seleccione fecha" appendTo="body"
+                  [disabled]="isEditMode && !canUpdateData()" [minDate]="minDate" [maxDate]="maxDate"
+                  dateFormat="dd/mm/yy">
+                </p-calendar>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
 
-      <div class="grid">
-        <div class="col-6">
-          <div class="field mb-3">
-            <label for="assignee">Asignado a</label>
-            <p-dropdown 
-              id="assignee"
-              name="assignee"
-              #assigneeField="ngModel"
-              [options]="projectMembers"
-              [(ngModel)]="incidentForm.assigneeId"
-              placeholder="Seleccione un miembro del proyecto"
-              [showClear]="true"
-              [disabled]="!incidentForm.projectId || projectMembers.length === 0 || (isEditMode && !canUpdateData())"
-              appendTo="body"
-              optionLabel="label"
-              optionValue="value">
-            </p-dropdown>
-            <small class="text-gray-500" *ngIf="incidentForm.projectId && projectMembers.length === 0">
-              No hay miembros en este proyecto
-            </small>
-            <small class="text-gray-500" *ngIf="!incidentForm.projectId">
-              Primero seleccione un proyecto
-            </small>
+      <!-- Attachments Sidebar (Create mode only) -->
+      <div class="attachments-sidebar" *ngIf="!isEditMode">
+        <h3 class="sidebar-title">
+          <i class="mr-2 pi pi-paperclip"></i>Adjuntos
+        </h3>
+
+        <div class="upload-section">
+          <p-fileUpload mode="basic" name="file" chooseLabel="Agregar Archivo" chooseIcon="pi pi-plus" [auto]="false"
+            [maxFileSize]="getMaxFileSizeMB() * 1024 * 1024" (onSelect)="onPendingFileSelect($event)">
+          </p-fileUpload>
+          <small class="text-gray-500">Máx: {{ getMaxFileSizeMB() }}MB</small>
+        </div>
+
+        <div class="pending-files-list" *ngIf="pendingFiles.length > 0">
+          <div class="pending-file-item" *ngFor="let file of pendingFiles; let i = index">
+            <div class="file-info">
+              <i class="pi pi-file file-icon"></i>
+              <div class="file-details">
+                <span class="file-name" [title]="file.name">{{ file.name }}</span>
+                <span class="file-size">{{ formatFileSize(file.size) }}</span>
+              </div>
+            </div>
+            <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" size="small"
+              (onClick)="removePendingFile(i)" pTooltip="Quitar">
+            </p-button>
           </div>
         </div>
 
-        <div class="col-6">
-          <div class="field mb-3">
-            <label for="dueDate">Fecha Límite</label>
-            <p-calendar 
-              id="dueDate"
-              name="dueDate"
-              #dueDateField="ngModel"
-              [(ngModel)]="incidentForm.dueDate"
-              [showIcon]="true"
-              placeholder="Seleccione fecha"
-              appendTo="body"
-              [disabled]="isEditMode && !canUpdateData()"
-              [minDate]="minDate"
-              [maxDate]="maxDate"
-              dateFormat="dd/mm/yy">
-            </p-calendar>
-          </div>
+        <div class="empty-files" *ngIf="pendingFiles.length === 0">
+          <i class="pi pi-inbox"></i>
+          <p>No hay archivos pendientes</p>
         </div>
       </div>
-    </form>
+    </div>
 
     <ng-template pTemplate="footer">
-      <p-button 
-        label="Cancelar" 
-        icon="pi pi-times" 
-        (onClick)="onCancelDialog()"
-        styleClass="p-button-text">
+      <p-button label="Cancelar" icon="pi pi-times" (onClick)="onCancelDialog()" styleClass="p-button-text">
       </p-button>
-      <p-button 
-        [label]="isEditMode ? 'Actualizar' : 'Crear'" 
-        icon="pi pi-check" 
-        (onClick)="onSaveIncident()">
+
+      <!-- Edit mode: single update button -->
+      <p-button *ngIf="isEditMode" label="Actualizar" icon="pi pi-check" (onClick)="onSaveIncident()">
+      </p-button>
+
+      <!-- Create mode: two buttons -->
+      <p-button *ngIf="!isEditMode" label="Crear y Agregar Otro" icon="pi pi-plus" [outlined]="true"
+        [disabled]="isUploading" [loading]="isUploading" (onClick)="onSaveIncident(true)">
+      </p-button>
+      <p-button *ngIf="!isEditMode" label="Crear y Finalizar" icon="pi pi-check" [disabled]="isUploading"
+        [loading]="isUploading" (onClick)="onSaveIncident(false)">
       </p-button>
     </ng-template>
   </p-dialog>
