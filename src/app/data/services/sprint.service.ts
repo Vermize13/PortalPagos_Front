@@ -11,6 +11,13 @@ export interface CreateSprintRequest {
   endDate: string;
 }
 
+export interface UpdateSprintRequest {
+  name?: string;
+  goal?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -31,6 +38,10 @@ export class SprintService {
     return this.http.post<Sprint>(`${this.apiUrl}/by-project/${projectId}`, request);
   }
 
+  update(id: string, request: UpdateSprintRequest): Observable<Sprint> {
+    return this.http.put<Sprint>(`${this.apiUrl}/${id}`, request);
+  }
+
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
@@ -39,3 +50,4 @@ export class SprintService {
     return this.http.patch<Sprint>(`${this.apiUrl}/${id}/close`, {});
   }
 }
+

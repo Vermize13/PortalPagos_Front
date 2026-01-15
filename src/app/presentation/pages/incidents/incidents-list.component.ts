@@ -223,7 +223,8 @@ export class IncidentsListComponent implements OnInit {
           priorityLabel: IncidentPriorityMapping.find((p: { label: string; value: IncidentPriority }) => p.value === inc.priority)?.label ?? 'Desconocido',
           severityLabel: IncidentSeverityMapping.find((sev: { label: string; value: IncidentSeverity }) => sev.value === inc.severity)?.label ?? 'Desconocido',
           projectName: inc.projectName || inc.project?.name,
-          sprintName: inc.sprint?.name,
+          sprintName: inc.sprintName || inc.sprint?.name,
+          sprintNumber: inc.sprintNumber || inc.sprint?.number,
           reporterName: inc.reporterName || inc.reporter?.name,
           assigneeName: inc.assigneeName || inc.assignee?.name
         }));
@@ -600,7 +601,7 @@ export class IncidentsListComponent implements OnInit {
   }
 
   validateForm(): boolean {
-    if (!this.incidentForm.title || !this.incidentForm.projectId) {
+    if (!this.incidentForm.title || !this.incidentForm.projectId || !this.incidentForm.sprintId) {
       return false;
     }
     return true;

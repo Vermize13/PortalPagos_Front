@@ -172,11 +172,19 @@
             </small>
           </div>
 
-          <div class="mb-3 field" *ngIf="incidentForm.projectId && sprints.length > 0">
-            <label for="sprint">Sprint</label>
-            <p-dropdown id="sprint" name="sprint" [options]="sprints" [(ngModel)]="incidentForm.sprintId"
-              placeholder="Seleccione un sprint (opcional)" [showClear]="true" optionLabel="label" optionValue="value">
+          <div class="mb-3 field" *ngIf="incidentForm.projectId">
+            <label for="sprint">Sprint *</label>
+            <p-dropdown id="sprint" name="sprint" #sprintField="ngModel" [options]="sprints"
+              [(ngModel)]="incidentForm.sprintId" placeholder="Seleccione un sprint" optionLabel="label"
+              optionValue="value" required [disabled]="sprints.length === 0">
             </p-dropdown>
+            <small class="p-error"
+              *ngIf="sprintField.invalid && (sprintField.dirty || sprintField.touched || submitted)">
+              El sprint es requerido
+            </small>
+            <small class="text-gray-500" *ngIf="sprints.length === 0">
+              No hay sprints activos en este proyecto. Cree uno primero.
+            </small>
           </div>
 
           <!-- Title field - only editable if user has permission -->

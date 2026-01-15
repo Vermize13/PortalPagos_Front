@@ -43,7 +43,7 @@ export class SprintListComponent implements OnInit {
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
     public permissionService: PermissionService
-  ) {}
+  ) { }
 
   ngOnInit() {
     if (this.projectId) {
@@ -58,7 +58,7 @@ export class SprintListComponent implements OnInit {
 
   canCloseSprint(): boolean {
     return this.permissionService.hasPermission(Permissions.SPRINT_CLOSE) ||
-           this.permissionService.hasPermission(Permissions.SPRINT_UPDATE);
+      this.permissionService.hasPermission(Permissions.SPRINT_UPDATE);
   }
 
   canDeleteSprint(): boolean {
@@ -95,6 +95,15 @@ export class SprintListComponent implements OnInit {
 
   onSprintSaved(sprint: Sprint) {
     this.loadSprints();
+  }
+
+  onEdit(sprint: Sprint) {
+    this.selectedSprint = sprint;
+    this.showDialog = true;
+  }
+
+  canEditSprint(): boolean {
+    return this.permissionService.hasPermission(Permissions.SPRINT_UPDATE);
   }
 
   closeSprint(sprint: Sprint) {

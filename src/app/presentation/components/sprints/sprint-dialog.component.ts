@@ -39,16 +39,16 @@ export class SprintDialogComponent implements OnChanges {
     startDate: Date | null;
     endDate: Date | null;
   } = {
-    name: '',
-    goal: '',
-    startDate: null,
-    endDate: null
-  };
+      name: '',
+      goal: '',
+      startDate: null,
+      endDate: null
+    };
 
   constructor(
     private sprintService: SprintService,
     private toastService: ToastService
-  ) {}
+  ) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['visible'] && this.visible) {
@@ -79,26 +79,52 @@ export class SprintDialogComponent implements OnChanges {
     if (!this.isFormValid()) return;
 
     this.loading = true;
-    const request: CreateSprintRequest = {
-      name: this.formData.name.trim(),
-      goal: this.formData.goal.trim() || undefined,
-      startDate: this.formatDate(this.formData.startDate!),
-      endDate: this.formatDate(this.formData.endDate!)
-    };
 
-    this.sprintService.create(this.projectId, request).subscribe({
-      next: (sprint) => {
-        this.toastService.showSuccess('Éxito', 'Sprint creado correctamente');
-        this.sprintSaved.emit(sprint);
-        this.closeDialog();
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error creating sprint:', error);
-        this.toastService.showError('Error', 'No se pudo crear el sprint');
-        this.loading = false;
-      }
-    });
+    if (this.editMode && this.sprint) {
+      // Update existing sprint
+      const request = {
+        name: this.formData.name.trim(),
+        goal: this.formData.goal.trim() || undefined,
+        startDate: this.formatDate(this.formData.startDate!),
+        endDate: this.formatDate(this.formData.endDate!)
+      };
+
+      this.sprintService.update(this.sprint.id, request).subscribe({
+        next: (sprint) => {
+          this.toastService.showSuccess('Éxito', 'Sprint actualizado correctamente');
+          this.sprintSaved.emit(sprint);
+          this.closeDialog();
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error updating sprint:', error);
+          this.toastService.showError('Error', 'No se pudo actualizar el sprint');
+          this.loading = false;
+        }
+      });
+    } else {
+      // Create new sprint
+      const request: CreateSprintRequest = {
+        name: this.formData.name.trim(),
+        goal: this.formData.goal.trim() || undefined,
+        startDate: this.formatDate(this.formData.startDate!),
+        endDate: this.formatDate(this.formData.endDate!)
+      };
+
+      this.sprintService.create(this.projectId, request).subscribe({
+        next: (sprint) => {
+          this.toastService.showSuccess('Éxito', 'Sprint creado correctamente');
+          this.sprintSaved.emit(sprint);
+          this.closeDialog();
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error creating sprint:', error);
+          this.toastService.showError('Error', 'No se pudo crear el sprint');
+          this.loading = false;
+        }
+      });
+    }
   }
 
   onCancel() {

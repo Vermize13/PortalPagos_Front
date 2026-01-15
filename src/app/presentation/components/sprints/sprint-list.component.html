@@ -2,37 +2,31 @@
   <ng-template pTemplate="header">
     <div class="flex align-items-center justify-content-between p-3">
       <h3 class="m-0">Sprints del Proyecto</h3>
-      <p-button 
-        *ngIf="canCreateSprint()"
-        label="Nuevo Sprint" 
-        icon="pi pi-plus"
-        (onClick)="showCreateDialog()">
+      <p-button *ngIf="canCreateSprint()" label="Nuevo Sprint" icon="pi pi-plus" (onClick)="showCreateDialog()">
       </p-button>
     </div>
   </ng-template>
 
-  <p-table 
-    [value]="sprints"
-    [loading]="loading"
-    [paginator]="true"
-    [rows]="10"
-    [showCurrentPageReport]="true"
-    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} sprints"
-    styleClass="p-datatable-sm">
-    
+  <p-table [value]="sprints" [loading]="loading" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} sprints" styleClass="p-datatable-sm">
+
     <ng-template pTemplate="header">
       <tr>
+        <th>#</th>
         <th>Nombre</th>
         <th>Objetivo</th>
         <th>Fecha Inicio</th>
         <th>Fecha Fin</th>
         <th>Estado</th>
-        <th style="width: 150px" *ngIf="canCloseSprint() || canDeleteSprint()">Acciones</th>
+        <th style="width: 150px" *ngIf="canEditSprint() || canCloseSprint() || canDeleteSprint()">Acciones</th>
       </tr>
     </ng-template>
-    
+
     <ng-template pTemplate="body" let-sprint>
       <tr>
+        <td>
+          <span class="font-semibold text-primary">{{ sprint.number }}</span>
+        </td>
         <td>
           <span class="font-semibold">{{ sprint.name }}</span>
         </td>
@@ -42,39 +36,28 @@
         <td>{{ sprint.startDate | date:'shortDate' }}</td>
         <td>{{ sprint.endDate | date:'shortDate' }}</td>
         <td>
-          <p-tag 
-            [value]="sprint.isClosed ? 'Cerrado' : getSprintStatus(sprint)"
-            [severity]="getSprintSeverity(sprint)">
+          <p-tag [value]="sprint.isClosed ? 'Cerrado' : getSprintStatus(sprint)" [severity]="getSprintSeverity(sprint)">
           </p-tag>
         </td>
-        <td *ngIf="canCloseSprint() || canDeleteSprint()">
+        <td *ngIf="canEditSprint() || canCloseSprint() || canDeleteSprint()">
           <div class="flex gap-2">
-            <p-button 
-              *ngIf="!sprint.isClosed && canCloseSprint()"
-              icon="pi pi-check" 
-              [rounded]="true"
-              [text]="true"
-              severity="success"
-              pTooltip="Cerrar Sprint"
-              (onClick)="closeSprint(sprint)">
+            <p-button *ngIf="canEditSprint() && !sprint.isClosed" icon="pi pi-pencil" [rounded]="true" [text]="true"
+              severity="info" pTooltip="Editar Sprint" (onClick)="onEdit(sprint)">
             </p-button>
-            <p-button 
-              *ngIf="canDeleteSprint()"
-              icon="pi pi-trash" 
-              [rounded]="true"
-              [text]="true"
-              severity="danger"
-              pTooltip="Eliminar Sprint"
-              (onClick)="deleteSprint(sprint)">
+            <p-button *ngIf="!sprint.isClosed && canCloseSprint()" icon="pi pi-check" [rounded]="true" [text]="true"
+              severity="success" pTooltip="Cerrar Sprint" (onClick)="closeSprint(sprint)">
+            </p-button>
+            <p-button *ngIf="canDeleteSprint()" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+              pTooltip="Eliminar Sprint" (onClick)="deleteSprint(sprint)">
             </p-button>
           </div>
         </td>
       </tr>
     </ng-template>
-    
+
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td [attr.colspan]="(canCloseSprint() || canDeleteSprint()) ? 6 : 5" class="text-center">
+        <td [attr.colspan]="(canEditSprint() || canCloseSprint() || canDeleteSprint()) ? 7 : 6" class="text-center">
           <div class="py-4">
             <i class="pi pi-inbox text-4xl text-gray-400 mb-3"></i>
             <p class="text-gray-600">No hay sprints creados para este proyecto.</p>
@@ -86,10 +69,7 @@
   </p-table>
 </p-card>
 
-<app-sprint-dialog
-  [(visible)]="showDialog"
-  [projectId]="projectId"
-  [sprint]="selectedSprint"
+<app-sprint-dialog [(visible)]="showDialog" [projectId]="projectId" [sprint]="selectedSprint"
   (sprintSaved)="onSprintSaved($event)">
 </app-sprint-dialog>
 

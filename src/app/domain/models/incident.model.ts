@@ -97,6 +97,8 @@ export interface IncidentWithDetails {
   projectId: string;
   projectName?: string;
   sprintId?: string;
+  sprintName?: string;
+  sprintNumber?: number;
   code: string;
   title: string;
   description?: string;
