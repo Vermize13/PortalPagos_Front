@@ -210,7 +210,8 @@ export class IncidentsListComponent implements OnInit {
     this.loading = true;
     const filter: IncidentFilter = {
       projectId: this.selectedProjectId || undefined,
-      sprintId: this.selectedSprintId || undefined
+      sprintId: this.selectedSprintId || undefined,
+      status: this.selectedStatus !== null ? Number(this.selectedStatus) : undefined
     };
 
     this.incidentService.getAll(filter).subscribe({

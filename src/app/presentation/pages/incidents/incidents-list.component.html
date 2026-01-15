@@ -20,8 +20,8 @@
         placeholder="Filtrar por sprint" [showClear]="true" optionLabel="label" optionValue="value"
         (onChange)="onFilterBySprint()">
       </p-dropdown>
-      <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Filtrar por estado" [showClear]="true"
-        (onChange)="onFilterByStatus()">
+      <p-dropdown [options]="statusOptions" [(ngModel)]="selectedStatus" placeholder="Filtrar por estado"
+        [showClear]="true" optionLabel="label" optionValue="value" (onChange)="onFilterByStatus()">
       </p-dropdown>
     </div>
 
