@@ -1,5 +1,5 @@
-<div class="container-fluid p-4">
-  <div class="flex justify-content-between align-items-center mb-4">
+<div class="p-4 container-fluid">
+  <div class="flex mb-4 justify-content-between align-items-center">
     <h1 class="m-0">Dashboard - Sistema de Gestión de Incidencias</h1>
     <div class="flex gap-2 align-items-center">
       <span class="font-medium text-gray-600">Filtrar por proyecto:</span>
@@ -15,7 +15,7 @@
     <div class="col-12 md:col-6 lg:col-3">
       <p-card>
         <div class="text-center">
-          <i class="pi pi-exclamation-circle text-4xl text-blue-500"></i>
+          <i class="text-4xl text-blue-500 pi pi-exclamation-circle"></i>
           <h3 class="mt-2">Incidencias Abiertas</h3>
           <p class="text-3xl font-bold">{{ metrics?.openIncidents || 0 }}</p>
         </div>
@@ -25,7 +25,7 @@
     <div class="col-12 md:col-6 lg:col-3">
       <p-card>
         <div class="text-center">
-          <i class="pi pi-check-circle text-4xl text-green-500"></i>
+          <i class="text-4xl text-green-500 pi pi-check-circle"></i>
           <h3 class="mt-2">Incidencias Cerradas</h3>
           <p class="text-3xl font-bold">{{ metrics?.closedIncidents || 0 }}</p>
         </div>
@@ -35,7 +35,7 @@
     <div class="col-12 md:col-6 lg:col-3">
       <p-card>
         <div class="text-center">
-          <i class="pi pi-sync text-4xl text-orange-500"></i>
+          <i class="text-4xl text-orange-500 pi pi-sync"></i>
           <h3 class="mt-2">En Progreso</h3>
           <p class="text-3xl font-bold">{{ metrics?.inProgressIncidents || 0 }}</p>
         </div>
@@ -91,10 +91,10 @@
             <tr>
               <td>{{ sprint.sprintName }}</td>
               <td>
-                <span class="badge bg-blue-500 text-white px-2 py-1 rounded">{{ sprint.openCount }}</span>
+                <span class="px-2 py-1 text-white bg-blue-500 rounded badge">{{ sprint.openCount }}</span>
               </td>
               <td>
-                <span class="badge bg-green-500 text-white px-2 py-1 rounded">{{ sprint.closedCount }}</span>
+                <span class="px-2 py-1 text-white bg-green-500 rounded badge">{{ sprint.closedCount }}</span>
               </td>
               <td>{{ sprint.totalCount }}</td>
               <td>

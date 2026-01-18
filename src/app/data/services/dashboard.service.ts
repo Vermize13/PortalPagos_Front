@@ -125,9 +125,14 @@ export class DashboardService {
     const sprintGroups = this.groupBy(incidents.filter(i => i.sprintId), 'sprintId');
     const incidentsBySprint: SprintMetric[] = Object.keys(sprintGroups).map(sprintId => {
       const sprintIncidents = sprintGroups[sprintId];
+      const firstIncident = sprintIncidents[0];
+      // Get sprint name from incident's sprintName, sprint.name, or use sprint number
+      const sprintName = firstIncident?.sprintName
+        || firstIncident?.sprint?.name
+        || (firstIncident?.sprintNumber ? `Sprint ${firstIncident.sprintNumber}` : `Sprint desconocido`);
       return {
         sprintId,
-        sprintName: sprintIncidents[0]?.sprint?.name || `Sprint ${sprintId}`,
+        sprintName,
         openCount: sprintIncidents.filter(i => this.OPEN_STATUSES.includes(i.status)).length,
         closedCount: sprintIncidents.filter(i => this.CLOSED_STATUSES.includes(i.status)).length,
         totalCount: sprintIncidents.length

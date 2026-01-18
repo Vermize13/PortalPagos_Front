@@ -29,11 +29,11 @@ interface ProjectFormData {
   selector: 'app-projects-list',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     FormsModule,
-    CardModule, 
-    TableModule, 
-    ButtonModule, 
+    CardModule,
+    TableModule,
+    ButtonModule,
     TagModule,
     DialogModule,
     InputTextModule,
@@ -48,12 +48,12 @@ interface ProjectFormData {
 export class ProjectsListComponent implements OnInit {
   projects: Project[] = [];
   loading: boolean = false;
-  
+
   // Dialog state
   displayDialog: boolean = false;
   isEditMode: boolean = false;
   submitted: boolean = false;
-  
+
   // Form data
   projectForm: ProjectFormData = {
     name: '',
@@ -68,7 +68,7 @@ export class ProjectsListComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private router: Router,
     public permissionService: PermissionService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadProjects();
@@ -81,7 +81,7 @@ export class ProjectsListComponent implements OnInit {
 
   canEditProject(): boolean {
     return this.permissionService.hasPermission(Permissions.PROJECT_UPDATE) ||
-           this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
+      this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
   }
 
   canDeleteProject(): boolean {
@@ -201,22 +201,22 @@ export class ProjectsListComponent implements OnInit {
   onViewDetails(project: Project) {
     this.router.navigate(['/inicio/projects', project.id]);
   }
-  
+
   onSaveProject() {
     this.submitted = true;
-    
+
     if (!this.validateForm()) {
       this.toastService.showError('Error', 'Por favor complete todos los campos requeridos');
       return;
     }
-    
+
     if (this.isEditMode && this.projectForm.id) {
       const updateRequest: UpdateProjectRequest = {
         name: this.projectForm.name,
         description: this.projectForm.description,
         isActive: this.projectForm.isActive
       };
-      
+
       this.projectService.update(this.projectForm.id, updateRequest).subscribe({
         next: () => {
           this.toastService.showSuccess('Éxito', 'Proyecto actualizado correctamente');
@@ -225,7 +225,9 @@ export class ProjectsListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error updating project:', error);
-          this.toastService.showError('Error', 'No se pudo actualizar el proyecto');
+          // Extract error message from backend response
+          const errorMessage = error?.error?.message || error?.error || 'No se pudo actualizar el proyecto';
+          this.toastService.showError('Error al actualizar proyecto', errorMessage);
         }
       });
     } else {
@@ -234,7 +236,7 @@ export class ProjectsListComponent implements OnInit {
         code: this.projectForm.code,
         description: this.projectForm.description
       };
-      
+
       this.projectService.create(createRequest).subscribe({
         next: () => {
           this.toastService.showSuccess('Éxito', 'Proyecto creado correctamente');
@@ -243,17 +245,19 @@ export class ProjectsListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error creating project:', error);
-          this.toastService.showError('Error', 'No se pudo crear el proyecto');
+          // Extract error message from backend response
+          const errorMessage = error?.error?.message || error?.error || 'No se pudo crear el proyecto';
+          this.toastService.showError('Error al crear proyecto', errorMessage);
         }
       });
     }
   }
-  
+
   onCancelDialog() {
     this.displayDialog = false;
     this.submitted = false;
   }
-  
+
   validateForm(): boolean {
     if (!this.projectForm.name || !this.projectForm.code) {
       return false;
