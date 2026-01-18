@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  url:'https://bugmgr-back.fly.dev/'
+  url: 'https://api.martiniere.app/'
 };
