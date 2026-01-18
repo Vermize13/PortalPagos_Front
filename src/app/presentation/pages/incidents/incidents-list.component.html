@@ -356,6 +356,7 @@
 
         <div class="upload-section">
           <p-fileUpload mode="basic" name="file" chooseLabel="Agregar Archivo" chooseIcon="pi pi-plus" [auto]="false"
+            accept=".jpg,.jpeg,.png,.gif,.pdf,.txt,.log,.zip,.md,.docx,.xlsx"
             [maxFileSize]="getMaxFileSizeMB() * 1024 * 1024" (onSelect)="onPendingFileSelect($event)">
           </p-fileUpload>
           <small class="text-gray-500">Máx: {{ getMaxFileSizeMB() }}MB</small>

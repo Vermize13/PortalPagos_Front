@@ -17,10 +17,13 @@ export interface AttachmentValidationResult {
 })
 export class AttachmentService {
   private readonly baseUrl = `${environment.url}api/incidents`;
-  
+
   // RF6.5: Maximum file size in bytes (default: 10MB)
   private readonly MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-  
+
+  // Allowed file extensions (synced with backend)
+  readonly ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.pdf', '.txt', '.log', '.zip', '.md', '.docx', '.xlsx'];
+
   // Allowed file types
   private readonly ALLOWED_TYPES = [
     'image/jpeg',
@@ -33,6 +36,7 @@ export class AttachmentService {
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'text/plain',
     'text/csv',
+    'text/x-log',
     'application/zip',
     'application/x-rar-compressed',
     'text/markdown'
@@ -60,9 +64,9 @@ export class AttachmentService {
     // Check file size
     if (file.size > this.MAX_FILE_SIZE) {
       const maxSizeMB = this.MAX_FILE_SIZE / (1024 * 1024);
-      return { 
-        valid: false, 
-        error: `El archivo excede el tamaño máximo permitido de ${maxSizeMB}MB` 
+      return {
+        valid: false,
+        error: `El archivo excede el tamaño máximo permitido de ${maxSizeMB}MB`
       };
     }
 
@@ -70,9 +74,9 @@ export class AttachmentService {
     const fileType = file.type || this.inferFileType(file.name);
     console.log('Validating file type:', file);
     if (!this.ALLOWED_TYPES.includes(fileType)) {
-      return { 
-        valid: false, 
-        error: 'Tipo de archivo no permitido. Por favor, sube una imagen, documento o archivo comprimido.' 
+      return {
+        valid: false,
+        error: 'Tipo de archivo no permitido. Por favor, sube una imagen, documento o archivo comprimido.'
       };
     }
 
@@ -97,6 +101,7 @@ export class AttachmentService {
       'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'txt': 'text/plain',
       'csv': 'text/csv',
+      'log': 'text/x-log',
       'zip': 'application/zip',
       'rar': 'application/x-rar-compressed',
       'md': 'text/markdown'
@@ -117,13 +122,13 @@ export class AttachmentService {
 
     const formData = new FormData();
     formData.append('file', file);
-    
+
     return this.http.post<Attachment>(`${this.baseUrl}/${incidentId}/attachments`, formData);
   }
 
   download(incidentId: string, id: string): Observable<Blob> {
-    return this.http.get(`${this.baseUrl}/${incidentId}/attachments/${id}/download`, { 
-      responseType: 'blob' 
+    return this.http.get(`${this.baseUrl}/${incidentId}/attachments/${id}/download`, {
+      responseType: 'blob'
     });
   }
 
@@ -143,11 +148,11 @@ export class AttachmentService {
    */
   formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
-    
+
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
+
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   }
 }

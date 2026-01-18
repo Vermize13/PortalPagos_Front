@@ -1,10 +1,6 @@
 <div class="container-fluid p-4">
   <div class="mb-3">
-    <p-button 
-      label="Volver" 
-      icon="pi pi-arrow-left" 
-      [outlined]="true"
-      (onClick)="onBack()">
+    <p-button label="Volver" icon="pi pi-arrow-left" [outlined]="true" (onClick)="onBack()">
     </p-button>
   </div>
 
@@ -23,11 +19,7 @@
               <h2 class="mt-2 mb-0">{{ incident.title }}</h2>
             </div>
             <div class="flex gap-2" *ngIf="canEditIncident()">
-              <p-button 
-                label="Editar" 
-                icon="pi pi-pencil" 
-                [outlined]="true"
-                (onClick)="onEdit()">
+              <p-button label="Editar" icon="pi pi-pencil" [outlined]="true" (onClick)="onEdit()">
               </p-button>
             </div>
           </div>
@@ -50,19 +42,12 @@
               <div class="mb-4">
                 <div class="flex justify-content-between align-items-center mb-2">
                   <h3 class="text-lg font-semibold m-0">Etiquetas</h3>
-                  <p-button 
-                    *ngIf="canManageLabels()"
-                    label="Gestionar" 
-                    icon="pi pi-tags" 
-                    [outlined]="true"
-                    size="small"
+                  <p-button *ngIf="canManageLabels()" label="Gestionar" icon="pi pi-tags" [outlined]="true" size="small"
                     (onClick)="onManageLabels()">
                   </p-button>
                 </div>
                 <div class="flex flex-wrap gap-2" *ngIf="incident.labels && incident.labels.length > 0">
-                  <p-tag 
-                    *ngFor="let label of incident.labels" 
-                    [value]="label.name"
+                  <p-tag *ngFor="let label of incident.labels" [value]="label.name"
                     [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
                     styleClass="text-sm"></p-tag>
                 </div>
@@ -76,21 +61,14 @@
               <!-- Comments Section -->
               <div class="mt-4">
                 <h3 class="text-lg font-semibold mb-3">Comentarios ({{ comments.length }})</h3>
-                
+
                 <!-- Add Comment Form - Only show if user has comment permission -->
                 <div class="mb-4" *ngIf="canComment()">
-                  <textarea 
-                    pInputTextarea 
-                    [(ngModel)]="newCommentBody"
-                    placeholder="Agregar un comentario..."
-                    rows="3"
+                  <textarea pInputTextarea [(ngModel)]="newCommentBody" placeholder="Agregar un comentario..." rows="3"
                     class="w-full"></textarea>
                   <div class="flex justify-content-end mt-2">
-                    <p-button 
-                      label="Comentar" 
-                      icon="pi pi-send"
-                      [disabled]="!newCommentBody.trim() || submittingComment"
-                      [loading]="submittingComment"
+                    <p-button label="Comentar" icon="pi pi-send"
+                      [disabled]="!newCommentBody.trim() || submittingComment" [loading]="submittingComment"
                       (onClick)="onAddComment()">
                     </p-button>
                   </div>
@@ -109,11 +87,8 @@
                 <div *ngIf="!loadingComments" class="comments-list">
                   <div *ngFor="let comment of comments" class="comment-item">
                     <div class="flex gap-3">
-                      <p-avatar 
-                        [label]="getAuthorInitials(comment.author?.name || 'Usuario')" 
-                        size="large"
-                        shape="circle"
-                        styleClass="bg-primary-500">
+                      <p-avatar [label]="getAuthorInitials(comment.author?.name || 'Usuario')" size="large"
+                        shape="circle" styleClass="bg-primary-500">
                       </p-avatar>
                       <div class="flex-1">
                         <div class="flex justify-content-between align-items-start mb-2">
@@ -173,13 +148,9 @@
             <p-tabPanel header="Adjuntos">
               <!-- Upload section - Only show if user has attachment permission -->
               <div class="mb-4" *ngIf="canManageAttachments()">
-                <p-fileUpload
-                  mode="basic"
-                  name="file"
-                  [auto]="true"
-                  chooseLabel="Subir Archivo"
-                  [maxFileSize]="getMaxFileSizeMB() * 1024 * 1024"
-                  [disabled]="uploadingAttachment"
+                <p-fileUpload mode="basic" name="file" [auto]="true" chooseLabel="Subir Archivo"
+                  accept=".jpg,.jpeg,.png,.gif,.pdf,.txt,.log,.zip,.md,.docx,.xlsx"
+                  [maxFileSize]="getMaxFileSizeMB() * 1024 * 1024" [disabled]="uploadingAttachment"
                   (onSelect)="onFileSelect($event)">
                 </p-fileUpload>
                 <small class="text-gray-500 ml-2">
@@ -219,22 +190,11 @@
                       <td>{{ attachment.uploadedAt | date:'short' }}</td>
                       <td>
                         <div class="flex gap-2">
-                          <p-button 
-                            icon="pi pi-download" 
-                            [text]="true"
-                            [rounded]="true"
-                            severity="info"
-                            (onClick)="onDownloadAttachment(attachment)"
-                            pTooltip="Descargar">
+                          <p-button icon="pi pi-download" [text]="true" [rounded]="true" severity="info"
+                            (onClick)="onDownloadAttachment(attachment)" pTooltip="Descargar">
                           </p-button>
-                          <p-button 
-                            *ngIf="canManageAttachments()"
-                            icon="pi pi-trash" 
-                            [text]="true"
-                            [rounded]="true"
-                            severity="danger"
-                            (onClick)="onDeleteAttachment(attachment)"
-                            pTooltip="Eliminar">
+                          <p-button *ngIf="canManageAttachments()" icon="pi pi-trash" [text]="true" [rounded]="true"
+                            severity="danger" (onClick)="onDeleteAttachment(attachment)" pTooltip="Eliminar">
                           </p-button>
                         </div>
                       </td>
@@ -249,28 +209,22 @@
         <div class="col-12 md:col-4">
           <div class="details-panel">
             <h3 class="text-lg font-semibold mb-3">Detalles</h3>
-            
+
             <div class="detail-item">
               <span class="detail-label">Estado</span>
-              <p-tag 
-                [value]="getStatusLabel(incident.status)" 
-                [severity]="getStatusSeverity(incident.status)">
+              <p-tag [value]="getStatusLabel(incident.status)" [severity]="getStatusSeverity(incident.status)">
               </p-tag>
             </div>
 
             <div class="detail-item">
               <span class="detail-label">Prioridad</span>
-              <p-tag 
-                [value]="getPriorityLabel(incident.priority)" 
-                [severity]="getPrioritySeverity(incident.priority)">
+              <p-tag [value]="getPriorityLabel(incident.priority)" [severity]="getPrioritySeverity(incident.priority)">
               </p-tag>
             </div>
 
             <div class="detail-item">
               <span class="detail-label">Severidad</span>
-              <p-tag 
-                [value]="getSeverityLabel(incident.severity)" 
-                [severity]="getSeveritySeverity(incident.severity)">
+              <p-tag [value]="getSeverityLabel(incident.severity)" [severity]="getSeveritySeverity(incident.severity)">
               </p-tag>
             </div>
 
@@ -292,7 +246,8 @@
                 Reportado por
               </span>
               <!-- Fallback chain: API DTO field (reporterName) or expanded reference (reporter.name) -->
-              <div class="detail-value font-semibold">{{ incident.reporterName || incident.reporter?.name || 'N/A' }}</div>
+              <div class="detail-value font-semibold">{{ incident.reporterName || incident.reporter?.name || 'N/A' }}
+              </div>
             </div>
 
             <div class="detail-item">
@@ -332,41 +287,24 @@
   </div>
 
   <!-- Label Management Dialog -->
-  <p-dialog 
-    [(visible)]="displayLabelDialog" 
-    header="Gestionar Etiquetas"
-    [modal]="true"
-    [style]="{width: '500px'}"
-    [baseZIndex]="10"
-    [closable]="true">
-    
+  <p-dialog [(visible)]="displayLabelDialog" header="Gestionar Etiquetas" [modal]="true" [style]="{width: '500px'}"
+    [baseZIndex]="10" [closable]="true">
+
     <div class="p-fluid">
       <div class="field">
         <label for="labelSelect">Seleccione las etiquetas para esta incidencia</label>
-        <p-multiSelect 
-          id="labelSelect"
-          [options]="availableLabels"
-          [(ngModel)]="selectedLabelIds"
-          placeholder="Seleccione etiquetas"
-          [showClear]="true"
-          appendTo="body"
-          optionLabel="name"
-          optionValue="id"
-          [disabled]="loadingLabels"
-          [style]="{'width': '100%'}">
+        <p-multiSelect id="labelSelect" [options]="availableLabels" [(ngModel)]="selectedLabelIds"
+          placeholder="Seleccione etiquetas" [showClear]="true" appendTo="body" optionLabel="name" optionValue="id"
+          [disabled]="loadingLabels" [style]="{'width': '100%'}">
           <ng-template let-label pTemplate="item">
             <div class="flex align-items-center gap-2">
-              <span 
-                class="label-color-indicator" 
-                [style.background-color]="label.colorHex || '#6c757d'">
+              <span class="label-color-indicator" [style.background-color]="label.colorHex || '#6c757d'">
               </span>
               <span>{{ label.name }}</span>
             </div>
           </ng-template>
           <ng-template let-label pTemplate="selectedItem">
-            <p-tag 
-              [value]="label.name"
-              [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
+            <p-tag [value]="label.name" [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
               styleClass="text-xs mr-1">
             </p-tag>
           </ng-template>
@@ -375,17 +313,9 @@
     </div>
 
     <ng-template pTemplate="footer">
-      <p-button 
-        label="Cancelar" 
-        icon="pi pi-times" 
-        (onClick)="onCancelLabelDialog()"
-        styleClass="p-button-text">
+      <p-button label="Cancelar" icon="pi pi-times" (onClick)="onCancelLabelDialog()" styleClass="p-button-text">
       </p-button>
-      <p-button 
-        label="Guardar" 
-        icon="pi pi-check" 
-        (onClick)="onSaveLabels()"
-        [disabled]="loadingLabels">
+      <p-button label="Guardar" icon="pi pi-check" (onClick)="onSaveLabels()" [disabled]="loadingLabels">
       </p-button>
     </ng-template>
   </p-dialog>
