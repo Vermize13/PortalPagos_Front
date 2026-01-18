@@ -19,7 +19,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmationService } from 'primeng/api';
-import { ProjectWithMembers, ProjectMemberDetail, Label, User, Role, Permissions } from '../../../domain/models';
+import { ProjectWithMembers, ProjectMemberDetail, Label, User, Permissions } from '../../../domain/models';
 import { ProjectService, UpdateProjectRequest, AddProjectMemberRequest } from '../../../data/services/project.service';
 import { LabelService, CreateLabelRequest } from '../../../data/services/label.service';
 import { UserService } from '../../../data/services/user.service';
