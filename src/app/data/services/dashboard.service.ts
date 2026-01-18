@@ -68,18 +68,23 @@ export class DashboardService {
    * RF4.1: Get metrics by status, priority, and severity
    * RF4.2: Get open/closed incidents per sprint
    * RF4.3: Get incident evolution data for charts
+   * @param projectId Optional project ID to filter metrics
    */
-  getMetrics(): Observable<DashboardMetrics> {
+  getMetrics(projectId?: string): Observable<DashboardMetrics> {
     // Since the backend doesn't have a dashboard endpoint yet,
     // we'll create one locally that aggregates data from incidents
-    return this.http.get<any[]>(`${environment.url}api/Incidents`).pipe(
+    let url = `${environment.url}api/Incidents`;
+    if (projectId) {
+      url += `?projectId=${projectId}`;
+    }
+    return this.http.get<any[]>(url).pipe(
       map(incidents => this.calculateMetrics(incidents))
     );
   }
 
   private calculateMetrics(incidents: any[]): DashboardMetrics {
     const total = incidents.length;
-    
+
     // Calculate status metrics
     const statusGroups = this.groupBy(incidents, 'status');
     const incidentsByStatus: StatusMetric[] = Object.keys(statusGroups).map(statusValue => {
@@ -150,13 +155,13 @@ export class DashboardService {
   private calculateIncidentEvolution(incidents: any[]): IncidentEvolutionMetric[] {
     const evolution: IncidentEvolutionMetric[] = [];
     const today = new Date();
-    
+
     // Generate data for last 30 days
     for (let i = 29; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
-      
+
       const openedOnDate = incidents.filter(inc => {
         const createdDate = new Date(inc.createdAt).toISOString().split('T')[0];
         return createdDate === dateStr;

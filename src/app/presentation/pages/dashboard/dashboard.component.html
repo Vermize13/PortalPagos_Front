@@ -1,6 +1,15 @@
 <div class="container-fluid p-4">
-  <h1 class="mb-4">Dashboard - Sistema de Gestión de Incidencias</h1>
-  
+  <div class="flex justify-content-between align-items-center mb-4">
+    <h1 class="m-0">Dashboard - Sistema de Gestión de Incidencias</h1>
+    <div class="flex gap-2 align-items-center">
+      <span class="font-medium text-gray-600">Filtrar por proyecto:</span>
+      <p-dropdown [options]="projects" [(ngModel)]="selectedProjectId" placeholder="Todos los proyectos"
+        [showClear]="true" optionLabel="label" optionValue="value" (onChange)="onFilterByProject()"
+        [style]="{'min-width': '250px'}">
+      </p-dropdown>
+    </div>
+  </div>
+
   <!-- RF4: Dashboard Metrics Summary Cards -->
   <div class="grid">
     <div class="col-12 md:col-6 lg:col-3">
@@ -12,7 +21,7 @@
         </div>
       </p-card>
     </div>
-    
+
     <div class="col-12 md:col-6 lg:col-3">
       <p-card>
         <div class="text-center">
@@ -22,7 +31,7 @@
         </div>
       </p-card>
     </div>
-    
+
     <div class="col-12 md:col-6 lg:col-3">
       <p-card>
         <div class="text-center">
@@ -41,13 +50,13 @@
         <p-chart type="doughnut" [data]="statusChartData" [options]="chartOptions" height="300px"></p-chart>
       </p-card>
     </div>
-    
+
     <div class="col-12 lg:col-4">
       <p-card header="Incidencias por Prioridad">
         <p-chart type="pie" [data]="priorityChartData" [options]="chartOptions" height="300px"></p-chart>
       </p-card>
     </div>
-    
+
     <div class="col-12 lg:col-4">
       <p-card header="Incidencias por Severidad">
         <p-chart type="polarArea" [data]="severityChartData" [options]="chartOptions" height="300px"></p-chart>
@@ -90,8 +99,8 @@
               <td>{{ sprint.totalCount }}</td>
               <td>
                 <div class="w-full bg-gray-200 rounded-full h-2.5">
-                  <div class="bg-green-600 h-2.5 rounded-full" 
-                       [style.width.%]="sprint.totalCount > 0 ? (sprint.closedCount / sprint.totalCount * 100) : 0">
+                  <div class="bg-green-600 h-2.5 rounded-full"
+                    [style.width.%]="sprint.totalCount > 0 ? (sprint.closedCount / sprint.totalCount * 100) : 0">
                   </div>
                 </div>
                 <small class="text-gray-600">

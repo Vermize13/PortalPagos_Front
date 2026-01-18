@@ -12,7 +12,8 @@
       </div>
     </div>
 
-    <div class="flex gap-2 mb-3" *ngIf="viewMode === 'table'">
+    <!-- Filters - shown in both views -->
+    <div class="flex gap-2 mb-3">
       <p-dropdown [options]="projects" [(ngModel)]="selectedProjectId" placeholder="Filtrar por proyecto"
         [showClear]="true" optionLabel="label" optionValue="value" (onChange)="onFilterByProject()">
       </p-dropdown>
@@ -20,8 +21,10 @@
         placeholder="Filtrar por sprint" [showClear]="true" optionLabel="label" optionValue="value"
         (onChange)="onFilterBySprint()">
       </p-dropdown>
-      <p-dropdown [options]="statusOptions" [(ngModel)]="selectedStatus" placeholder="Filtrar por estado"
-        [showClear]="true" optionLabel="label" optionValue="value" (onChange)="onFilterByStatus()">
+      <!-- Status filter only in table view since board already separates by status -->
+      <p-dropdown *ngIf="viewMode === 'table'" [options]="statusOptions" [(ngModel)]="selectedStatus"
+        placeholder="Filtrar por estado" [showClear]="true" optionLabel="label" optionValue="value"
+        (onChange)="onFilterByStatus()">
       </p-dropdown>
     </div>
 

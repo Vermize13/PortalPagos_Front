@@ -1,20 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
+import { DropdownModule } from 'primeng/dropdown';
 import { DashboardService, DashboardMetrics } from '../../../data/services/dashboard.service';
+import { ProjectService } from '../../../data/services/project.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CardModule, ChartModule, TableModule],
+  imports: [CommonModule, FormsModule, CardModule, ChartModule, TableModule, DropdownModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
   metrics: DashboardMetrics | null = null;
   loading: boolean = false;
+
+  // Project filter
+  projects: any[] = [];
+  selectedProjectId: string = '';
 
   // Chart data
   statusChartData: any;
@@ -23,16 +30,36 @@ export class DashboardComponent implements OnInit {
   evolutionChartData: any;
   chartOptions: any;
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private projectService: ProjectService
+  ) { }
 
   ngOnInit() {
     this.initChartOptions();
+    this.loadProjects();
+    this.loadMetrics();
+  }
+
+  loadProjects() {
+    this.projectService.getAll().subscribe({
+      next: (projects) => {
+        this.projects = projects.map(p => ({ label: p.name, value: p.id }));
+      },
+      error: (error) => {
+        console.error('Error loading projects:', error);
+      }
+    });
+  }
+
+  onFilterByProject() {
     this.loadMetrics();
   }
 
   loadMetrics() {
     this.loading = true;
-    this.dashboardService.getMetrics().subscribe({
+    const projectId = this.selectedProjectId || undefined;
+    this.dashboardService.getMetrics(projectId).subscribe({
       next: (metrics) => {
         this.metrics = metrics;
         this.updateCharts();
