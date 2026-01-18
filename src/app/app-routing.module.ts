@@ -7,94 +7,93 @@ import { Permissions } from './domain/models/permissions.model';
 export const routes: Routes = [
   // Default route - redirect to login2
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  
+
   // Login route (new login component)
   {
     path: 'login',
     loadComponent: () => import('./presentation/components/auth/login2/login2.component').then(m => m.LoginComponent)
   },
-  
+
   // Legacy login routes removed: `login2` redirect and `login/legacy` were deprecated.
-  
+
   // Other auth routes
   { path: 'login/codigo', loadComponent: () => import('./presentation/components/auth/codigoVerificacion/codigoVerificacion.component').then(m => m.CodigoVerificacionComponent) },
   { path: 'login/reestablecer/:id', loadComponent: () => import('./presentation/components/auth/reestablecerPassword/reestablecerPassword.component').then(m => m.ReestablecerPasswordComponent) },
   { path: 'login/cambio', loadComponent: () => import('./presentation/components/auth/cambioPassword/cambioPassword.component').then(m => m.CambioPasswordComponent) },
-  
+
   // Public registration route for invitation completion
   {
     path: 'register',
     loadComponent: () => import('./presentation/components/auth/register/register.component').then(m => m.RegisterComponent)
   },
-  
+
   // Not found route
   { path: 'notfound', component: NotfoundComponent },
-  
+
   // Main application route (protected by auth guard)
   {
     path: 'inicio',
     loadComponent: () => import('../app/presentation/pages/layout/layout.component').then(m => m.LayoutComponent),
     canActivate: [AuthGuard],
     children: [
-      { 
-        path: 'home', 
+      {
+        path: 'home',
         loadComponent: () => import('./presentation/pages/home/home.component').then(m => m.HomeComponent)
       },
-      { 
-        path: 'dashboard', 
+      {
+        path: 'dashboard',
         loadComponent: () => import('./presentation/pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
         canActivate: [RoleGuard],
         data: { permissions: [Permissions.DASHBOARD_ACCESS] }
       },
-      { 
-        path: 'users', 
+      {
+        path: 'users',
         loadComponent: () => import('./presentation/pages/users/users-list.component').then(m => m.UsersListComponent),
         canActivate: [RoleGuard],
         data: { permissions: [Permissions.USER_VIEW, Permissions.USER_MANAGE] }
       },
-      { 
-        path: 'projects', 
+      {
+        path: 'projects',
         loadComponent: () => import('./presentation/pages/projects/projects-list.component').then(m => m.ProjectsListComponent),
         canActivate: [RoleGuard],
         data: { permissions: [Permissions.PROJECT_VIEW] }
       },
-      { 
-        path: 'projects/:id', 
+      {
+        path: 'projects/:id',
         loadComponent: () => import('./presentation/pages/projects/project-view.component').then(m => m.ProjectViewComponent),
-        canActivate: [RoleGuard],
-        data: { permissions: [Permissions.PROJECT_VIEW] }
+        canActivate: [AdminRoleGuard]
       },
-      { 
-        path: 'incidents', 
+      {
+        path: 'incidents',
         loadComponent: () => import('./presentation/pages/incidents/incidents-list.component').then(m => m.IncidentsListComponent),
         canActivate: [RoleGuard],
         data: { permissions: [Permissions.INCIDENT_VIEW] }
       },
-      { 
-        path: 'incidents/:id', 
+      {
+        path: 'incidents/:id',
         loadComponent: () => import('./presentation/pages/incidents/incident-detail.component').then(m => m.IncidentDetailComponent),
         canActivate: [RoleGuard],
         data: { permissions: [Permissions.INCIDENT_VIEW] }
       },
-      { 
-        path: 'audit', 
+      {
+        path: 'audit',
         loadComponent: () => import('./presentation/pages/audit/audit-list.component').then(m => m.AuditListComponent),
         canActivate: [RoleGuard],
         data: { permissions: [Permissions.AUDIT_VIEW] }
       },
-      { 
-        path: 'admin', 
+      {
+        path: 'admin',
         loadComponent: () => import('./presentation/pages/admin/admin.component').then(m => m.AdminComponent),
         canActivate: [AdminRoleGuard]
       },
       { path: 'profile', loadComponent: () => import('./presentation/pages/profile/profile.component').then(m => m.ProfileComponent) },
       { path: 'profile/:userId', loadComponent: () => import('./presentation/pages/profile/profile.component').then(m => m.ProfileComponent) },
-      
+
       // Redirect empty path to home
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ]
   },
-  
+
   // Catch all other routes and redirect to not found
   { path: '**', redirectTo: '/notfound' },
 ];

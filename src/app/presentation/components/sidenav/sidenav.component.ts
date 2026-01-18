@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ViewChild, forwardRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild, forwardRef, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -11,7 +11,9 @@ import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { UserStateService } from '../../../data/states/userState.service';
 import { PermissionService } from '../../../data/services/permission.service';
+import { ProjectService } from '../../../data/services/project.service';
 import { Permissions } from '../../../domain/models/permissions.model';
+import { Project } from '../../../domain/models';
 
 @Component({
   selector: 'app-sidenav',
@@ -20,7 +22,7 @@ import { Permissions } from '../../../domain/models/permissions.model';
   host: {
     '[class.collapsed]': 'collapsed'
   },
-  imports: [CommonModule, SidebarModule, ButtonModule, RippleModule, AvatarModule, StyleClassModule, RouterModule, MenuModule ],
+  imports: [CommonModule, SidebarModule, ButtonModule, RippleModule, AvatarModule, StyleClassModule, RouterModule, MenuModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -32,16 +34,22 @@ import { Permissions } from '../../../domain/models/permissions.model';
   styleUrls: ['./sidenav.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SidenavComponent implements ControlValueAccessor {
-  
+export class SidenavComponent implements ControlValueAccessor, OnInit {
+
   private userStateService = inject(UserStateService);
   private router = inject(Router);
+  private projectService = inject(ProjectService);
+  private cdr = inject(ChangeDetectorRef);
   public permissionService = inject(PermissionService);
-  
+
+  // User's assigned projects (for non-admin users)
+  userProjects: Project[] = [];
+  loadingProjects: boolean = false;
+
   get currentUser() {
     return this.userStateService.getUser();
   }
-  
+
   get userInitials(): string {
     const user = this.currentUser;
     if (!user || !user.unique_name) return 'U';
@@ -51,6 +59,36 @@ export class SidenavComponent implements ControlValueAccessor {
     if (names.length === 0) return 'U';
     if (names.length === 1) return names[0].charAt(0).toUpperCase();
     return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+  }
+
+  ngOnInit() {
+    // Load user's assigned projects for non-admin users
+    if (!this.permissionService.isAdmin() && this.currentUser) {
+      this.loadUserProjects();
+    }
+  }
+
+  loadUserProjects() {
+    const userId = this.currentUser?.nameid;
+    if (!userId) return;
+
+    this.loadingProjects = true;
+    this.projectService.getMyProjects(userId).subscribe({
+      next: (projects) => {
+        this.userProjects = projects.filter(p => p.isActive);
+        this.loadingProjects = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.loadingProjects = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  // Check if user is admin
+  isAdmin(): boolean {
+    return this.permissionService.isAdmin();
   }
 
   // Permission helper methods for template use
@@ -68,7 +106,7 @@ export class SidenavComponent implements ControlValueAccessor {
 
   canViewUsers(): boolean {
     return this.permissionService.hasPermission(Permissions.USER_VIEW) ||
-           this.permissionService.hasPermission(Permissions.USER_MANAGE);
+      this.permissionService.hasPermission(Permissions.USER_MANAGE);
   }
 
   canViewAudit(): boolean {
@@ -91,7 +129,7 @@ export class SidenavComponent implements ControlValueAccessor {
 
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
   @ViewChild('profileMenu') profileMenu!: Menu;
-  
+
   profileMenuItems: MenuItem[] = [
     {
       label: 'Mi Perfil',
@@ -120,8 +158,8 @@ export class SidenavComponent implements ControlValueAccessor {
   }
 
   // ControlValueAccessor boilerplate
-  private onChange: (value: any) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: any) => void = () => { };
+  private onTouched: () => void = () => { };
   disabled: boolean = false;
 
   writeValue(obj: any): void {
@@ -139,16 +177,16 @@ export class SidenavComponent implements ControlValueAccessor {
   setDisabledState?(isDisabled: boolean): void {
     this.disabled = isDisabled;
   }
-  
+
   toggleProfileMenu(event: Event): void {
     this.profileMenu.toggle(event);
   }
-  
+
   goToProfile(): void {
     // Navigate to user profile page
     this.router.navigate(['/inicio/profile']);
   }
-  
+
   logout(): void {
     this.userStateService.clearUser();
     this.router.navigate(['/login']);

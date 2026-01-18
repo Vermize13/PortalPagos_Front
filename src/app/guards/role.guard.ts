@@ -28,7 +28,7 @@ export class RoleGuard implements CanActivate {
     private permissionService: PermissionService,
     private router: Router,
     private toastService: ToastService
-  ) {}
+  ) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     // Refresh permissions to ensure we have the latest
@@ -43,7 +43,7 @@ export class RoleGuard implements CanActivate {
     }
 
     let hasAccess: boolean;
-    
+
     if (requireAll) {
       hasAccess = this.permissionService.hasAllPermissions(requiredPermissions);
     } else {
@@ -56,7 +56,7 @@ export class RoleGuard implements CanActivate {
 
     // User doesn't have required permissions - deny access
     this.toastService.showError(
-      'Acceso Denegado', 
+      'Acceso Denegado',
       'No tiene los permisos necesarios para acceder a esta sección'
     );
     this.router.navigate(['/inicio/dashboard']);
@@ -76,7 +76,7 @@ export class AdminRoleGuard implements CanActivate {
     private permissionService: PermissionService,
     private router: Router,
     private toastService: ToastService
-  ) {}
+  ) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     // Refresh permissions to ensure we have the latest
@@ -88,10 +88,10 @@ export class AdminRoleGuard implements CanActivate {
 
     // User is not admin - deny access
     this.toastService.showError(
-      'Acceso Denegado', 
+      'Acceso Denegado',
       'Solo los administradores pueden acceder a esta función'
     );
-    this.router.navigate(['/inicio/dashboard']);
+    this.router.navigate(['/inicio/home']);
     return false;
   }
 }

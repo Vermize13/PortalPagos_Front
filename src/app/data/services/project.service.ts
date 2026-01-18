@@ -83,4 +83,52 @@ export class ProjectService {
   getProgress(id: string): Observable<ProjectProgressResponse> {
     return this.http.get<ProjectProgressResponse>(`${this.apiUrl}/${id}/progress`);
   }
+
+  /**
+   * Get projects where the current user is a member.
+   * Fetches all projects and their members, then filters to those the user belongs to.
+   */
+  getMyProjects(userId: string): Observable<Project[]> {
+    return new Observable<Project[]>(observer => {
+      this.getAll().subscribe({
+        next: async (projects) => {
+          // Filter projects where user is a member
+          const userProjects: Project[] = [];
+          let processed = 0;
+
+          if (projects.length === 0) {
+            observer.next([]);
+            observer.complete();
+            return;
+          }
+
+          for (const project of projects) {
+            this.getMembers(project.id).subscribe({
+              next: (members) => {
+                const isMember = members.some(m => m.userId === userId && m.isActive);
+                if (isMember) {
+                  userProjects.push(project);
+                }
+                processed++;
+                if (processed === projects.length) {
+                  observer.next(userProjects);
+                  observer.complete();
+                }
+              },
+              error: () => {
+                processed++;
+                if (processed === projects.length) {
+                  observer.next(userProjects);
+                  observer.complete();
+                }
+              }
+            });
+          }
+        },
+        error: (error) => {
+          observer.error(error);
+        }
+      });
+    });
+  }
 }
