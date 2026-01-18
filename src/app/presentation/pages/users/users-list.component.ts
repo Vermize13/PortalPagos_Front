@@ -79,11 +79,11 @@ const FALLBACK_ROLES: Array<{ id: string; code: string; name: string }> = [
   selector: 'app-users-list',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     FormsModule,
-    CardModule, 
-    TableModule, 
-    ButtonModule, 
+    CardModule,
+    TableModule,
+    ButtonModule,
     TagModule,
     DialogModule,
     InputTextModule,
@@ -99,21 +99,21 @@ const FALLBACK_ROLES: Array<{ id: string; code: string; name: string }> = [
 export class UsersListComponent implements OnInit {
   users: UserDisplay[] = [];
   loading: boolean = false;
-  
+
   // Dialog state
   displayDialog: boolean = false;
   displayInvitationDialog: boolean = false;
   isEditMode: boolean = false;
   submitted: boolean = false;
   saving: boolean = false;
-  
+
   // Invitation form data
   invitationForm: InvitationFormData = {
     fullName: '',
     email: '',
     roleId: ''
   };
-  
+
   // Form data for editing users
   userForm: UserFormData = {
     name: '',
@@ -123,7 +123,7 @@ export class UsersListComponent implements OnInit {
     roleId: '',
     isActive: true
   };
-  
+
   // Role options dynamically loaded from the API
   roles: Array<{ label: string; value: string }> = [];
   private readonly roleLookup = new Map<string, RoleLookupEntry>();
@@ -164,7 +164,7 @@ export class UsersListComponent implements OnInit {
     private router: Router,
     private roleService: RoleService,
     public permissionService: PermissionService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.initializeRoles();
@@ -173,17 +173,17 @@ export class UsersListComponent implements OnInit {
   // Permission helper methods for template use
   canInviteUser(): boolean {
     return this.permissionService.hasPermission(Permissions.USER_CREATE) ||
-           this.permissionService.hasPermission(Permissions.USER_MANAGE);
+      this.permissionService.hasPermission(Permissions.USER_MANAGE);
   }
 
   canEditUser(): boolean {
     return this.permissionService.hasPermission(Permissions.USER_UPDATE) ||
-           this.permissionService.hasPermission(Permissions.USER_MANAGE);
+      this.permissionService.hasPermission(Permissions.USER_MANAGE);
   }
 
   canDeleteUser(): boolean {
     return this.permissionService.hasPermission(Permissions.USER_DELETE) ||
-           this.permissionService.hasPermission(Permissions.USER_MANAGE);
+      this.permissionService.hasPermission(Permissions.USER_MANAGE);
   }
 
   private initializeRoles(): void {
@@ -386,7 +386,7 @@ export class UsersListComponent implements OnInit {
         let roleLookupUpdated = false;
 
         this.users = users.map(user => {
-          const resolvedRole = user.role || user.roles?.[0];
+          const resolvedRole = user.role;
           const canonicalRoleCode = this.toCanonicalRoleCode(resolvedRole?.code) ?? this.toCanonicalRoleCode(resolvedRole?.name);
           const roleEntrySource = resolvedRole ? {
             id: resolvedRole.id,
@@ -556,7 +556,7 @@ export class UsersListComponent implements OnInit {
 
   onSendInvitation() {
     this.submitted = true;
-    
+
     if (!this.validateInvitationForm()) {
       this.toastService.showError('Error', 'Por favor complete todos los campos requeridos');
       return;
@@ -620,14 +620,14 @@ export class UsersListComponent implements OnInit {
       roleId: ''
     };
   }
-  
+
   /**
    * Handles saving user updates. This method only handles updates to existing users.
    * New user creation is now done via the invitation flow (onSendInvitation).
    */
   onSaveUser() {
     this.submitted = true;
-    
+
     if (!this.validateForm()) {
       this.toastService.showError('Error', 'Por favor complete todos los campos requeridos');
       return;
@@ -659,14 +659,14 @@ export class UsersListComponent implements OnInit {
       });
     }
   }
-  
+
   onCancelDialog() {
     this.displayDialog = false;
     this.submitted = false;
     this.saving = false;
     this.resetForm();
   }
-  
+
   validateForm(): boolean {
     if (!this.userForm.name?.trim() || !this.userForm.email?.trim() || !this.userForm.username?.trim() || !this.userForm.roleId) {
       return false;

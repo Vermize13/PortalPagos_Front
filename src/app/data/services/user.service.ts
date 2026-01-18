@@ -41,12 +41,12 @@ export class UserService {
   }
   login(username: string, password: string): Observable<any> {
     return this.http.post<AuthUser>(`${this.urlAuth}login`, { username, password })
-    .pipe(
-      tap( (user: AuthUser) => {
-        this.userState.setUser(user.token);
-         this.enable2fa();
-      })
-    );
+      .pipe(
+        tap((user: AuthUser) => {
+          this.userState.setUser(user.token);
+          this.enable2fa();
+        })
+      );
   }
 
   enable2fa(): Observable<any> {
@@ -65,12 +65,12 @@ export class UserService {
   }
 
   passWordRecovery(email: string): Observable<string> {
-    return this.http.post(`${this.urlPass}recover`, {email}, {
+    return this.http.post(`${this.urlPass}recover`, { email }, {
       responseType: 'text'
     });
   }
 
-  passwordReset(newPassword:string): Observable<string> {
+  passwordReset(newPassword: string): Observable<string> {
     const userId = this.userState?.getUser()?.nameid;
     return this.http.post(`${this.urlPass}reset`, {
       userId,
@@ -80,7 +80,7 @@ export class UserService {
     });
   }
 
-  passwordChange(currentPassword:string, newPassword:string): Observable<string>{
+  passwordChange(currentPassword: string, newPassword: string): Observable<string> {
     const userId = this.userState?.getUser()?.nameid;
     return this.http.post(`${this.urlPass}change`, {
       userId,
@@ -116,21 +116,18 @@ export class UserService {
       return user as unknown as DomainUser;
     }
 
-    const rolesFromResponse = Array.isArray(user.roles) ? user.roles : undefined;
-    const rolesFromUserRoles = Array.isArray(user.userRoles)
+    // Get role from either the role property or from userRoles array (for backward compatibility)
+    const roleFromUserRoles = Array.isArray(user.userRoles)
       ? user.userRoles
-          .map(userRole => userRole?.role)
-          .filter((role): role is NonNullable<DomainUser['role']> => Boolean(role))
+        .map(userRole => userRole?.role)
+        .filter((role): role is NonNullable<DomainUser['role']> => Boolean(role))[0]
       : undefined;
 
-    const roles = rolesFromResponse ?? rolesFromUserRoles ?? [];
-    const primaryRole = user.role ?? roles[0];
-    const normalizedRoles = roles.length > 0 ? roles : undefined;
+    const primaryRole = user.role ?? roleFromUserRoles;
 
     return {
       ...user,
-      role: primaryRole,
-      roles: normalizedRoles
+      role: primaryRole
     } as DomainUser;
   }
 
@@ -176,7 +173,6 @@ export interface UpdateUserRequest extends BaseUserRequest {
 }
 
 type UserLike = DomainUser & {
-  roles?: DomainUser['roles'];
   userRoles?: Array<{ role?: DomainUser['role'] } & Record<string, unknown>>;
 };
 

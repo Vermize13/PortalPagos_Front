@@ -18,8 +18,7 @@ export interface User {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-  roles?: Role[];
-  role?: Role; // Single role instead of multiple roles
+  role?: Role; // Single role per user (1:N relationship)
 }
 
 export interface Role {

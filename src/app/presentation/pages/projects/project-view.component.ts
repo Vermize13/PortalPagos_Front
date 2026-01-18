@@ -60,7 +60,7 @@ export class ProjectViewComponent implements OnInit {
   projectId: string = '';
   loading: boolean = false;
   members: ProjectMemberDetail[] = [];
-  
+
   // Labels
   labels: Label[] = [];
   loadingLabels: boolean = false;
@@ -72,7 +72,7 @@ export class ProjectViewComponent implements OnInit {
     colorHex: '#3b82f6'
   };
   submittedLabel: boolean = false;
-  
+
   // Edit project
   displayEditDialog: boolean = false;
   editProjectForm = {
@@ -81,15 +81,14 @@ export class ProjectViewComponent implements OnInit {
     isActive: true
   };
   submittedProject: boolean = false;
-  
+
   // Add member
   displayAddMemberDialog: boolean = false;
   allUsers: User[] = [];
-  availableRoles: Role[] = [];
   loadingUsers: boolean = false;
+  selectedUser: User | null = null; // Track selected user to display their role
   addMemberForm = {
-    userId: '',
-    roleId: ''
+    userId: ''
   };
   submittedMember: boolean = false;
 
@@ -102,7 +101,7 @@ export class ProjectViewComponent implements OnInit {
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
     public permissionService: PermissionService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -118,27 +117,27 @@ export class ProjectViewComponent implements OnInit {
   // Permission helper methods for template use
   canEditProject(): boolean {
     return this.permissionService.hasPermission(Permissions.PROJECT_UPDATE) ||
-           this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
+      this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
   }
 
   canAddMember(): boolean {
     return this.permissionService.hasPermission(Permissions.PROJECT_MEMBER_ADD) ||
-           this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
+      this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
   }
 
   canRemoveMember(): boolean {
     return this.permissionService.hasPermission(Permissions.PROJECT_MEMBER_REMOVE) ||
-           this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
+      this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
   }
 
   canManageLabels(): boolean {
     return this.permissionService.hasPermission(Permissions.PROJECT_UPDATE) ||
-           this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
+      this.permissionService.hasPermission(Permissions.PROJECT_MANAGE);
   }
 
   canManageSprints(): boolean {
     return this.permissionService.hasPermission(Permissions.SPRINT_CREATE) ||
-           this.permissionService.hasPermission(Permissions.SPRINT_UPDATE);
+      this.permissionService.hasPermission(Permissions.SPRINT_UPDATE);
   }
 
   loadProject() {
@@ -157,7 +156,7 @@ export class ProjectViewComponent implements OnInit {
       }
     });
   }
-  
+
   loadMembers() {
     this.projectService.getMembers(this.projectId).subscribe({
       next: (members) => {
@@ -268,20 +267,20 @@ export class ProjectViewComponent implements OnInit {
       this.displayEditDialog = true;
     }
   }
-  
+
   onSaveProject() {
     this.submittedProject = true;
-    
+
     if (!this.editProjectForm.name) {
       return;
     }
-    
+
     const updateRequest: UpdateProjectRequest = {
       name: this.editProjectForm.name,
       description: this.editProjectForm.description,
       isActive: this.editProjectForm.isActive
     };
-    
+
     this.projectService.update(this.projectId, updateRequest).subscribe({
       next: () => {
         this.toastService.showSuccess('Éxito', 'Proyecto actualizado correctamente');
@@ -294,12 +293,12 @@ export class ProjectViewComponent implements OnInit {
       }
     });
   }
-  
+
   onCancelEdit() {
     this.displayEditDialog = false;
     this.submittedProject = false;
   }
-  
+
   // Label management methods
   loadLabels() {
     this.loadingLabels = true;
@@ -315,7 +314,7 @@ export class ProjectViewComponent implements OnInit {
       }
     });
   }
-  
+
   onCreateLabel() {
     this.isEditingLabel = false;
     this.labelForm = {
@@ -326,7 +325,7 @@ export class ProjectViewComponent implements OnInit {
     this.submittedLabel = false;
     this.displayLabelDialog = true;
   }
-  
+
   onEditLabel(label: Label) {
     this.isEditingLabel = true;
     this.labelForm = {
@@ -337,14 +336,14 @@ export class ProjectViewComponent implements OnInit {
     this.submittedLabel = false;
     this.displayLabelDialog = true;
   }
-  
+
   onSaveLabel() {
     this.submittedLabel = true;
-    
+
     if (!this.labelForm.name.trim()) {
       return;
     }
-    
+
     if (this.isEditingLabel) {
       this.toastService.showInfo('Información', 'La edición de etiquetas estará disponible próximamente');
       this.displayLabelDialog = false;
@@ -354,7 +353,7 @@ export class ProjectViewComponent implements OnInit {
         name: this.labelForm.name.trim(),
         colorHex: this.labelForm.colorHex
       };
-      
+
       this.labelService.create(request).subscribe({
         next: () => {
           this.toastService.showSuccess('Éxito', 'Etiqueta creada correctamente');
@@ -368,7 +367,7 @@ export class ProjectViewComponent implements OnInit {
       });
     }
   }
-  
+
   onDeleteLabel(label: Label) {
     this.confirmationService.confirm({
       message: `¿Está seguro de eliminar la etiqueta "${label.name}"?`,
@@ -381,7 +380,7 @@ export class ProjectViewComponent implements OnInit {
       }
     });
   }
-  
+
   onCancelLabel() {
     this.displayLabelDialog = false;
     this.submittedLabel = false;
@@ -408,33 +407,23 @@ export class ProjectViewComponent implements OnInit {
   getActiveMembersCount(): number {
     return this.members.filter(m => m.isActive).length;
   }
-  
+
   // Member management methods
   onAddMember() {
     this.loadingUsers = true;
     this.displayAddMemberDialog = true;
     this.addMemberForm = {
-      userId: '',
-      roleId: ''
+      userId: ''
     };
+    this.selectedUser = null;
     this.submittedMember = false;
-    
+
     // Load all users
     this.userService.getAllUsers().subscribe({
       next: (users) => {
         // Filter out users who are already members
         const memberUserIds = this.members.map(m => m.userId);
         this.allUsers = users.filter(u => !memberUserIds.includes(u.id) && u.isActive);
-        
-        // Extract unique roles from all users using Set for efficiency
-        const uniqueRoles = new Map<string, Role>();
-        users.forEach(user => {
-          if (user.role) {
-            uniqueRoles.set(user.role.id, user.role);
-          }
-        });
-        this.availableRoles = Array.from(uniqueRoles.values());
-        
         this.loadingUsers = false;
       },
       error: (error) => {
@@ -444,23 +433,34 @@ export class ProjectViewComponent implements OnInit {
       }
     });
   }
-  
+
+  // Called when user is selected from dropdown
+  onUserSelected(userId: string) {
+    this.selectedUser = this.allUsers.find(u => u.id === userId) || null;
+  }
+
   onSaveMember() {
     this.submittedMember = true;
-    
-    if (!this.addMemberForm.userId || !this.addMemberForm.roleId) {
+
+    // Validate user is selected and has a role
+    if (!this.addMemberForm.userId || !this.selectedUser?.role?.id) {
+      if (!this.selectedUser?.role) {
+        this.toastService.showError('Error', 'El usuario seleccionado no tiene un rol asignado');
+      }
       return;
     }
-    
+
+    // Use the selected user's assigned role
     const request: AddProjectMemberRequest = {
       userId: this.addMemberForm.userId,
-      roleId: this.addMemberForm.roleId
+      roleId: this.selectedUser.role.id
     };
-    
+
     this.projectService.addMember(this.projectId, request).subscribe({
       next: () => {
         this.toastService.showSuccess('Éxito', 'Miembro agregado correctamente');
         this.displayAddMemberDialog = false;
+        this.selectedUser = null;
         this.loadMembers();
       },
       error: (error) => {
@@ -469,12 +469,12 @@ export class ProjectViewComponent implements OnInit {
       }
     });
   }
-  
+
   onCancelMember() {
     this.displayAddMemberDialog = false;
     this.submittedMember = false;
   }
-  
+
   onRemoveMember(member: ProjectMemberDetail) {
     this.confirmationService.confirm({
       message: `¿Está seguro de eliminar a "${member.userName}" del proyecto?`,

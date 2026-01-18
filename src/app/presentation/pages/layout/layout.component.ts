@@ -23,7 +23,8 @@ import { ButtonModule } from 'primeng/button';
 })
 export class LayoutComponent {
     // model bound to the sidenav collapsed state via [(ngModel)]
-    sidenavCollapsed: boolean = false;
+    // Start collapsed by default after login
+    sidenavCollapsed: boolean = true;
 
     toggleSidenav(): void {
         this.sidenavCollapsed = !this.sidenavCollapsed;

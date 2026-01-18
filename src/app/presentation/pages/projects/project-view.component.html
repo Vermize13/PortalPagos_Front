@@ -503,6 +503,7 @@
         [showClear]="true"
         appendTo="body"
         [loading]="loadingUsers"
+        (onChange)="onUserSelected($event.value)"
         required>
         <ng-template let-user pTemplate="item">
           <div class="flex align-items-center gap-2">
@@ -523,30 +524,20 @@
       </small>
     </div>
 
-    <div class="field mb-3">
-      <label for="memberRole">Rol en el Proyecto *</label>
-      <p-dropdown 
-        id="memberRole" 
-        name="memberRole"
-        #memberRoleField="ngModel"
-        [(ngModel)]="addMemberForm.roleId"
-        [options]="availableRoles"
-        optionLabel="name"
-        optionValue="id"
-        placeholder="Seleccione un rol"
-        [showClear]="true"
-        appendTo="body"
-        required>
-        <ng-template let-role pTemplate="item">
-          <div>
-            <div>{{ role.name }}</div>
-            <small class="text-gray-500" *ngIf="role.description">{{ role.description }}</small>
-          </div>
-        </ng-template>
-      </p-dropdown>
-      <small class="p-error" *ngIf="memberRoleField.invalid && (memberRoleField.dirty || memberRoleField.touched || submittedMember)">
-        Debe seleccionar un rol
-      </small>
+    <div class="field mb-3" *ngIf="selectedUser">
+      <label>Rol del Usuario</label>
+      <div class="p-inputgroup">
+        <span class="p-inputgroup-addon">
+          <i class="pi pi-id-card"></i>
+        </span>
+        <input 
+          type="text" 
+          pInputText 
+          [value]="selectedUser.role?.name || 'Sin rol asignado'" 
+          [readonly]="true"
+          class="read-only-input" />
+      </div>
+      <small class="text-gray-500">El miembro será agregado con su rol asignado</small>
     </div>
   </form>
 
