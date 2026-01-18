@@ -211,7 +211,7 @@ export class IncidentsListComponent implements OnInit {
     const filter: IncidentFilter = {
       projectId: this.selectedProjectId || undefined,
       sprintId: this.selectedSprintId || undefined,
-      status: this.selectedStatus !== null ? Number(this.selectedStatus) : undefined
+      status: this.selectedStatus ? Number(this.selectedStatus) : undefined
     };
 
     this.incidentService.getAll(filter).subscribe({
