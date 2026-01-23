@@ -62,6 +62,14 @@ export class SidenavComponent implements ControlValueAccessor, OnInit {
   }
 
   ngOnInit() {
+    // Check if sidebar should be collapsed on load
+    const shouldCollapse = localStorage.getItem('sidebarCollapsed');
+    if (shouldCollapse === 'true') {
+      this.collapsed = true;
+      localStorage.removeItem('sidebarCollapsed');
+      this.cdr.markForCheck();
+    }
+
     // Load user's assigned projects for non-admin users
     if (!this.permissionService.isAdmin() && this.currentUser) {
       this.loadUserProjects();
@@ -179,7 +187,9 @@ export class SidenavComponent implements ControlValueAccessor, OnInit {
   }
 
   toggleProfileMenu(event: Event): void {
-    this.profileMenu.toggle(event);
+    if (this.profileMenu) {
+      this.profileMenu.toggle(event);
+    }
   }
 
   goToProfile(): void {

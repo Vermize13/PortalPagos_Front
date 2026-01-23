@@ -30,12 +30,12 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Build breadcrumbs on initial load
     this.buildBreadcrumbs();
-    
+
     // Rebuild breadcrumbs on navigation
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
@@ -55,13 +55,16 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 
     urlSegments.forEach((segment, index) => {
       cumulativeUrl += '/' + segment;
+      if (segment === 'home') {
+        return
+      }
 
-        const label = this.routeLabels[segment] || this.capitalizeFirstLetter(segment);
-        breadcrumbs.push({
-          label: this.isUUID(segment) ? 'Detalle' : label,
-          url: cumulativeUrl,
-          active: false
-        });
+      const label = this.routeLabels[segment] || this.capitalizeFirstLetter(segment);
+      breadcrumbs.push({
+        label: this.isUUID(segment) ? 'Detalle' : label,
+        url: cumulativeUrl,
+        active: false
+      });
     });
 
     if (breadcrumbs.length > 0) {

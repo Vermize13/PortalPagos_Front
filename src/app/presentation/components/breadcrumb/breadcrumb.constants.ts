@@ -16,4 +16,4 @@ export const ROUTE_LABELS: { [key: string]: string } = {
 /**
  * Default home route for breadcrumb navigation
  */
-export const HOME_ROUTE = '/inicio/dashboard';
+export const HOME_ROUTE = '/inicio';

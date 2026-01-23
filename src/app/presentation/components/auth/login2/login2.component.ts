@@ -44,11 +44,11 @@ export class LoginComponent implements OnInit {
     private messageService: MessageService,
     private authService: AuthService,
     private userState: UserStateService
-  ) {}
+  ) { }
 
   onSubmit() {
     this.submitted = true;
-    
+
     if (!this.username || !this.password) {
       this.messageService.add({
         severity: 'warn',
@@ -74,6 +74,9 @@ export class LoginComponent implements OnInit {
           } else {
             localStorage.removeItem('rememberedUser');
           }
+
+          // Set sidebar to collapsed on login
+          localStorage.setItem('sidebarCollapsed', 'true');
 
           this.messageService.add({ severity: 'success', summary: 'Bienvenido', detail: 'Inicio de sesión exitoso', key: 'global-toast' });
           this.router.navigate(['/inicio']);
