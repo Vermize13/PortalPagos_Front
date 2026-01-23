@@ -65,7 +65,7 @@
                 </li>
                 <li *ngIf="loadingProjects" class="pl-4">
                   <div class="flex p-2 align-items-center text-500">
-                    <i class="pi pi-spin pi-spinner mr-2"></i>
+                    <i class="mr-2 pi pi-spin pi-spinner"></i>
                     <span class="text-sm">Cargando...</span>
                   </div>
                 </li>
@@ -76,7 +76,7 @@
                 </li>
                 <li *ngFor="let project of userProjects" class="pl-4">
                   <div class="flex p-2 align-items-center text-700">
-                    <i class="mr-2 pi pi-folder-open text-sm"></i>
+                    <i class="mr-2 text-sm pi pi-folder-open"></i>
                     <span class="text-sm">{{ project.name }}</span>
                   </div>
                 </li>
@@ -133,12 +133,14 @@
           </div>
           <i class="pi pi-ellipsis-v text-600"></i>
         </div>
-        <p-menu #profileMenu [model]="profileMenuItems" [popup]="true" appendTo="body"
-          [ariaLabel]="'Menú de opciones de perfil'"></p-menu>
       </div>
     </div>
   </ng-template>
 </p-sidebar>
+
+<!-- Profile menu - positioned outside sidebar so it works in both collapsed and expanded states -->
+<p-menu #profileMenu [model]="profileMenuItems" [popup]="true" appendTo="body"
+  [ariaLabel]="'Menú de opciones de perfil'"></p-menu>
 
 <!-- Collapsed vertical bar shown when sidebar is collapsed -->
 <div class="collapsed-bar" *ngIf="collapsed" role="navigation" aria-label="Collapsed sidebar">

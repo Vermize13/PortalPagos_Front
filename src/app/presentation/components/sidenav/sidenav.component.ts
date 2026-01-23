@@ -163,6 +163,8 @@ export class SidenavComponent implements ControlValueAccessor, OnInit {
     // notify ngModel / form control consumers
     this.onChange(this.collapsed);
     this.onTouched();
+    // Trigger change detection to update avatar
+    this.cdr.markForCheck();
   }
 
   // ControlValueAccessor boilerplate
