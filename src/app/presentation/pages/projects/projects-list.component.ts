@@ -226,7 +226,8 @@ export class ProjectsListComponent implements OnInit {
         error: (error) => {
           console.error('Error updating project:', error);
           // Extract error message from backend response
-          const errorMessage = error?.error?.message || error?.error || 'No se pudo actualizar el proyecto';
+          // Extract error message from backend response
+          const errorMessage = error?.error?.message || error?.error?.title || (typeof error?.error === 'string' ? error.error : 'No se pudo actualizar el proyecto');
           this.toastService.showError('Error al actualizar proyecto', errorMessage);
         }
       });
@@ -246,7 +247,8 @@ export class ProjectsListComponent implements OnInit {
         error: (error) => {
           console.error('Error creating project:', error);
           // Extract error message from backend response
-          const errorMessage = error?.error?.message || error?.error || 'No se pudo crear el proyecto';
+          // Extract error message from backend response
+          const errorMessage = error?.error?.message || error?.error?.title || (typeof error?.error === 'string' ? error.error : 'No se pudo crear el proyecto');
           this.toastService.showError('Error al crear proyecto', errorMessage);
         }
       });
