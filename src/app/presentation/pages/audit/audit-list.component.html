@@ -2,11 +2,7 @@
   <p-card>
     <div class="flex justify-content-between align-items-center mb-4">
       <h2 class="m-0">Auditoría del Sistema</h2>
-      <p-button 
-        *ngIf="canExportAudit()"
-        label="Exportar" 
-        icon="pi pi-download" 
-        (onClick)="onExport()" 
+      <p-button *ngIf="canExportAudit()" label="Exportar" icon="pi pi-download" (onClick)="onExport()"
         [disabled]="loading">
       </p-button>
     </div>
@@ -18,77 +14,46 @@
       </div>
       <div class="col-12 md:col-3">
         <label class="block mb-2 font-semibold">Acción</label>
-        <p-dropdown 
-          [(ngModel)]="selectedAction" 
-          [options]="actionOptions" 
-          optionLabel="label" 
-          optionValue="value"
-          placeholder="Todas las acciones"
-          [showClear]="true"
-          styleClass="w-full">
+        <p-dropdown [(ngModel)]="selectedAction" [options]="actionOptions" optionLabel="label" optionValue="value"
+          placeholder="Todas las acciones" [showClear]="true" styleClass="w-full">
         </p-dropdown>
       </div>
       <div class="col-12 md:col-3">
         <label class="block mb-2 font-semibold">Fecha Inicio</label>
-        <p-calendar 
-          [(ngModel)]="startDate" 
-          [showIcon]="true" 
-          placeholder="Seleccionar fecha"
-          dateFormat="dd/mm/yy"
-          [showButtonBar]="true"
-          styleClass="w-full">
+        <p-calendar [(ngModel)]="startDate" [showIcon]="true" placeholder="Seleccionar fecha" dateFormat="dd/mm/yy"
+          [showButtonBar]="true" styleClass="w-full">
         </p-calendar>
       </div>
       <div class="col-12 md:col-3">
         <label class="block mb-2 font-semibold">Fecha Fin</label>
-        <p-calendar 
-          [(ngModel)]="endDate" 
-          [showIcon]="true" 
-          placeholder="Seleccionar fecha"
-          dateFormat="dd/mm/yy"
-          [showButtonBar]="true"
-          styleClass="w-full">
+        <p-calendar [(ngModel)]="endDate" [showIcon]="true" placeholder="Seleccionar fecha" dateFormat="dd/mm/yy"
+          [showButtonBar]="true" styleClass="w-full">
         </p-calendar>
       </div>
       <div class="col-12 md:col-3 flex align-items-end">
-        <p-button 
-          label="Aplicar Filtros" 
-          icon="pi pi-filter" 
-          (onClick)="applyFilters()"
-          styleClass="mr-2">
+        <p-button label="Aplicar Filtros" icon="pi pi-filter" (onClick)="applyFilters()" styleClass="mr-2">
         </p-button>
-        <p-button 
-          label="Limpiar" 
-          icon="pi pi-filter-slash" 
-          (onClick)="clearFilters()"
-          [outlined]="true">
+        <p-button label="Limpiar" icon="pi pi-filter-slash" (onClick)="clearFilters()" [outlined]="true">
         </p-button>
       </div>
     </div>
 
-    <p-table 
-      [value]="auditLogs" 
-      [loading]="loading"
-      [paginator]="true" 
-      [rows]="pageSize"
-      [totalRecords]="totalRecords"
-      [lazy]="true"
-      (onLazyLoad)="onPageChange($event)"
-      [showCurrentPageReport]="true"
+    <p-table [value]="auditLogs" [loading]="loading" [paginator]="true" [rows]="pageSize" [totalRecords]="totalRecords"
+      [lazy]="true" (onLazyLoad)="onPageChange($event)" [showCurrentPageReport]="true"
       currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-      [rowsPerPageOptions]="[20, 50, 100]"
-      styleClass="p-datatable-striped">
-      
+      [rowsPerPageOptions]="[20, 50, 100]" styleClass="p-datatable-striped">
+
       <ng-template pTemplate="header">
         <tr>
-          <th>Fecha/Hora</th>
-          <th>Usuario</th>
-          <th>Acción</th>
-          <th>Entidad</th>
-          <th>Detalles</th>
+          <th style="width: 15%">Fecha/Hora</th>
+          <th style="width: 20%">Usuario</th>
+          <th style="width: 15%">Acción</th>
+          <th style="width: 15%">Entidad</th>
+          <th style="width: 25%">ID Entidad</th>
+          <th style="width: 10%" class="text-center">Detalles</th>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="body" let-log>
         <tr>
           <td>{{ log.createdAt | date:'short' }}</td>
@@ -99,15 +64,61 @@
             <p-tag [value]="getActionLabel(log.action)" [severity]="getActionSeverity(log.action)"></p-tag>
           </td>
           <td>{{ log.entityName || '-' }}</td>
-          <td>{{ log.detailsJson || '-' }}</td>
+          <td class="text-truncate" [title]="log.entityId">{{ log.entityId || '-' }}</td>
+          <td class="text-center">
+            <button pButton icon="pi pi-eye" class="p-button-rounded p-button-text p-button-secondary"
+              (click)="showDetails(log)" pTooltip="Ver Detalles" tooltipPosition="top">
+            </button>
+          </td>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="5" class="text-center">No se encontraron registros de auditoría.</td>
+          <td colspan="6" class="text-center">No se encontraron registros de auditoría.</td>
         </tr>
       </ng-template>
     </p-table>
   </p-card>
+
+  <!-- Details Dialog -->
+  <p-dialog header="Detalles de Auditoría" [(visible)]="displayDetailsDialog" [modal]="true" [style]="{width: '50vw'}"
+    [draggable]="false" [resizable]="false">
+
+    <div *ngIf="selectedLog">
+      <div class="grid">
+        <div class="col-6 mb-2">
+          <span class="font-bold block">Acción:</span>
+          <p-tag [value]="getActionLabel(selectedLog.action)"
+            [severity]="getActionSeverity(selectedLog.action)"></p-tag>
+        </div>
+        <div class="col-6 mb-2">
+          <span class="font-bold block">Fecha:</span>
+          <span>{{ selectedLog.createdAt | date:'medium' }}</span>
+        </div>
+        <div class="col-6 mb-2">
+          <span class="font-bold block">Usuario:</span>
+          <span>{{ selectedLog.actorUsername || '-' }}</span>
+        </div>
+        <div class="col-6 mb-2">
+          <span class="font-bold block">Entidad:</span>
+          <span>{{ selectedLog.entityName || '-' }}</span>
+        </div>
+        <div class="col-12 mb-2">
+          <span class="font-bold block">ID Entidad:</span>
+          <span class="text-sm font-mono bg-gray-100 p-1 border-round block">{{ selectedLog.entityId || '-' }}</span>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <span class="font-bold block mb-2">Detalles JSON:</span>
+        <pre class="bg-gray-100 p-3 border-round overflow-auto" style="max-height: 300px;">{{ formattedDetails }}</pre>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button icon="pi pi-check" (click)="displayDetailsDialog=false" label="Cerrar"
+        styleClass="p-button-text"></p-button>
+    </ng-template>
+  </p-dialog>
 </div>

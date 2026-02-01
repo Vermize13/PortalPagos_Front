@@ -18,11 +18,11 @@ import { saveAs } from 'file-saver';
   selector: 'app-audit-list',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     FormsModule,
-    CardModule, 
-    TableModule, 
-    ButtonModule, 
+    CardModule,
+    TableModule,
+    ButtonModule,
     TagModule,
     DropdownModule,
     CalendarModule
@@ -33,26 +33,31 @@ import { saveAs } from 'file-saver';
 export class AuditListComponent implements OnInit {
   auditLogs: AuditLog[] = [];
   loading: boolean = false;
-  
+
   // Pagination
   totalRecords: number = 0;
   currentPage: number = 1;
   pageSize: number = 20;
-  
+
+  // Details Dialog
+  displayDetailsDialog: boolean = false;
+  selectedLog: AuditLog | null = null;
+  formattedDetails: string = '';
+
   // RF5.2: Filter properties
   filter: AuditLogFilter = {};
   selectedAction: string | null = null;
   selectedUserId: string | null = null;
   startDate: Date | null = null;
   endDate: Date | null = null;
-  
+
   // Filter options
   actionOptions: { label: string; value: string }[] = [];
-  
+
   // Valid action values based on API schema
   private readonly validActions = [
-    'login', 'logout', 'create', 'update', 'delete', 
-    'assign', 'transition', 'upload', 'download', 
+    'login', 'logout', 'create', 'update', 'delete',
+    'assign', 'transition', 'upload', 'download',
     'backup', 'restore', 'export'
   ];
 
@@ -77,18 +82,18 @@ export class AuditListComponent implements OnInit {
   // Permission helper methods for template use
   canExportAudit(): boolean {
     return this.permissionService.hasPermission(Permissions.AUDIT_EXPORT) ||
-           this.permissionService.hasPermission(Permissions.ADMIN_FULL);
+      this.permissionService.hasPermission(Permissions.ADMIN_FULL);
   }
 
   loadAuditLogs() {
     this.loading = true;
-    
+
     // Build filter with pagination
     this.filter = {
       page: this.currentPage,
       pageSize: this.pageSize
     };
-    
+
     if (this.selectedAction !== null) {
       this.filter.action = this.selectedAction;
     }
@@ -218,7 +223,16 @@ export class AuditListComponent implements OnInit {
       case AuditAction.Download: return 'info';
       case AuditAction.Export: return 'success';
       case AuditAction.Comment: return 'info';
-      default: return 'secondary';
+      default:
+        // HTTP Verbs fallback
+        if (typeof action === 'string') {
+          const upper = action.toUpperCase();
+          if (upper.includes('GET')) return 'info';
+          if (upper.includes('POST')) return 'success';
+          if (upper.includes('PUT') || upper.includes('PATCH')) return 'warning';
+          if (upper.includes('DELETE')) return 'danger';
+        }
+        return 'secondary';
     }
   }
 
@@ -240,14 +254,31 @@ export class AuditListComponent implements OnInit {
       [AuditAction.Comment]: 'Comentar',
       [AuditAction.Unknown]: 'Desconocido'
     };
-    return labels[actionEnum] || (typeof action === 'string' ? action : AuditAction[action]) || 'Desconocido';
+
+
+    if (labels[actionEnum]) {
+      return labels[actionEnum]!;
+    }
+
+    // HTTP Verbs fallback
+    if (typeof action === 'string') {
+      const upper = action.toUpperCase();
+      if (upper === 'GET') return 'Lectura (GET)';
+      if (upper === 'POST') return 'Creación (POST)';
+      if (upper === 'PUT') return 'Actualización (PUT)';
+      if (upper === 'PATCH') return 'Modificación (PATCH)';
+      if (upper === 'DELETE') return 'Eliminación (DELETE)';
+      return action;
+    }
+
+    return AuditAction[actionEnum] || 'Desconocido';
   }
 
   // RF5.3: Export audit logs
   async onExport() {
     try {
       this.loading = true;
-      
+
       // Create a new workbook
       const workbook = new XLSX.Workbook();
       const worksheet = workbook.addWorksheet('Auditoría');
@@ -285,10 +316,10 @@ export class AuditListComponent implements OnInit {
 
       // Generate Excel file
       const buffer = await workbook.xlsx.writeBuffer();
-      const blob = new Blob([buffer], { 
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       });
-      
+
       // Save file
       const fileName = `auditoria_${new Date().toISOString().split('T')[0]}.xlsx`;
       saveAs(blob, fileName);
@@ -299,6 +330,23 @@ export class AuditListComponent implements OnInit {
       console.error('Error exporting audit logs:', error);
       this.toastService.showError('Error', 'No se pudieron exportar los registros');
       this.loading = false;
+    }
+  }
+
+
+  showDetails(log: AuditLog) {
+    this.selectedLog = log;
+    this.formattedDetails = this.formatDetails(log.detailsJson);
+    this.displayDetailsDialog = true;
+  }
+
+  formatDetails(json: string | undefined): string {
+    if (!json) return 'Sin detalles adicionales.';
+    try {
+      const parsed = JSON.parse(json);
+      return JSON.stringify(parsed, null, 2);
+    } catch (e) {
+      return json;
     }
   }
 }
