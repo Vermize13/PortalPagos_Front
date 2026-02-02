@@ -5,6 +5,7 @@ import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
+import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
 import { AuditAction, AuditLog, Permissions } from '../../../domain/models';
@@ -24,6 +25,7 @@ import { saveAs } from 'file-saver';
     TableModule,
     ButtonModule,
     TagModule,
+    DialogModule,
     DropdownModule,
     CalendarModule
   ],
@@ -252,7 +254,8 @@ export class AuditListComponent implements OnInit {
       [AuditAction.Restore]: 'Restaurar',
       [AuditAction.Export]: 'Exportar',
       [AuditAction.Comment]: 'Comentar',
-      [AuditAction.Unknown]: 'Desconocido'
+      [AuditAction.Unknown]: 'Desconocido',
+      [AuditAction.HttpRequest]: 'Petición HTTP'
     };
 
 
@@ -289,8 +292,7 @@ export class AuditListComponent implements OnInit {
         { header: 'Usuario', key: 'actorUsername', width: 30 },
         { header: 'Acción', key: 'action', width: 20 },
         { header: 'Entidad', key: 'entityName', width: 20 },
-        { header: 'ID Entidad', key: 'entityId', width: 38 },
-        { header: 'Detalles', key: 'detailsJson', width: 50 }
+        { header: 'ID Entidad', key: 'entityId', width: 38 }
       ];
 
       // Add rows
@@ -298,10 +300,9 @@ export class AuditListComponent implements OnInit {
         worksheet.addRow({
           createdAt: log.createdAt,
           actorUsername: log.actorUsername || '-',
-          action: this.getActionLabel(log.action),
-          entityName: log.entityName || '-',
-          entityId: log.entityId || '-',
-          detailsJson: log.detailsJson || '-'
+          action: this.getLogActionLabel(log),
+          entityName: this.formatEntityName(log.entityName),
+          entityId: log.entityId || '-'
         });
       });
 
@@ -348,5 +349,67 @@ export class AuditListComponent implements OnInit {
     } catch (e) {
       return json;
     }
+  }
+
+  // New helper to extract Method from details if action is Unknown
+  getLogActionLabel(log: AuditLog): string {
+    const action = log.action as any;
+    if (action === AuditAction.Unknown || action === 'Unknown' ||
+      action === AuditAction.HttpRequest || action === 'HttpRequest') {
+      if (log.detailsJson) {
+        try {
+          const details = JSON.parse(log.detailsJson);
+          if (details && details.Method) {
+            return `${details.Method}`;
+          }
+        } catch (e) {
+          // ignore parsing error
+        }
+      }
+    }
+    return this.getActionLabel(log.action);
+  }
+
+  // New helper to get severity based on extracted Method
+  getLogActionSeverity(log: AuditLog): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
+    const action = log.action as any;
+    if (action === AuditAction.Unknown || action === 'Unknown' ||
+      action === AuditAction.HttpRequest || action === 'HttpRequest') {
+      if (log.detailsJson) {
+        try {
+          const details = JSON.parse(log.detailsJson);
+          if (details && details.Method) {
+            const method = details.Method.toUpperCase();
+            switch (method) {
+              case 'GET': return 'info';
+              case 'POST': return 'success';
+              case 'PUT':
+              case 'PATCH': return 'warning';
+              case 'DELETE': return 'danger';
+              default: return 'secondary';
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+    return this.getActionSeverity(log.action);
+  }
+
+  // New helper to format Entity Name
+  formatEntityName(name: string | undefined): string {
+    if (!name) return '-';
+    // Remove /api/ prefix if present (case insensitive)
+    let cleanName = name.replace(/^\/api\//i, '');
+
+    // If it likely contains an ID (e.g., Users/GUID), take the first part
+    if (cleanName.includes('/')) {
+      const parts = cleanName.split('/');
+      if (parts.length > 0) {
+        cleanName = parts[0];
+      }
+    }
+    return cleanName;
   }
 }

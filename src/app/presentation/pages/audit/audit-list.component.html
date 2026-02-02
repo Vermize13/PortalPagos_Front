@@ -46,11 +46,10 @@
       <ng-template pTemplate="header">
         <tr>
           <th style="width: 15%">Fecha/Hora</th>
-          <th style="width: 20%">Usuario</th>
+          <th style="width: 25%">Usuario</th>
           <th style="width: 15%">Acción</th>
           <th style="width: 15%">Entidad</th>
-          <th style="width: 25%">ID Entidad</th>
-          <th style="width: 10%" class="text-center">Detalles</th>
+          <th style="width: 30%">ID Entidad</th>
         </tr>
       </ng-template>
 
@@ -61,15 +60,10 @@
             <div class="font-semibold">{{ log.actorUsername || '-' }}</div>
           </td>
           <td>
-            <p-tag [value]="getActionLabel(log.action)" [severity]="getActionSeverity(log.action)"></p-tag>
+            <p-tag [value]="getLogActionLabel(log)" [severity]="getLogActionSeverity(log)"></p-tag>
           </td>
-          <td>{{ log.entityName || '-' }}</td>
+          <td>{{ formatEntityName(log.entityName) }}</td>
           <td class="text-truncate" [title]="log.entityId">{{ log.entityId || '-' }}</td>
-          <td class="text-center">
-            <button pButton icon="pi pi-eye" class="p-button-rounded p-button-text p-button-secondary"
-              (click)="showDetails(log)" pTooltip="Ver Detalles" tooltipPosition="top">
-            </button>
-          </td>
         </tr>
       </ng-template>
 
@@ -89,8 +83,7 @@
       <div class="grid">
         <div class="col-6 mb-2">
           <span class="font-bold block">Acción:</span>
-          <p-tag [value]="getActionLabel(selectedLog.action)"
-            [severity]="getActionSeverity(selectedLog.action)"></p-tag>
+          <p-tag [value]="getLogActionLabel(selectedLog)" [severity]="getLogActionSeverity(selectedLog)"></p-tag>
         </div>
         <div class="col-6 mb-2">
           <span class="font-bold block">Fecha:</span>
@@ -102,7 +95,7 @@
         </div>
         <div class="col-6 mb-2">
           <span class="font-bold block">Entidad:</span>
-          <span>{{ selectedLog.entityName || '-' }}</span>
+          <span>{{ formatEntityName(selectedLog.entityName) }}</span>
         </div>
         <div class="col-12 mb-2">
           <span class="font-bold block">ID Entidad:</span>

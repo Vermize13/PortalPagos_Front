@@ -12,6 +12,7 @@ export enum AuditAction {
   Download = 10,
   Export = 11,
   Comment = 12,
+  HttpRequest = 13,
   Unknown = 99
 }
 
