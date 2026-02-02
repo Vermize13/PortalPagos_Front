@@ -1,18 +1,19 @@
 export enum AuditAction {
-  Login = 0,
-  Logout = 1,
-  Create = 2,
-  Update = 3,
-  Delete = 4,
+  Create = 0,
+  Update = 1,
+  Delete = 2,
+  Login = 3,
+  Logout = 4,
   Assign = 5,
   Transition = 6,
   Backup = 7,
   Restore = 8,
   Upload = 9,
   Download = 10,
-  Export = 11,
-  Comment = 12,
-  HttpRequest = 13,
+  HttpRequest = 11,
+  SqlCommand = 12,
+  Export = 13,
+  Comment = 14,
   Unknown = 99
 }
 

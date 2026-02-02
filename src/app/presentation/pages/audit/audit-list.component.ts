@@ -73,7 +73,7 @@ export class AuditListComponent implements OnInit {
       .filter(key => isNaN(Number(key)))
       .map(key => ({
         label: this.getActionLabel(AuditAction[key as keyof typeof AuditAction]),
-        value: key.toLowerCase()
+        value: key // Send PascalCase string (e.g. "Login") which works with JsonStringEnumConverter
       }));
   }
 
@@ -278,60 +278,90 @@ export class AuditListComponent implements OnInit {
   }
 
   // RF5.3: Export audit logs
-  async onExport() {
-    try {
-      this.loading = true;
+  // RF5.3: Export audit logs
+  onExport() {
+    this.loading = true;
 
-      // Create a new workbook
-      const workbook = new XLSX.Workbook();
-      const worksheet = workbook.addWorksheet('Auditoría');
+    // Create filter for all records (up to 100,000)
+    const exportFilter: AuditLogFilter = {
+      ...this.filter,
+      page: 1,
+      pageSize: 100000
+    };
 
-      // Add headers
-      worksheet.columns = [
-        { header: 'Fecha/Hora', key: 'createdAt', width: 20 },
-        { header: 'Usuario', key: 'actorUsername', width: 30 },
-        { header: 'Acción', key: 'action', width: 20 },
-        { header: 'Entidad', key: 'entityName', width: 20 },
-        { header: 'ID Entidad', key: 'entityId', width: 38 }
-      ];
-
-      // Add rows
-      this.auditLogs.forEach(log => {
-        worksheet.addRow({
-          createdAt: log.createdAt,
-          actorUsername: log.actorUsername || '-',
-          action: this.getLogActionLabel(log),
-          entityName: this.formatEntityName(log.entityName),
-          entityId: log.entityId || '-'
-        });
-      });
-
-      // Style header row
-      const headerRow = worksheet.getRow(1);
-      headerRow.font = { bold: true };
-      headerRow.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFE0E0E0' }
-      };
-
-      // Generate Excel file
-      const buffer = await workbook.xlsx.writeBuffer();
-      const blob = new Blob([buffer], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      });
-
-      // Save file
-      const fileName = `auditoria_${new Date().toISOString().split('T')[0]}.xlsx`;
-      saveAs(blob, fileName);
-
-      this.toastService.showSuccess('Éxito', 'Registros de auditoría exportados correctamente');
-      this.loading = false;
-    } catch (error) {
-      console.error('Error exporting audit logs:', error);
-      this.toastService.showError('Error', 'No se pudieron exportar los registros');
-      this.loading = false;
+    if (this.selectedAction !== null) {
+      exportFilter.action = this.selectedAction;
     }
+    if (this.selectedUserId) {
+      exportFilter.userId = this.selectedUserId;
+    }
+    if (this.startDate) {
+      exportFilter.startDate = this.startDate;
+    }
+    if (this.endDate) {
+      exportFilter.endDate = this.endDate;
+    }
+
+    this.auditService.getAll(exportFilter).subscribe({
+      next: async (response) => {
+        try {
+          // Create a new workbook
+          const workbook = new XLSX.Workbook();
+          const worksheet = workbook.addWorksheet('Auditoría');
+
+          // Add headers
+          worksheet.columns = [
+            { header: 'Fecha/Hora', key: 'createdAt', width: 20 },
+            { header: 'Usuario', key: 'actorUsername', width: 30 },
+            { header: 'Acción', key: 'action', width: 20 },
+            { header: 'Entidad', key: 'entityName', width: 20 },
+            { header: 'ID Entidad', key: 'entityId', width: 38 }
+          ];
+
+          // Add rows
+          response.logs.forEach(log => {
+            worksheet.addRow({
+              createdAt: log.createdAt,
+              actorUsername: log.actorUsername || '-',
+              action: this.getLogActionLabel(log),
+              entityName: this.formatEntityName(log.entityName),
+              entityId: log.entityId || '-'
+            });
+          });
+
+          // Style header row
+          const headerRow = worksheet.getRow(1);
+          headerRow.font = { bold: true };
+          headerRow.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFE0E0E0' }
+          };
+
+          // Generate Excel file
+          const buffer = await workbook.xlsx.writeBuffer();
+          const blob = new Blob([buffer], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          });
+
+          // Save file
+          const fileName = `auditoria_${new Date().toISOString().split('T')[0]}.xlsx`;
+          saveAs(blob, fileName);
+
+          this.toastService.showSuccess('Éxito', 'Registros de auditoría exportados correctamente');
+        } catch (error) {
+          console.error('Error generating Excel:', error);
+          this.toastService.showError('Error', 'Error al generar el archivo Excel');
+        } finally {
+          this.loading = false;
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching audit logs for export:', error);
+        this.toastService.showError('Error', 'No se pudieron obtener los registros para exportar');
+        this.loading = false;
+      }
+    });
   }
 
 

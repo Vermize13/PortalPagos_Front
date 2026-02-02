@@ -16,6 +16,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { BackupService, BackupResponse, RestoreResponse } from '../../../data/services/backup.service';
 import { ToastService } from '../../../data/services/toast.service';
 import { PermissionService } from '../../../data/services/permission.service';
+import { SystemConfigurationService } from '../../../data/services/system-configuration.service';
 import { Permissions } from '../../../domain/models';
 
 /**
@@ -46,18 +47,18 @@ import { Permissions } from '../../../domain/models';
 export class AdminComponent implements OnInit {
   // Active tab index
   activeTabIndex: number = 0;
-  
+
   // Help manual visibility
   showHelpManual: boolean = false;
-  
+
   // Backup & Restore properties
   backups: BackupResponse[] = [];
   loading: boolean = false;
-  
+
   // Create backup dialog
   showCreateDialog: boolean = false;
   backupNotes: string = '';
-  
+
   // Restore dialog
   showRestoreDialog: boolean = false;
   selectedBackup: BackupResponse | null = null;
@@ -72,7 +73,7 @@ export class AdminComponent implements OnInit {
     emailNotifications: true,
     maintenanceMode: false
   };
-  
+
   uploadSizeOptions = [
     { label: '5 MB', value: '5' },
     { label: '10 MB', value: '10' },
@@ -80,14 +81,14 @@ export class AdminComponent implements OnInit {
     { label: '50 MB', value: '50' },
     { label: '100 MB', value: '100' }
   ];
-  
+
   sessionTimeoutOptions = [
     { label: '15 minutos', value: '15' },
     { label: '30 minutos', value: '30' },
     { label: '60 minutos', value: '60' },
     { label: '120 minutos', value: '120' }
   ];
-  
+
   retentionOptions = [
     { label: '7 días', value: '7' },
     { label: '15 días', value: '15' },
@@ -95,14 +96,15 @@ export class AdminComponent implements OnInit {
     { label: '60 días', value: '60' },
     { label: '90 días', value: '90' }
   ];
-  
+
   configModified: boolean = false;
 
   constructor(
     private backupService: BackupService,
     private toastService: ToastService,
-    public permissionService: PermissionService
-  ) {}
+    public permissionService: PermissionService,
+    private configService: SystemConfigurationService
+  ) { }
 
   ngOnInit() {
     this.loadBackups();
@@ -112,18 +114,18 @@ export class AdminComponent implements OnInit {
   // Permission helper methods for template use
   canCreateBackup(): boolean {
     return this.permissionService.hasPermission(Permissions.BACKUP_CREATE) ||
-           this.permissionService.hasPermission(Permissions.ADMIN_FULL);
+      this.permissionService.hasPermission(Permissions.ADMIN_FULL);
   }
 
   canRestoreBackup(): boolean {
     return this.permissionService.hasPermission(Permissions.BACKUP_RESTORE) ||
-           this.permissionService.hasPermission(Permissions.ADMIN_FULL);
+      this.permissionService.hasPermission(Permissions.ADMIN_FULL);
   }
 
   canViewBackups(): boolean {
     return this.permissionService.hasPermission(Permissions.BACKUP_VIEW) ||
-           this.permissionService.hasPermission(Permissions.ADMIN_ACCESS) ||
-           this.permissionService.hasPermission(Permissions.ADMIN_FULL);
+      this.permissionService.hasPermission(Permissions.ADMIN_ACCESS) ||
+      this.permissionService.hasPermission(Permissions.ADMIN_FULL);
   }
 
   canConfigureSystem(): boolean {
@@ -136,7 +138,7 @@ export class AdminComponent implements OnInit {
       next: (backups) => {
         // Ensure backups is an array before calling sort
         const backupsArray = Array.isArray(backups) ? backups : [];
-        this.backups = backupsArray.sort((a, b) => 
+        this.backups = backupsArray.sort((a, b) =>
           new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
         );
         this.loading = false;
@@ -225,11 +227,11 @@ export class AdminComponent implements OnInit {
 
   formatBytes(bytes?: number): string {
     if (!bytes) return '0 Bytes';
-    
+
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
+
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   }
 
@@ -237,11 +239,11 @@ export class AdminComponent implements OnInit {
     const start = new Date(startedAt).getTime();
     const end = finishedAt ? new Date(finishedAt).getTime() : Date.now();
     const diff = end - start;
-    
+
     const seconds = Math.floor(diff / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes % 60}m`;
     } else if (minutes > 0) {
@@ -253,11 +255,23 @@ export class AdminComponent implements OnInit {
 
   // Configuration methods
   loadConfiguration() {
-    // Load configuration from localStorage or API
-    const savedConfig = localStorage.getItem('systemConfig');
-    if (savedConfig) {
-      this.systemConfig = JSON.parse(savedConfig);
-    }
+    this.configService.getConfiguration().subscribe({
+      next: (config) => {
+        if (config) {
+          this.systemConfig = {
+            systemName: config['SystemName'] || this.systemConfig.systemName,
+            maxUploadSize: config['MaxUploadSize'] || this.systemConfig.maxUploadSize,
+            sessionTimeout: config['SessionTimeout'] || this.systemConfig.sessionTimeout,
+            backupRetentionDays: config['BackupRetentionDays'] || this.systemConfig.backupRetentionDays,
+            emailNotifications: config['EmailNotifications'] === 'true',
+            maintenanceMode: config['MaintenanceMode'] === 'true'
+          };
+        }
+      },
+      error: (error) => {
+        console.error('Error loading configuration:', error);
+      }
+    });
   }
 
   onConfigChange() {
@@ -265,10 +279,25 @@ export class AdminComponent implements OnInit {
   }
 
   saveConfiguration() {
-    // Save configuration to localStorage and/or API
-    localStorage.setItem('systemConfig', JSON.stringify(this.systemConfig));
-    this.toastService.showSuccess('Éxito', 'Configuración guardada correctamente');
-    this.configModified = false;
+    const configPayload: any = {
+      'SystemName': this.systemConfig.systemName,
+      'MaxUploadSize': this.systemConfig.maxUploadSize,
+      'SessionTimeout': this.systemConfig.sessionTimeout,
+      'BackupRetentionDays': this.systemConfig.backupRetentionDays,
+      'EmailNotifications': String(this.systemConfig.emailNotifications),
+      'MaintenanceMode': String(this.systemConfig.maintenanceMode)
+    };
+
+    this.configService.updateConfiguration(configPayload).subscribe({
+      next: () => {
+        this.toastService.showSuccess('Éxito', 'Configuración guardada correctamente');
+        this.configModified = false;
+      },
+      error: (error) => {
+        console.error('Error saving configuration:', error);
+        this.toastService.showError('Error', 'No se pudo guardar la configuración');
+      }
+    });
   }
 
   resetConfiguration() {
