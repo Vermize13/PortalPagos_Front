@@ -54,7 +54,7 @@ export class AuditListComponent implements OnInit {
   endDate: Date | null = null;
 
   // Filter options
-  actionOptions: { label: string; value: string }[] = [];
+  actionOptions: { label: string; value: any }[] = [];
 
   // Valid action values based on API schema
   private readonly validActions = [
@@ -73,7 +73,7 @@ export class AuditListComponent implements OnInit {
       .filter(key => isNaN(Number(key)))
       .map(key => ({
         label: this.getActionLabel(AuditAction[key as keyof typeof AuditAction]),
-        value: key // Send PascalCase string (e.g. "Login") which works with JsonStringEnumConverter
+        value: AuditAction[key as keyof typeof AuditAction] // Send numeric enum value
       }));
   }
 
