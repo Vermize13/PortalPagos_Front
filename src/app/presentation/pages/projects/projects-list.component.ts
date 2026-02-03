@@ -88,6 +88,10 @@ export class ProjectsListComponent implements OnInit {
     return this.permissionService.hasPermission(Permissions.PROJECT_DELETE);
   }
 
+  canViewProjectDetails(project: Project): boolean {
+    return this.permissionService.isAdmin();
+  }
+
   loadProjects() {
     this.loading = true;
     this.projectService.getAll().subscribe({

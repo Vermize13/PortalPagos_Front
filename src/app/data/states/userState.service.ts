@@ -157,17 +157,17 @@ export class UserStateService {
       scrum_master: 'scrum_master',
       product_owner: 'product_owner',
       stakeholder: 'stakeholder',
-      lider_tecnico: 'tech_lead',
-      lider_tecnic: 'tech_lead',
-      lider_tec: 'tech_lead',
-      tech_lead: 'tech_lead',
-      desarrollador: 'developer',
-      developer: 'developer',
-      dev: 'developer',
-      qa: 'tester',
-      tester: 'tester',
-      qa_tester: 'tester',
-      qa_tester_role: 'tester'
+      lider_tecnico: 'lider_tecnico',
+      lider_tecnic: 'lider_tecnico',
+      lider_tec: 'lider_tecnico',
+      tech_lead: 'lider_tecnico',
+      desarrollador: 'desarrollador',
+      developer: 'desarrollador',
+      dev: 'desarrollador',
+      qa: 'qa_tester',
+      tester: 'qa_tester',
+      qa_tester: 'qa_tester',
+      qa_tester_role: 'qa_tester'
     };
 
     return roleMap[normalizedKey] || normalizedKey;

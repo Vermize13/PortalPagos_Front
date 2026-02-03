@@ -11,6 +11,7 @@ import { UserStateService } from '../../../data/states/userState.service';
 import { UserService } from '../../../data/services/user.service';
 import { ProjectService } from '../../../data/services/project.service';
 import { ToastService } from '../../../data/services/toast.service';
+import { PermissionService } from '../../../data/services/permission.service';
 import { User as DomainUser } from '../../../domain/models/user.model';
 import { Project } from '../../../domain/models';
 import { firstValueFrom } from 'rxjs';
@@ -41,6 +42,7 @@ export class HomeComponent implements OnInit {
   private userService = inject(UserService);
   private projectService = inject(ProjectService);
   private toastService = inject(ToastService);
+  private permissionService = inject(PermissionService);
   private router = inject(Router);
 
   user: DomainUser | null = null;
@@ -50,6 +52,10 @@ export class HomeComponent implements OnInit {
 
   get currentUser() {
     return this.userStateService.getUser();
+  }
+
+  canViewProjectDetails(): boolean {
+    return this.permissionService.isAdmin();
   }
 
   ngOnInit() {

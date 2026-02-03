@@ -2,24 +2,14 @@
   <p-card>
     <div class="flex justify-content-between align-items-center mb-4">
       <h2 class="m-0">Gestión de Proyectos</h2>
-      <p-button 
-        *ngIf="canCreateProject()"
-        label="Nuevo Proyecto" 
-        icon="pi pi-plus" 
-        (onClick)="onCreate()">
+      <p-button *ngIf="canCreateProject()" label="Nuevo Proyecto" icon="pi pi-plus" (onClick)="onCreate()">
       </p-button>
     </div>
 
-    <p-table 
-      [value]="projects" 
-      [loading]="loading"
-      [paginator]="true" 
-      [rows]="10"
-      [showCurrentPageReport]="true"
+    <p-table [value]="projects" [loading]="loading" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
       currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} proyectos"
-      [rowsPerPageOptions]="[10, 25, 50]"
-      styleClass="p-datatable-striped">
-      
+      [rowsPerPageOptions]="[10, 25, 50]" styleClass="p-datatable-striped">
+
       <ng-template pTemplate="header">
         <tr>
           <th>Código</th>
@@ -30,41 +20,28 @@
           <th>Acciones</th>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="body" let-project>
         <tr>
           <td>{{ project.code }}</td>
           <td>{{ project.name }}</td>
           <td>{{ project.description }}</td>
           <td>
-            <p-tag [value]="project.isActive ? 'Activo' : 'Inactivo'" [severity]="getStatusSeverity(project.isActive)"></p-tag>
+            <p-tag [value]="project.isActive ? 'Activo' : 'Inactivo'"
+              [severity]="getStatusSeverity(project.isActive)"></p-tag>
           </td>
           <td>{{ project.createdAt | date:'short' }}</td>
           <td>
-            <p-button 
-              icon="pi pi-eye" 
-              [rounded]="true" 
-              [text]="true" 
-              severity="secondary"
-              (onClick)="onViewDetails(project)"></p-button>
-            <p-button 
-              *ngIf="canEditProject()"
-              icon="pi pi-pencil" 
-              [rounded]="true" 
-              [text]="true" 
-              severity="info"
+            <p-button *ngIf="canViewProjectDetails(project)" icon="pi pi-eye" [rounded]="true" [text]="true"
+              severity="secondary" (onClick)="onViewDetails(project)"></p-button>
+            <p-button *ngIf="canEditProject()" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="info"
               (onClick)="onEdit(project)"></p-button>
-            <p-button 
-              *ngIf="canDeleteProject()"
-              icon="pi pi-trash" 
-              [rounded]="true" 
-              [text]="true" 
-              severity="danger"
+            <p-button *ngIf="canDeleteProject()" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
               (onClick)="onDelete(project)"></p-button>
           </td>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="6" class="text-center">No se encontraron proyectos.</td>
@@ -74,29 +51,17 @@
   </p-card>
 
   <!-- Project Create/Edit Dialog -->
-  <p-dialog 
-    [(visible)]="displayDialog" 
-    [header]="isEditMode ? 'Editar Proyecto' : 'Nuevo Proyecto'"
-    [modal]="true"
-    [style]="{width: '600px'}"
-    [closable]="true">
-    
+  <p-dialog [(visible)]="displayDialog" [header]="isEditMode ? 'Editar Proyecto' : 'Nuevo Proyecto'" [modal]="true"
+    [style]="{width: '600px'}" [closable]="true">
+
     <form #projectFormRef="ngForm" class="p-fluid">
       <div class="field mb-3">
         <label for="code">Código *</label>
-        <input 
-          id="code" 
-          name="code"
-          #codeField="ngModel"
-          type="text" 
-          pInputText 
-          [(ngModel)]="projectForm.code"
-          [disabled]="isEditMode"
-          placeholder="Ej: PP, SI"
-          maxlength="10"
-          minlength="2"
-          required />
-        <small class="text-muted" *ngIf="!(codeField.invalid && (codeField.dirty || codeField.touched || submitted))">Código único del proyecto (2-10 caracteres)</small>
+        <input id="code" name="code" #codeField="ngModel" type="text" pInputText [(ngModel)]="projectForm.code"
+          [disabled]="isEditMode" placeholder="Ej: PP, SI" maxlength="10" minlength="2" required />
+        <small class="text-muted"
+          *ngIf="!(codeField.invalid && (codeField.dirty || codeField.touched || submitted))">Código único del proyecto
+          (2-10 caracteres)</small>
         <small class="p-error" *ngIf="codeField.invalid && (codeField.dirty || codeField.touched || submitted)">
           <span *ngIf="codeField.errors?.['required']">El código es requerido</span>
           <span *ngIf="codeField.errors?.['minlength']">El código debe tener al menos 2 caracteres</span>
@@ -105,15 +70,8 @@
 
       <div class="field mb-3">
         <label for="name">Nombre *</label>
-        <input 
-          id="name" 
-          name="name"
-          #nameField="ngModel"
-          type="text" 
-          pInputText 
-          [(ngModel)]="projectForm.name"
-          placeholder="Nombre del proyecto"
-          required />
+        <input id="name" name="name" #nameField="ngModel" type="text" pInputText [(ngModel)]="projectForm.name"
+          placeholder="Nombre del proyecto" required />
         <small class="p-error" *ngIf="nameField.invalid && (nameField.dirty || nameField.touched || submitted)">
           El nombre es requerido
         </small>
@@ -121,24 +79,14 @@
 
       <div class="field mb-3">
         <label for="description">Descripción</label>
-        <textarea 
-          id="description"
-          name="description"
-          #descriptionField="ngModel"
-          pInputTextarea 
-          [(ngModel)]="projectForm.description"
-          placeholder="Descripción del proyecto"
-          rows="4">
+        <textarea id="description" name="description" #descriptionField="ngModel" pInputTextarea
+          [(ngModel)]="projectForm.description" placeholder="Descripción del proyecto" rows="4">
         </textarea>
       </div>
 
       <div class="field mb-3">
         <div class="flex align-items-center">
-          <p-checkbox 
-            [(ngModel)]="projectForm.isActive"
-            name="isActive"
-            [binary]="true"
-            inputId="active">
+          <p-checkbox [(ngModel)]="projectForm.isActive" name="isActive" [binary]="true" inputId="active">
           </p-checkbox>
           <label for="active" class="ml-2">Proyecto Activo</label>
         </div>
@@ -146,16 +94,9 @@
     </form>
 
     <ng-template pTemplate="footer">
-      <p-button 
-        label="Cancelar" 
-        icon="pi pi-times" 
-        (onClick)="onCancelDialog()"
-        styleClass="p-button-text">
+      <p-button label="Cancelar" icon="pi pi-times" (onClick)="onCancelDialog()" styleClass="p-button-text">
       </p-button>
-      <p-button 
-        [label]="isEditMode ? 'Actualizar' : 'Crear'" 
-        icon="pi pi-check" 
-        (onClick)="onSaveProject()">
+      <p-button [label]="isEditMode ? 'Actualizar' : 'Crear'" icon="pi pi-check" (onClick)="onSaveProject()">
       </p-button>
     </ng-template>
   </p-dialog>

@@ -1,4 +1,4 @@
-<div class="container mx-auto px-4 py-6">
+<div class="container px-4 py-6 mx-auto">
   <!-- Welcome Section -->
   <div class="mb-6">
     <div *ngIf="loading" class="flex items-center gap-4 mb-4">
@@ -9,19 +9,19 @@
       </div>
     </div>
 
-    <div *ngIf="!loading && user" class="bg-white rounded-lg shadow-md p-6">
+    <div *ngIf="!loading && user" class="p-6 bg-white rounded-lg shadow-md">
       <div class="flex items-center gap-4">
-        <div class="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-bold">
+        <div class="flex items-center justify-center w-16 h-16 text-2xl font-bold text-white bg-blue-500 rounded-full">
           {{ user.name.charAt(0).toUpperCase() }}
         </div>
         <div class="flex-1">
           <h1 class="text-3xl font-bold text-gray-800">
             Bienvenido, {{ user.name }}
           </h1>
-          <p class="text-gray-600 text-lg mt-1">
+          <p class="mt-1 text-lg text-gray-600">
             <span class="font-semibold">Cargo:</span> {{ user.role?.name || 'No asignado' }}
           </p>
-          <p class="text-gray-500 text-sm mt-1">
+          <p class="mt-1 text-sm text-gray-500">
             {{ user.email }}
           </p>
         </div>
@@ -30,11 +30,11 @@
   </div>
 
   <!-- Quick Actions -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="grid grid-cols-1 gap-4 mb-6 md:grid-cols-3">
     <p-card styleClass="h-full cursor-pointer hover:shadow-lg transition-shadow" (click)="navigateToDashboard()">
       <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
-          <i class="pi pi-chart-line text-blue-600 text-2xl"></i>
+        <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
+          <i class="text-2xl text-blue-600 pi pi-chart-line"></i>
         </div>
         <div>
           <h3 class="font-semibold text-gray-800">Dashboard</h3>
@@ -45,8 +45,8 @@
 
     <p-card styleClass="h-full cursor-pointer hover:shadow-lg transition-shadow" (click)="navigateToProjects()">
       <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
-          <i class="pi pi-briefcase text-green-600 text-2xl"></i>
+        <div class="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg">
+          <i class="text-2xl text-green-600 pi pi-briefcase"></i>
         </div>
         <div>
           <h3 class="font-semibold text-gray-800">Proyectos</h3>
@@ -57,8 +57,8 @@
 
     <p-card styleClass="h-full cursor-pointer hover:shadow-lg transition-shadow" [routerLink]="['/inicio/profile']">
       <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
-          <i class="pi pi-user text-purple-600 text-2xl"></i>
+        <div class="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg">
+          <i class="text-2xl text-purple-600 pi pi-user"></i>
         </div>
         <div>
           <h3 class="font-semibold text-gray-800">Mi Perfil</h3>
@@ -74,14 +74,10 @@
       <div class="px-4 py-3 border-b">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <i class="pi pi-briefcase text-2xl text-blue-600"></i>
+            <i class="text-2xl text-blue-600 pi pi-briefcase"></i>
             <h2 class="text-xl font-bold text-gray-800">Mis Proyectos Asignados</h2>
           </div>
-          <p-button 
-            label="Ver todos" 
-            icon="pi pi-arrow-right" 
-            [text]="true"
-            (click)="navigateToProjects()">
+          <p-button label="Ver todos" icon="pi pi-arrow-right" [text]="true" (click)="navigateToProjects()">
           </p-button>
         </div>
       </div>
@@ -91,17 +87,14 @@
       <p-skeleton width="100%" height="4rem" *ngFor="let i of [1,2,3]"></p-skeleton>
     </div>
 
-    <div *ngIf="!loadingProjects && userProjects.length === 0" class="text-center py-8">
-      <i class="pi pi-inbox text-6xl text-gray-300 mb-4"></i>
-      <p class="text-gray-500 text-lg">No tienes proyectos asignados</p>
-      <p class="text-gray-400 text-sm mt-2">Contacta con tu administrador para que te asigne a un proyecto</p>
+    <div *ngIf="!loadingProjects && userProjects.length === 0" class="py-8 text-center">
+      <i class="mb-4 text-6xl text-gray-300 pi pi-inbox"></i>
+      <p class="text-lg text-gray-500">No tienes proyectos asignados</p>
+      <p class="mt-2 text-sm text-gray-400">Contacta con tu administrador para que te asigne a un proyecto</p>
     </div>
 
     <div *ngIf="!loadingProjects && userProjects.length > 0">
-      <p-table 
-        [value]="userProjects" 
-        [tableStyle]="{ 'min-width': '50rem' }"
-        styleClass="p-datatable-striped">
+      <p-table [value]="userProjects" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped">
         <ng-template pTemplate="header">
           <tr>
             <th>Proyecto</th>
@@ -109,7 +102,7 @@
             <th>Descripción</th>
             <th>Rol</th>
             <th>Estado</th>
-            <th style="width: 8rem">Acciones</th>
+            <th style="width: 8rem" *ngIf="canViewProjectDetails()">Acciones</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-projectInfo>
@@ -121,7 +114,7 @@
               <p-tag [value]="projectInfo.project.code" severity="info"></p-tag>
             </td>
             <td>
-              <span class="text-gray-600 text-sm">
+              <span class="text-sm text-gray-600">
                 {{ projectInfo.project.description || 'Sin descripción' }}
               </span>
             </td>
@@ -129,20 +122,13 @@
               <p-tag [value]="projectInfo.role" severity="secondary"></p-tag>
             </td>
             <td>
-              <p-tag 
-                [value]="projectInfo.project.isActive ? 'Activo' : 'Inactivo'" 
+              <p-tag [value]="projectInfo.project.isActive ? 'Activo' : 'Inactivo'"
                 [severity]="projectInfo.project.isActive ? 'success' : 'danger'">
               </p-tag>
             </td>
             <td>
-              <p-button 
-                icon="pi pi-eye" 
-                [rounded]="true" 
-                [text]="true"
-                severity="info"
-                pTooltip="Ver proyecto"
-                tooltipPosition="top"
-                (click)="viewProject(projectInfo.project.id)">
+              <p-button *ngIf="canViewProjectDetails()" icon="pi pi-eye" [rounded]="true" [text]="true" severity="info"
+                pTooltip="Ver proyecto" tooltipPosition="top" (click)="viewProject(projectInfo.project.id)">
               </p-button>
             </td>
           </tr>
