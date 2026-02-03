@@ -569,4 +569,78 @@ export class IncidentDetailComponent implements OnInit {
   onCancelLabelDialog() {
     this.displayLabelDialog = false;
   }
+
+  // Comment Editing Logic
+  editingCommentId: string | null = null;
+  editCommentBody: string = '';
+
+  isCommentAuthor(comment: IncidentComment): boolean {
+    const userId = this.permissionService.getCurrentUserId();
+    // Check both potential ID fields from the backend
+    return comment.authorId === userId || (comment.author && comment.author.id === userId);
+  }
+
+  canDeleteComment(comment: IncidentComment): boolean {
+    // Author or Admin can delete
+    return this.isCommentAuthor(comment) || this.permissionService.isAdmin();
+  }
+
+  onEditComment(comment: IncidentComment) {
+    this.editingCommentId = comment.id;
+    this.editCommentBody = comment.body;
+  }
+
+  onCancelEditComment() {
+    this.editingCommentId = null;
+    this.editCommentBody = '';
+  }
+
+  onSaveEditComment(comment: IncidentComment) {
+    if (!this.editCommentBody.trim() || !this.incident) return;
+
+    this.incidentService.updateComment(this.incident.id, comment.id, { body: this.editCommentBody.trim() })
+      .subscribe({
+        next: (updatedComment) => {
+          this.toastService.showSuccess('Éxito', 'Comentario actualizado');
+
+          // Update local state without full reload
+          const index = this.comments.findIndex(c => c.id === comment.id);
+          if (index !== -1) {
+            this.comments[index] = {
+              ...this.comments[index],
+              body: this.editCommentBody.trim(),
+              // Verify if the backend returns the editedAt date, otherwise we use current date locally
+              editedAt: updatedComment.editedAt || new Date()
+            };
+          }
+
+          this.editingCommentId = null;
+          this.editCommentBody = '';
+        },
+        error: (error) => {
+          console.error('Error updating comment:', error);
+          this.toastService.showError('Error', 'No se pudo actualizar el comentario');
+        }
+      });
+  }
+
+  onDeleteComment(comment: IncidentComment) {
+    if (!this.incident) return;
+
+    if (!confirm('¿Está seguro de eliminar este comentario?')) {
+      return;
+    }
+
+    this.incidentService.deleteComment(this.incident.id, comment.id).subscribe({
+      next: () => {
+        this.toastService.showSuccess('Éxito', 'Comentario eliminado');
+        // Remove from local list
+        this.comments = this.comments.filter(c => c.id !== comment.id);
+      },
+      error: (error) => {
+        console.error('Error deleting comment:', error);
+        this.toastService.showError('Error', 'No se pudo eliminar el comentario');
+      }
+    });
+  }
 }

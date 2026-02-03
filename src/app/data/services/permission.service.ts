@@ -1,11 +1,11 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { UserStateService } from '../states/userState.service';
-import { 
-  Permission, 
-  Permissions, 
-  RoleConfig, 
-  RolesConfig, 
-  getPermissionsForRole 
+import {
+  Permission,
+  Permissions,
+  RoleConfig,
+  RolesConfig,
+  getPermissionsForRole
 } from '../../domain/models/permissions.model';
 
 /**
@@ -16,7 +16,7 @@ import {
   providedIn: 'root'
 })
 export class PermissionService {
-  
+
   // Cache the user's permissions to avoid recalculating on every check
   private userPermissions = signal<Permission[]>([]);
 
@@ -57,7 +57,7 @@ export class PermissionService {
     if (!user || !user.role) {
       return false;
     }
-    
+
     // Get fresh permissions based on current role
     const permissions = getPermissionsForRole(user.role);
     return permissions.includes(permission);
@@ -109,12 +109,20 @@ export class PermissionService {
   }
 
   /**
+   * Get the current user ID
+   */
+  getCurrentUserId(): string | null {
+    const user = this.userStateService.getUser();
+    return user ? user.nameid : null;
+  }
+
+  /**
    * Check if the current user can update incident title.
    * @returns true if the user can update incident title, false otherwise.
    */
   canUpdateIncidentTitle(): boolean {
-    return this.hasPermission(Permissions.INCIDENT_TITLE_UPDATE) || 
-           this.hasPermission(Permissions.INCIDENT_FULL);
+    return this.hasPermission(Permissions.INCIDENT_TITLE_UPDATE) ||
+      this.hasPermission(Permissions.INCIDENT_FULL);
   }
 
   /**
@@ -122,8 +130,8 @@ export class PermissionService {
    * @returns true if the user can update incident description, false otherwise.
    */
   canUpdateIncidentDescription(): boolean {
-    return this.hasPermission(Permissions.INCIDENT_DESCRIPTION_UPDATE) || 
-           this.hasPermission(Permissions.INCIDENT_FULL);
+    return this.hasPermission(Permissions.INCIDENT_DESCRIPTION_UPDATE) ||
+      this.hasPermission(Permissions.INCIDENT_FULL);
   }
 
   /**
@@ -131,8 +139,8 @@ export class PermissionService {
    * @returns true if the user can update incident labels, false otherwise.
    */
   canUpdateIncidentLabels(): boolean {
-    return this.hasPermission(Permissions.INCIDENT_LABEL_UPDATE) || 
-           this.hasPermission(Permissions.INCIDENT_FULL);
+    return this.hasPermission(Permissions.INCIDENT_LABEL_UPDATE) ||
+      this.hasPermission(Permissions.INCIDENT_FULL);
   }
 
   /**
@@ -140,8 +148,8 @@ export class PermissionService {
    * @returns true if the user can update incident data, false otherwise.
    */
   canUpdateIncidentData(): boolean {
-    return this.hasPermission(Permissions.INCIDENT_DATA_UPDATE) || 
-           this.hasPermission(Permissions.INCIDENT_FULL);
+    return this.hasPermission(Permissions.INCIDENT_DATA_UPDATE) ||
+      this.hasPermission(Permissions.INCIDENT_FULL);
   }
 
   /**
@@ -150,8 +158,8 @@ export class PermissionService {
    */
   canManageProjects(): boolean {
     return this.hasPermission(Permissions.PROJECT_MANAGE) ||
-           this.hasPermission(Permissions.PROJECT_CREATE) ||
-           this.hasPermission(Permissions.PROJECT_UPDATE);
+      this.hasPermission(Permissions.PROJECT_CREATE) ||
+      this.hasPermission(Permissions.PROJECT_UPDATE);
   }
 
   /**
@@ -176,6 +184,6 @@ export class PermissionService {
    */
   canAccessAdmin(): boolean {
     return this.hasPermission(Permissions.ADMIN_ACCESS) ||
-           this.hasPermission(Permissions.ADMIN_FULL);
+      this.hasPermission(Permissions.ADMIN_FULL);
   }
 }

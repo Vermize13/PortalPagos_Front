@@ -111,6 +111,14 @@ export class IncidentService {
     return this.http.post<any>(`${this.apiUrl}/${id}/comments`, request);
   }
 
+  updateComment(incidentId: string, commentId: string, request: { body: string }): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${incidentId}/comments/${commentId}`, request);
+  }
+
+  deleteComment(incidentId: string, commentId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${incidentId}/comments/${commentId}`);
+  }
+
   addLabel(id: string, labelId: string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/${id}/labels/${labelId}`, {});
   }

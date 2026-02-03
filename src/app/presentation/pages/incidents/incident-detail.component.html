@@ -99,8 +99,36 @@
                             </span>
                             <span *ngIf="comment.editedAt" class="ml-1 text-sm text-gray-400">(editado)</span>
                           </div>
+
+                          <!-- Action Buttons -->
+                          <div class="flex gap-1" *ngIf="isCommentAuthor(comment) || canDeleteComment(comment)">
+                            <p-button *ngIf="isCommentAuthor(comment) && editingCommentId !== comment.id"
+                              icon="pi pi-pencil" [text]="true" [rounded]="true" severity="secondary" size="small"
+                              (onClick)="onEditComment(comment)" pTooltip="Editar">
+                            </p-button>
+                            <p-button *ngIf="canDeleteComment(comment) && editingCommentId !== comment.id"
+                              icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" size="small"
+                              (onClick)="onDeleteComment(comment)" pTooltip="Eliminar">
+                            </p-button>
+                          </div>
                         </div>
-                        <p class="m-0 comment-body">{{ comment.body }}</p>
+
+                        <!-- View Mode -->
+                        <p class="m-0 comment-body" *ngIf="editingCommentId !== comment.id">{{ comment.body }}</p>
+
+                        <!-- Edit Mode -->
+                        <div *ngIf="editingCommentId === comment.id" class="p-fluid">
+                          <textarea pInputTextarea [(ngModel)]="editCommentBody" rows="3"
+                            class="w-full mb-2"></textarea>
+                          <div class="flex gap-2 justify-content-end">
+                            <p-button label="Cancelar" icon="pi pi-times" [text]="true" size="small"
+                              severity="secondary" (onClick)="onCancelEditComment()">
+                            </p-button>
+                            <p-button label="Guardar" icon="pi pi-check" size="small"
+                              [disabled]="!editCommentBody.trim()" (onClick)="onSaveEditComment(comment)">
+                            </p-button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -219,9 +219,14 @@ export class IncidentsListComponent implements OnInit {
         // Map to display format
         this.incidents = incidents.map(inc => ({
           ...inc,
-          statusLabel: IncidentStatusMapping.find((s: { label: string; value: IncidentStatus }) => s.value === inc.status)?.label ?? 'Desconocido',
-          priorityLabel: IncidentPriorityMapping.find((p: { label: string; value: IncidentPriority }) => p.value === inc.priority)?.label ?? 'Desconocido',
-          severityLabel: IncidentSeverityMapping.find((sev: { label: string; value: IncidentSeverity }) => sev.value === inc.severity)?.label ?? 'Desconocido',
+          // Explicitly convert enum values to numbers to ensure type safety
+          status: Number(inc.status),
+          priority: Number(inc.priority),
+          severity: Number(inc.severity),
+          bugType: inc.bugType !== undefined ? Number(inc.bugType) : undefined,
+          statusLabel: IncidentStatusMapping.find((s: { label: string; value: IncidentStatus }) => s.value === Number(inc.status))?.label ?? 'Desconocido',
+          priorityLabel: IncidentPriorityMapping.find((p: { label: string; value: IncidentPriority }) => p.value === Number(inc.priority))?.label ?? 'Desconocido',
+          severityLabel: IncidentSeverityMapping.find((sev: { label: string; value: IncidentSeverity }) => sev.value === Number(inc.severity))?.label ?? 'Desconocido',
           projectName: inc.projectName || inc.project?.name,
           sprintName: inc.sprintName || inc.sprint?.name,
           sprintNumber: inc.sprintNumber || inc.sprint?.number,
