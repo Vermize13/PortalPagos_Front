@@ -186,4 +186,28 @@ export class PermissionService {
     return this.hasPermission(Permissions.ADMIN_ACCESS) ||
       this.hasPermission(Permissions.ADMIN_FULL);
   }
+
+  /**
+   * Check if the current user is a Stakeholder.
+   */
+  isStakeholder(): boolean {
+    const role = this.getUserRole();
+    return role?.toLowerCase() === 'stakeholder';
+  }
+
+  /**
+   * Check if the current user is a Scrum Master.
+   */
+  isScrumMaster(): boolean {
+    const role = this.getUserRole();
+    return role?.toLowerCase() === 'scrum_master';
+  }
+
+  /**
+   * Check if the current user is a Product Owner.
+   */
+  isProductOwner(): boolean {
+    const role = this.getUserRole();
+    return role?.toLowerCase() === 'product_owner';
+  }
 }

@@ -6,14 +6,14 @@ export const Permissions = {
   // Dashboard permissions
   DASHBOARD_ACCESS: 'dashboard-access',
   DASHBOARD_FULL: 'dashboard-full',
-  
+
   // User management permissions
   USER_VIEW: 'user-view',
   USER_CREATE: 'user-create',
   USER_UPDATE: 'user-update',
   USER_DELETE: 'user-delete',
   USER_MANAGE: 'user-manage',
-  
+
   // Project management permissions
   PROJECT_VIEW: 'project-view',
   PROJECT_CREATE: 'project-create',
@@ -22,7 +22,7 @@ export const Permissions = {
   PROJECT_MANAGE: 'project-manage',
   PROJECT_MEMBER_ADD: 'project-member-add',
   PROJECT_MEMBER_REMOVE: 'project-member-remove',
-  
+
   // Incident management permissions
   INCIDENT_VIEW: 'incident-view',
   INCIDENT_CREATE: 'incident-create',
@@ -36,23 +36,23 @@ export const Permissions = {
   INCIDENT_COMMENT: 'incident-comment',
   INCIDENT_ATTACHMENT: 'incident-attachment',
   INCIDENT_FULL: 'incident-full',
-  
+
   // Sprint management permissions
   SPRINT_VIEW: 'sprint-view',
   SPRINT_CREATE: 'sprint-create',
   SPRINT_UPDATE: 'sprint-update',
   SPRINT_DELETE: 'sprint-delete',
   SPRINT_CLOSE: 'sprint-close',
-  
+
   // Audit permissions
   AUDIT_VIEW: 'audit-view',
   AUDIT_EXPORT: 'audit-export',
-  
+
   // Backup permissions
   BACKUP_VIEW: 'backup-view',
   BACKUP_CREATE: 'backup-create',
   BACKUP_RESTORE: 'backup-restore',
-  
+
   // Admin permissions
   ADMIN_ACCESS: 'admin-access',
   ADMIN_FULL: 'admin-full'
@@ -158,9 +158,6 @@ export const RolesConfig: RoleConfig[] = [
       Permissions.DASHBOARD_ACCESS,
       Permissions.DASHBOARD_FULL,
       Permissions.PROJECT_VIEW,
-      Permissions.PROJECT_CREATE,
-      Permissions.PROJECT_UPDATE,
-      Permissions.PROJECT_MANAGE,
       Permissions.INCIDENT_VIEW,
       Permissions.INCIDENT_CREATE,
       Permissions.INCIDENT_TITLE_UPDATE,
@@ -192,7 +189,7 @@ export const RolesConfig: RoleConfig[] = [
   },
   {
     name: 'Líder Técnico',
-    code: 'tech_lead',
+    code: 'lider_tecnico',
     description: 'Access to dashboards and incident management.',
     permissions: [
       Permissions.DASHBOARD_ACCESS,
@@ -212,13 +209,12 @@ export const RolesConfig: RoleConfig[] = [
       Permissions.INCIDENT_FULL,
       Permissions.SPRINT_VIEW,
       Permissions.SPRINT_CREATE,
-      Permissions.SPRINT_UPDATE,
-      Permissions.AUDIT_VIEW
+      Permissions.SPRINT_UPDATE
     ]
   },
   {
     name: 'Desarrollador',
-    code: 'developer',
+    code: 'desarrollador',
     description: 'Access to dashboards and incident management, but cannot update incident title or description—only labels and other data.',
     permissions: [
       Permissions.DASHBOARD_ACCESS,
@@ -236,7 +232,7 @@ export const RolesConfig: RoleConfig[] = [
   },
   {
     name: 'QA/Tester',
-    code: 'tester',
+    code: 'qa_tester',
     description: 'Access to dashboards and incident management.',
     permissions: [
       Permissions.DASHBOARD_ACCESS,
@@ -262,7 +258,7 @@ export const RolesConfig: RoleConfig[] = [
  * @returns The role configuration or undefined if not found.
  */
 export function getRoleByCode(roleCode: string): RoleConfig | undefined {
-  return RolesConfig.find(role => 
+  return RolesConfig.find(role =>
     role.code.toLowerCase() === roleCode.toLowerCase()
   );
 }
