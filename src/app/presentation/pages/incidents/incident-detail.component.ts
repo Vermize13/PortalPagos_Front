@@ -16,10 +16,10 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { 
-  Incident, 
-  IncidentStatus, 
-  IncidentPriority, 
+import {
+  Incident,
+  IncidentStatus,
+  IncidentPriority,
   IncidentSeverity,
   IncidentComment,
   LabelInfo,
@@ -34,7 +34,7 @@ import { LabelService } from '../../../data/services/label.service';
 import { AttachmentWithUser } from '../../../domain/models/attachment.model';
 import { ToastService } from '../../../data/services/toast.service';
 import { PermissionService } from '../../../data/services/permission.service';
-import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping } from '../../../domain/models/enum-mappings';
+import { IncidentPriorityMapping, IncidentSeverityMapping, IncidentStatusMapping, BugTypeMapping } from '../../../domain/models/enum-mappings';
 
 @Component({
   selector: 'app-incident-detail',
@@ -70,13 +70,13 @@ export class IncidentDetailComponent implements OnInit {
   newCommentBody: string = '';
   submittingComment: boolean = false;
   uploadingAttachment: boolean = false;
-  
+
   // Label management
   displayLabelDialog: boolean = false;
   availableLabels: Label[] = [];
   selectedLabelIds: string[] = [];
   loadingLabels: boolean = false;
-  
+
   // Delay cleanup to prevent browser from canceling download before it starts
   private readonly DOWNLOAD_URL_REVOKE_DELAY_MS = 250;
 
@@ -88,7 +88,7 @@ export class IncidentDetailComponent implements OnInit {
     private labelService: LabelService,
     private toastService: ToastService,
     public permissionService: PermissionService
-  ) {}
+  ) { }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -103,9 +103,9 @@ export class IncidentDetailComponent implements OnInit {
   // Permission helper methods for template use
   canEditIncident(): boolean {
     return this.permissionService.canUpdateIncidentTitle() ||
-           this.permissionService.canUpdateIncidentDescription() ||
-           this.permissionService.canUpdateIncidentLabels() ||
-           this.permissionService.canUpdateIncidentData();
+      this.permissionService.canUpdateIncidentDescription() ||
+      this.permissionService.canUpdateIncidentLabels() ||
+      this.permissionService.canUpdateIncidentData();
   }
 
   canManageLabels(): boolean {
@@ -224,7 +224,7 @@ export class IncidentDetailComponent implements OnInit {
     }
 
     const incidentId = this.incident.id;
-    
+
     this.uploadingAttachment = true;
     this.attachmentService.upload(incidentId, file).subscribe({
       next: () => {
@@ -303,8 +303,8 @@ export class IncidentDetailComponent implements OnInit {
 
   onEdit() {
     if (this.incident) {
-      this.router.navigate(['/inicio/incidents'], { 
-        queryParams: { edit: this.incident.id } 
+      this.router.navigate(['/inicio/incidents'], {
+        queryParams: { edit: this.incident.id }
       });
     }
   }
@@ -377,7 +377,12 @@ export class IncidentDetailComponent implements OnInit {
       'AssigneeId': 'Asignado a',
       'SprintId': 'Sprint',
       'StoryPoints': 'Puntos de historia',
-      'ClosedAt': 'Fecha de cierre'
+      'ClosedAt': 'Fecha de cierre',
+      'BugType': 'Tipo de Error',
+      'TestData': 'Datos de Prueba',
+      'Evidence': 'Evidencia',
+      'ExpectedBehavior': 'Comportamiento Esperado',
+      'ReporterId': 'Reportado por'
     };
     return fieldMappings[fieldName] || fieldName;
   }
@@ -458,6 +463,27 @@ export class IncidentDetailComponent implements OnInit {
       return severityStringMappings[value] || value;
     }
 
+    // Handle BugType enum
+    if (fieldName === 'BugType') {
+      // Try parsing as numeric value first
+      const bugTypeValue = parseInt(value, 10);
+      if (!isNaN(bugTypeValue)) {
+        const bugTypeMapping = BugTypeMapping.find(b => b.value === bugTypeValue);
+        return bugTypeMapping?.label || value;
+      }
+      // Handle string values - backend may return C# enum names
+      const bugTypeStringMappings: { [key: string]: string } = {
+        'Funcional': 'Funcional',
+        'Visual': 'Visual',
+        'Performance': 'Rendimiento',
+        'Seguridad': 'Seguridad',
+        'Security': 'Seguridad',
+        'Otro': 'Otro',
+        'Other': 'Otro'
+      };
+      return bugTypeStringMappings[value] || value;
+    }
+
     return value;
   }
 
@@ -468,10 +494,10 @@ export class IncidentDetailComponent implements OnInit {
 
   onManageLabels() {
     if (!this.incident) return;
-    
+
     this.selectedLabelIds = Array.isArray(this.incident.labels) ? this.incident.labels.map(l => l.id) : [];
     this.loadingLabels = true;
-    
+
     this.labelService.getByProject(this.incident.projectId).subscribe({
       next: (labels) => {
         this.availableLabels = labels;

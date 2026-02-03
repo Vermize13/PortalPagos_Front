@@ -1,10 +1,10 @@
-<div class="container-fluid p-4">
+<div class="p-4 container-fluid">
   <div class="mb-3">
     <p-button label="Volver" icon="pi pi-arrow-left" [outlined]="true" (onClick)="onBack()">
     </p-button>
   </div>
 
-  <div *ngIf="loading" class="text-center py-5">
+  <div *ngIf="loading" class="py-5 text-center">
     <i class="pi pi-spinner pi-spin" style="font-size: 2rem"></i>
     <p class="mt-3">Cargando incidencia...</p>
   </div>
@@ -32,7 +32,7 @@
             <!-- Details Tab -->
             <p-tabPanel header="Detalles">
               <div class="mb-4">
-                <h3 class="text-lg font-semibold mb-2">Descripción</h3>
+                <h3 class="mb-2 text-lg font-semibold">Descripción</h3>
                 <p class="text-gray-700 line-height-3">
                   {{ incident.description || 'Sin descripción' }}
                 </p>
@@ -40,8 +40,8 @@
 
               <!-- Labels Display -->
               <div class="mb-4">
-                <div class="flex justify-content-between align-items-center mb-2">
-                  <h3 class="text-lg font-semibold m-0">Etiquetas</h3>
+                <div class="flex mb-2 justify-content-between align-items-center">
+                  <h3 class="m-0 text-lg font-semibold">Etiquetas</h3>
                   <p-button *ngIf="canManageLabels()" label="Gestionar" icon="pi pi-tags" [outlined]="true" size="small"
                     (onClick)="onManageLabels()">
                   </p-button>
@@ -51,7 +51,7 @@
                     [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}"
                     styleClass="text-sm"></p-tag>
                 </div>
-                <div *ngIf="!incident.labels || incident.labels.length === 0" class="text-gray-500 text-sm">
+                <div *ngIf="!incident.labels || incident.labels.length === 0" class="text-sm text-gray-500">
                   No hay etiquetas asignadas
                 </div>
               </div>
@@ -60,13 +60,13 @@
 
               <!-- Comments Section -->
               <div class="mt-4">
-                <h3 class="text-lg font-semibold mb-3">Comentarios ({{ comments.length }})</h3>
+                <h3 class="mb-3 text-lg font-semibold">Comentarios ({{ comments.length }})</h3>
 
                 <!-- Add Comment Form - Only show if user has comment permission -->
                 <div class="mb-4" *ngIf="canComment()">
                   <textarea pInputTextarea [(ngModel)]="newCommentBody" placeholder="Agregar un comentario..." rows="3"
                     class="w-full"></textarea>
-                  <div class="flex justify-content-end mt-2">
+                  <div class="flex mt-2 justify-content-end">
                     <p-button label="Comentar" icon="pi pi-send"
                       [disabled]="!newCommentBody.trim() || submittingComment" [loading]="submittingComment"
                       (onClick)="onAddComment()">
@@ -75,11 +75,11 @@
                 </div>
 
                 <!-- Comments List -->
-                <div *ngIf="loadingComments" class="text-center py-3">
+                <div *ngIf="loadingComments" class="py-3 text-center">
                   <i class="pi pi-spinner pi-spin"></i>
                 </div>
 
-                <div *ngIf="!loadingComments && comments.length === 0" class="text-center py-4 text-gray-500">
+                <div *ngIf="!loadingComments && comments.length === 0" class="py-4 text-center text-gray-500">
                   <i class="pi pi-comments" style="font-size: 2rem"></i>
                   <p class="mt-2">No hay comentarios todavía</p>
                 </div>
@@ -91,16 +91,16 @@
                         shape="circle" styleClass="bg-primary-500">
                       </p-avatar>
                       <div class="flex-1">
-                        <div class="flex justify-content-between align-items-start mb-2">
+                        <div class="flex mb-2 justify-content-between align-items-start">
                           <div>
                             <strong>{{ comment.author?.name || 'Usuario' }}</strong>
-                            <span class="text-sm text-gray-500 ml-2">
+                            <span class="ml-2 text-sm text-gray-500">
                               {{ comment.createdAt | date:'short' }}
                             </span>
-                            <span *ngIf="comment.editedAt" class="text-sm text-gray-400 ml-1">(editado)</span>
+                            <span *ngIf="comment.editedAt" class="ml-1 text-sm text-gray-400">(editado)</span>
                           </div>
                         </div>
-                        <p class="comment-body m-0">{{ comment.body }}</p>
+                        <p class="m-0 comment-body">{{ comment.body }}</p>
                       </div>
                     </div>
                   </div>
@@ -110,12 +110,12 @@
 
             <!-- History Tab -->
             <p-tabPanel header="Historial">
-              <div *ngIf="loadingHistory" class="text-center py-5">
+              <div *ngIf="loadingHistory" class="py-5 text-center">
                 <i class="pi pi-spinner pi-spin" style="font-size: 2rem"></i>
                 <p class="mt-3">Cargando historial...</p>
               </div>
 
-              <div *ngIf="!loadingHistory && history.length === 0" class="text-center py-5 text-gray-500">
+              <div *ngIf="!loadingHistory && history.length === 0" class="py-5 text-center text-gray-500">
                 <i class="pi pi-history" style="font-size: 2rem"></i>
                 <p class="mt-2">No hay cambios registrados</p>
               </div>
@@ -151,19 +151,20 @@
                 <p-fileUpload mode="basic" name="file" [auto]="true" chooseLabel="Subir Archivo"
                   accept=".jpg,.jpeg,.png,.gif,.pdf,.txt,.log,.zip,.md,.docx,.xlsx"
                   [maxFileSize]="getMaxFileSizeMB() * 1024 * 1024" [disabled]="uploadingAttachment"
-                  (onSelect)="onFileSelect($event)">
+                  invalidFileSizeMessageSummary="{0}: Tamaño de archivo inválido,"
+                  invalidFileSizeMessageDetail="el tamaño máximo de subida es {0}." (onSelect)="onFileSelect($event)">
                 </p-fileUpload>
-                <small class="text-gray-500 ml-2">
+                <small class="ml-2 text-gray-500">
                   Tamaño máximo: {{ getMaxFileSizeMB() }}MB
                 </small>
               </div>
 
-              <div *ngIf="loadingAttachments" class="text-center py-5">
+              <div *ngIf="loadingAttachments" class="py-5 text-center">
                 <i class="pi pi-spinner pi-spin" style="font-size: 2rem"></i>
                 <p class="mt-3">Cargando adjuntos...</p>
               </div>
 
-              <div *ngIf="!loadingAttachments && attachments.length === 0" class="text-center py-5 text-gray-500">
+              <div *ngIf="!loadingAttachments && attachments.length === 0" class="py-5 text-center text-gray-500">
                 <i class="pi pi-paperclip" style="font-size: 2rem"></i>
                 <p class="mt-2">No hay archivos adjuntos</p>
               </div>
@@ -182,7 +183,7 @@
                   <ng-template pTemplate="body" let-attachment>
                     <tr>
                       <td>
-                        <i class="pi pi-file mr-2"></i>
+                        <i class="mr-2 pi pi-file"></i>
                         {{ attachment.fileName }}
                       </td>
                       <td>{{ formatFileSize(attachment.fileSizeBytes) }}</td>
@@ -208,7 +209,7 @@
 
         <div class="col-12 md:col-4">
           <div class="details-panel">
-            <h3 class="text-lg font-semibold mb-3">Detalles</h3>
+            <h3 class="mb-3 text-lg font-semibold">Detalles</h3>
 
             <div class="detail-item">
               <span class="detail-label">Estado</span>
@@ -232,27 +233,27 @@
 
             <div class="detail-item">
               <span class="detail-label">Proyecto</span>
-              <div class="detail-value">{{ incident.project?.name || 'N/A' }}</div>
+              <div class="detail-value">{{ incident.projectName || incident.project?.name || 'N/A' }}</div>
             </div>
 
-            <div class="detail-item" *ngIf="incident.sprint">
+            <div class="detail-item" *ngIf="incident.sprintName || incident.sprint">
               <span class="detail-label">Sprint</span>
-              <div class="detail-value">{{ incident.sprint?.name }}</div>
+              <div class="detail-value">{{ incident.sprintName || incident.sprint?.name }}</div>
             </div>
 
             <div class="detail-item">
               <span class="detail-label">
-                <i class="pi pi-user-plus mr-1"></i>
+                <i class="mr-1 pi pi-user-plus"></i>
                 Reportado por
               </span>
               <!-- Fallback chain: API DTO field (reporterName) or expanded reference (reporter.name) -->
-              <div class="detail-value font-semibold">{{ incident.reporterName || incident.reporter?.name || 'N/A' }}
+              <div class="font-semibold detail-value">{{ incident.reporterName || incident.reporter?.name || 'N/A' }}
               </div>
             </div>
 
             <div class="detail-item">
               <span class="detail-label">
-                <i class="pi pi-user mr-1"></i>
+                <i class="mr-1 pi pi-user"></i>
                 Asignado a
               </span>
               <!-- Fallback chain: API DTO field (assigneeName) or expanded reference (assignee.name) -->
@@ -297,7 +298,7 @@
           placeholder="Seleccione etiquetas" [showClear]="true" appendTo="body" optionLabel="name" optionValue="id"
           [disabled]="loadingLabels" [style]="{'width': '100%'}">
           <ng-template let-label pTemplate="item">
-            <div class="flex align-items-center gap-2">
+            <div class="flex gap-2 align-items-center">
               <span class="label-color-indicator" [style.background-color]="label.colorHex || '#6c757d'">
               </span>
               <span>{{ label.name }}</span>
