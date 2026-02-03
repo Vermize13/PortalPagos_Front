@@ -219,14 +219,14 @@ export class IncidentsListComponent implements OnInit {
         // Map to display format
         this.incidents = incidents.map(inc => ({
           ...inc,
-          // Explicitly convert enum values to numbers to ensure type safety
-          status: Number(inc.status),
-          priority: Number(inc.priority),
-          severity: Number(inc.severity),
-          bugType: inc.bugType !== undefined ? Number(inc.bugType) : undefined,
-          statusLabel: IncidentStatusMapping.find((s: { label: string; value: IncidentStatus }) => s.value === Number(inc.status))?.label ?? 'Desconocido',
-          priorityLabel: IncidentPriorityMapping.find((p: { label: string; value: IncidentPriority }) => p.value === Number(inc.priority))?.label ?? 'Desconocido',
-          severityLabel: IncidentSeverityMapping.find((sev: { label: string; value: IncidentSeverity }) => sev.value === Number(inc.severity))?.label ?? 'Desconocido',
+          // Explicitly convert enum values (handling both string and number)
+          status: this.mapStatus(inc.status),
+          priority: this.mapPriority(inc.priority),
+          severity: this.mapSeverity(inc.severity),
+          bugType: this.mapBugType(inc.bugType),
+          statusLabel: IncidentStatusMapping.find((s: { label: string; value: IncidentStatus }) => s.value === this.mapStatus(inc.status))?.label ?? 'Desconocido',
+          priorityLabel: IncidentPriorityMapping.find((p: { label: string; value: IncidentPriority }) => p.value === this.mapPriority(inc.priority))?.label ?? 'Desconocido',
+          severityLabel: IncidentSeverityMapping.find((sev: { label: string; value: IncidentSeverity }) => sev.value === this.mapSeverity(inc.severity))?.label ?? 'Desconocido',
           projectName: inc.projectName || inc.project?.name,
           sprintName: inc.sprintName || inc.sprint?.name,
           sprintNumber: inc.sprintNumber || inc.sprint?.number,
@@ -242,6 +242,55 @@ export class IncidentsListComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  private mapStatus(value: any): number {
+    if (typeof value === 'number') return value;
+    // Map string values to numeric enum
+    const map: { [key: string]: number } = {
+      'Open': 0, 'Abierto': 0,
+      'InProgress': 1, 'EnProgreso': 1,
+      'Resolved': 2, 'Resuelto': 2,
+      'Closed': 3, 'Cerrado': 3,
+      'Rejected': 4, 'Rechazado': 4,
+      'Duplicated': 5, 'Duplicado': 5
+    };
+    return map[value] !== undefined ? map[value] : 0; // Default to Open
+  }
+
+  private mapPriority(value: any): number {
+    if (typeof value === 'number') return value;
+    const map: { [key: string]: number } = {
+      'NoHacer': 0, 'Wont': 0,
+      'PodríaHacer': 1, 'Could': 1,
+      'DeberíaHacer': 2, 'Should': 2,
+      'DebeHacer': 3, 'Must': 3
+    };
+    return map[value] !== undefined ? map[value] : 2; // Default to Should
+  }
+
+  private mapSeverity(value: any): number {
+    if (typeof value === 'number') return value;
+    const map: { [key: string]: number } = {
+      'Bajo': 0, 'Low': 0,
+      'Medio': 1, 'Medium': 1,
+      'Alto': 2, 'High': 2,
+      'Crítico': 3, 'Critical': 3
+    };
+    return map[value] !== undefined ? map[value] : 1; // Default to Medium
+  }
+
+  private mapBugType(value: any): number | undefined {
+    if (value === undefined || value === null) return undefined;
+    if (typeof value === 'number') return value;
+    const map: { [key: string]: number } = {
+      'Funcional': 0, 'Functional': 0,
+      'Visual': 1,
+      'Performance': 2,
+      'Seguridad': 3, 'Security': 3,
+      'Otro': 4, 'Other': 4
+    };
+    return map[value] !== undefined ? map[value] : 0; // Default to Functional
   }
 
   loadMockIncidents() {
