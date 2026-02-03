@@ -146,8 +146,7 @@ export const RolesConfig: RoleConfig[] = [
       Permissions.SPRINT_CREATE,
       Permissions.SPRINT_UPDATE,
       Permissions.SPRINT_DELETE,
-      Permissions.SPRINT_CLOSE,
-      Permissions.AUDIT_VIEW
+      Permissions.SPRINT_CLOSE
     ]
   },
   {
@@ -172,8 +171,7 @@ export const RolesConfig: RoleConfig[] = [
       Permissions.INCIDENT_FULL,
       Permissions.SPRINT_VIEW,
       Permissions.SPRINT_CREATE,
-      Permissions.SPRINT_UPDATE,
-      Permissions.AUDIT_VIEW
+      Permissions.SPRINT_UPDATE
     ]
   },
   {
@@ -182,9 +180,7 @@ export const RolesConfig: RoleConfig[] = [
     description: 'View-only access to dashboards.',
     permissions: [
       Permissions.DASHBOARD_ACCESS,
-      Permissions.PROJECT_VIEW,
-      Permissions.INCIDENT_VIEW,
-      Permissions.SPRINT_VIEW
+      Permissions.INCIDENT_VIEW
     ]
   },
   {
