@@ -47,16 +47,16 @@
                   <span class="font-medium">Incidencias</span>
                 </a>
               </li>
-              <!-- Proyectos: Admins see list link, non-admins see their assigned projects -->
-              <li *ngIf="canViewProjects() && isAdmin()">
+              <!-- Proyectos: Admins and Scrum Masters see list link -->
+              <li *ngIf="canViewProjects() && (isAdmin() || isScrumMaster())">
                 <a pRipple [routerLink]="['projects']" routerLinkActive="active-menu-item"
                   class="flex p-3 transition-colors cursor-pointer align-items-center border-round text-700 hover:surface-100 transition-duration-150 p-ripple">
                   <i class="mr-2 pi pi-folder"></i>
                   <span class="font-medium">Proyectos</span>
                 </a>
               </li>
-              <!-- Non-admin users see their assigned projects -->
-              <ng-container *ngIf="canViewProjects() && !isAdmin()">
+              <!-- Non-admin/Non-ScrumMaster users see their assigned projects -->
+              <ng-container *ngIf="canViewProjects() && !isAdmin() && !isScrumMaster()">
                 <li>
                   <div class="flex p-3 align-items-center text-600">
                     <i class="mr-2 pi pi-folder"></i>
@@ -165,14 +165,14 @@
           <i class="pi pi-exclamation-circle"></i>
         </a>
       </li>
-      <!-- Proyectos: only show clickable link for admins -->
-      <li *ngIf="canViewProjects() && isAdmin()">
+      <!-- Proyectos: only show clickable link for admins and scrum masters -->
+      <li *ngIf="canViewProjects() && (isAdmin() || isScrumMaster())">
         <a pRipple [routerLink]="['projects']" class="collapsed-item" aria-label="Proyectos">
           <i class="pi pi-folder"></i>
         </a>
       </li>
-      <!-- Non-admin: show folder icon if they have projects (non-clickable) -->
-      <li *ngIf="canViewProjects() && !isAdmin() && userProjects.length > 0">
+      <!-- Non-admin/Non-ScrumMaster: show folder icon if they have projects (non-clickable) -->
+      <li *ngIf="canViewProjects() && !isAdmin() && !isScrumMaster() && userProjects.length > 0">
         <div class="collapsed-item" aria-label="Mis Proyectos" title="Mis Proyectos">
           <i class="pi pi-folder"></i>
         </div>

@@ -61,7 +61,8 @@ export const routes: Routes = [
       {
         path: 'projects/:id',
         loadComponent: () => import('./presentation/pages/projects/project-view.component').then(m => m.ProjectViewComponent),
-        canActivate: [AdminRoleGuard]
+        canActivate: [RoleGuard],
+        data: { permissions: [Permissions.PROJECT_VIEW] }
       },
       {
         path: 'incidents',

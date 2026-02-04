@@ -99,6 +99,11 @@ export class SidenavComponent implements ControlValueAccessor, OnInit {
     return this.permissionService.isAdmin();
   }
 
+  // Check if user is scrum master
+  isScrumMaster(): boolean {
+    return this.permissionService.isScrumMaster();
+  }
+
   // Permission helper methods for template use
   canViewDashboard(): boolean {
     return this.permissionService.hasPermission(Permissions.DASHBOARD_ACCESS);

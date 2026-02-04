@@ -89,7 +89,7 @@ export class ProjectsListComponent implements OnInit {
   }
 
   canViewProjectDetails(project: Project): boolean {
-    return this.permissionService.isAdmin();
+    return this.permissionService.isAdmin() || this.permissionService.isScrumMaster();
   }
 
   loadProjects() {
