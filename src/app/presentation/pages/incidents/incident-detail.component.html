@@ -38,6 +38,30 @@
                 </p>
               </div>
 
+              <!-- Test Data -->
+              <div class="mb-4" *ngIf="incident.testData">
+                <h3 class="mb-2 text-lg font-semibold">Datos de Prueba</h3>
+                <p class="text-gray-700 line-height-3 white-space-pre-wrap">
+                  {{ incident.testData }}
+                </p>
+              </div>
+
+              <!-- Evidence -->
+              <div class="mb-4" *ngIf="incident.evidence">
+                <h3 class="mb-2 text-lg font-semibold">Evidencias</h3>
+                <p class="text-gray-700 line-height-3 white-space-pre-wrap">
+                  {{ incident.evidence }}
+                </p>
+              </div>
+
+              <!-- Expected Behavior -->
+              <div class="mb-4" *ngIf="incident.expectedBehavior">
+                <h3 class="mb-2 text-lg font-semibold">Comportamiento Esperado</h3>
+                <p class="text-gray-700 line-height-3 white-space-pre-wrap">
+                  {{ incident.expectedBehavior }}
+                </p>
+              </div>
+
               <!-- Labels Display -->
               <div class="mb-4">
                 <div class="flex mb-2 justify-content-between align-items-center">
@@ -254,6 +278,12 @@
             <div class="detail-item">
               <span class="detail-label">Severidad</span>
               <p-tag [value]="getSeverityLabel(incident.severity)" [severity]="getSeveritySeverity(incident.severity)">
+              </p-tag>
+            </div>
+
+            <div class="detail-item" *ngIf="incident.bugType !== undefined && incident.bugType !== null">
+              <span class="detail-label">Tipo de Bug</span>
+              <p-tag [value]="getBugTypeLabel(incident.bugType)" severity="info">
               </p-tag>
             </div>
 

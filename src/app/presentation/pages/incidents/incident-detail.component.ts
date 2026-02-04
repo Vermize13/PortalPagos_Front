@@ -380,6 +380,12 @@ export class IncidentDetailComponent implements OnInit {
     return IncidentSeverityMapping.find(s => s.value === severity)?.label ?? 'Desconocido';
   }
 
+  getBugTypeLabel(bugType: any): string {
+    // Check if bugType is defined (can be 0/Funcional)
+    if (bugType === undefined || bugType === null) return 'N/A';
+    return BugTypeMapping.find(b => b.value === bugType)?.label ?? 'Desconocido';
+  }
+
   getAuthorInitials(authorName: string): string {
     if (!authorName || !authorName.trim()) return '?';
     const names = authorName.trim().split(' ').filter(n => n.length > 0);
