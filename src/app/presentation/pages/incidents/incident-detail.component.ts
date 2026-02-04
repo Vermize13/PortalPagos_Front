@@ -264,7 +264,34 @@ export class IncidentDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error downloading file:', error);
-        this.toastService.showError('Error', 'No se pudo descargar el archivo');
+        let errorMessage = 'No se pudo descargar el archivo';
+
+        // Try to read the error message from the Blob response
+        if (error.error instanceof Blob) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const text = reader.result as string;
+              // Try to parse if it's JSON (e.g. Problem Details)
+              if (text.startsWith('{')) {
+                const json = JSON.parse(text);
+                // If the backend sent a simple string message in the body, it might not be JSON or might be just "message"
+                errorMessage = json.detail || json.title || text;
+              } else {
+                errorMessage = text;
+              }
+            } catch {
+              // If parsing fails, use default or the text itself if it looks like a message
+              if (reader.result && typeof reader.result === 'string') {
+                errorMessage = reader.result;
+              }
+            }
+            this.toastService.showError('Error', errorMessage);
+          };
+          reader.readAsText(error.error);
+        } else {
+          this.toastService.showError('Error', errorMessage);
+        }
       }
     });
   }

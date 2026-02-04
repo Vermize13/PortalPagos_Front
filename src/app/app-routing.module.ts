@@ -19,6 +19,7 @@ export const routes: Routes = [
   // Other auth routes
   { path: 'login/codigo', loadComponent: () => import('./presentation/components/auth/codigoVerificacion/codigoVerificacion.component').then(m => m.CodigoVerificacionComponent) },
   { path: 'login/reestablecer/:id', loadComponent: () => import('./presentation/components/auth/reestablecerPassword/reestablecerPassword.component').then(m => m.ReestablecerPasswordComponent) },
+  { path: 'login/recuperar', loadComponent: () => import('./presentation/components/auth/forgotPassword/forgotPassword.component').then(m => m.ForgotPasswordComponent) },
   { path: 'login/cambio', loadComponent: () => import('./presentation/components/auth/cambioPassword/cambioPassword.component').then(m => m.CambioPasswordComponent) },
 
   // Public registration route for invitation completion

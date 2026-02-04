@@ -35,19 +35,19 @@ import { ToastService } from '../../../../data/services/toast.service';
 export class ReestablecerPasswordComponent implements OnInit {
 
   reestablecerForm: FormGroup = new FormGroup({});
-  userId:string= ''
+  userId: string = ''
 
-  user:any;
-  constructor(private router:Router, private route: ActivatedRoute, private userService: UserService, private userState: UserStateService, private toast: ToastService) {
+  user: any;
+  constructor(private router: Router, private route: ActivatedRoute, private userService: UserService, private userState: UserStateService, private toast: ToastService) {
     this.route.params.subscribe(params => {
-      this.userId = params['id'];
+      this.userId = params['id']; // This is actually the token based on route config
     });
 
     this.formInit();
   }
 
   ngOnInit(): void {
-    this.user = this.userState.getUser();
+    // No need to check user state as this is public
   }
 
   formInit() {
@@ -58,16 +58,23 @@ export class ReestablecerPasswordComponent implements OnInit {
   }
 
 
-  onSubmit(){
-    if(this.reestablecerForm.valid){
-      this.userService.passwordReset(this.reestablecerForm.value.password).subscribe(response => {
-        this.toast.Success('Contraseña actualizada correctamente', 'Cerrar')
-        this.router.navigate(['/login'])
-      }, error => {
-        this.toast.Error('Error al actualizar la contraseña', 'Cerrar')
-      })
-    }else{
-      this.toast.Error('Las contraseñas no coinciden', 'Cerrar')
+  onSubmit() {
+    if (this.reestablecerForm.valid) {
+      // passing token (this.userId) and new password
+      this.userService.passwordReset(this.userId, this.reestablecerForm.value.password).subscribe({
+        next: (response) => {
+          this.toast.Success('Contraseña actualizada correctamente', 'Cerrar');
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000);
+        },
+        error: (error) => {
+          console.error(error);
+          this.toast.Error('Error al actualizar la contraseña. El enlace puede haber expirado.', 'Cerrar');
+        }
+      });
+    } else {
+      this.toast.Error('Las contraseñas no coinciden o son inválidas', 'Cerrar')
     }
   }
 

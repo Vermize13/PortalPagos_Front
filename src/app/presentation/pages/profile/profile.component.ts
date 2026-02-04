@@ -238,4 +238,9 @@ export class ProfileComponent implements OnInit {
       this.router.navigate(['/inicio/dashboard']);
     }
   }
+
+  goToChangePassword(): void {
+    this.router.navigate(['/login/cambio']);
+  }
+
 }

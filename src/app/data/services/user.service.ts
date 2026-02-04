@@ -70,10 +70,9 @@ export class UserService {
     });
   }
 
-  passwordReset(newPassword: string): Observable<string> {
-    const userId = this.userState?.getUser()?.nameid;
+  passwordReset(token: string, newPassword: string): Observable<string> {
     return this.http.post(`${this.urlPass}reset`, {
-      userId,
+      token,
       newPassword
     }, {
       responseType: 'text'
