@@ -211,7 +211,8 @@ export class IncidentsListComponent implements OnInit {
     const filter: IncidentFilter = {
       projectId: this.selectedProjectId || undefined,
       sprintId: this.selectedSprintId || undefined,
-      status: this.selectedStatus ? Number(this.selectedStatus) : undefined
+      // Fix: Check explicitly for empty string, as '0' (Open) is falsy
+      status: (this.selectedStatus !== null && this.selectedStatus !== '') ? Number(this.selectedStatus) : undefined
     };
 
     this.incidentService.getAll(filter).subscribe({
