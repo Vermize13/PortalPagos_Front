@@ -39,27 +39,24 @@
               </div>
 
               <!-- Test Data -->
-              <div class="mb-4" *ngIf="incident.testData">
+              <div class="mb-4">
                 <h3 class="mb-2 text-lg font-semibold">Datos de Prueba</h3>
-                <p class="text-gray-700 line-height-3 white-space-pre-wrap">
-                  {{ incident.testData }}
+                <p class="text-gray-700 line-height-3 white-space-pre-wrap">{{ incident.testData || 'No especificado' }}
                 </p>
               </div>
 
               <!-- Evidence -->
-              <div class="mb-4" *ngIf="incident.evidence">
+              <div class="mb-4">
                 <h3 class="mb-2 text-lg font-semibold">Evidencias</h3>
-                <p class="text-gray-700 line-height-3 white-space-pre-wrap">
-                  {{ incident.evidence }}
+                <p class="text-gray-700 line-height-3 white-space-pre-wrap">{{ incident.evidence || 'No especificado' }}
                 </p>
               </div>
 
               <!-- Expected Behavior -->
-              <div class="mb-4" *ngIf="incident.expectedBehavior">
+              <div class="mb-4">
                 <h3 class="mb-2 text-lg font-semibold">Comportamiento Esperado</h3>
-                <p class="text-gray-700 line-height-3 white-space-pre-wrap">
-                  {{ incident.expectedBehavior }}
-                </p>
+                <p class="text-gray-700 line-height-3 white-space-pre-wrap">{{ incident.expectedBehavior || 'No
+                  especificado' }}</p>
               </div>
 
               <!-- Labels Display -->
@@ -281,9 +278,10 @@
               </p-tag>
             </div>
 
-            <div class="detail-item" *ngIf="incident.bugType !== undefined && incident.bugType !== null">
+            <div class="detail-item">
               <span class="detail-label">Tipo de Bug</span>
-              <p-tag [value]="getBugTypeLabel(incident.bugType)" severity="info">
+              <p-tag [value]="getBugTypeLabel(incident.bugType)"
+                [severity]="incident.bugType !== undefined && incident.bugType !== null ? 'info' : 'secondary'">
               </p-tag>
             </div>
 
