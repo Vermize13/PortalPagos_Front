@@ -129,7 +129,6 @@ export class IncidentDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading incident:', error);
-        this.toastService.showError('Error', 'No se pudo cargar la incidencia');
         this.loading = false;
         this.router.navigate(['/inicio/incidents']);
       }
@@ -145,7 +144,6 @@ export class IncidentDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading comments:', error);
-        this.toastService.showError('Error', 'No se pudieron cargar los comentarios');
         this.loadingComments = false;
       }
     });
@@ -160,7 +158,6 @@ export class IncidentDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading history:', error);
-        this.toastService.showError('Error', 'No se pudo cargar el historial');
         this.loadingHistory = false;
       }
     });
@@ -175,7 +172,6 @@ export class IncidentDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading attachments:', error);
-        this.toastService.showError('Error', 'No se pudieron cargar los adjuntos');
         this.loadingAttachments = false;
       }
     });
@@ -200,7 +196,6 @@ export class IncidentDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error adding comment:', error);
-        this.toastService.showError('Error', 'No se pudo agregar el comentario');
         this.submittingComment = false;
       }
     });
@@ -232,7 +227,7 @@ export class IncidentDetailComponent implements OnInit {
         this.loadAttachments(incidentId);
       },
       error: () => {
-        this.toastService.showError('Error', 'No se pudo subir el archivo');
+        // Error handled by interceptor
       },
       complete: () => {
         this.uploadingAttachment = false;
@@ -264,34 +259,6 @@ export class IncidentDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error downloading file:', error);
-        let errorMessage = 'No se pudo descargar el archivo';
-
-        // Try to read the error message from the Blob response
-        if (error.error instanceof Blob) {
-          const reader = new FileReader();
-          reader.onload = () => {
-            try {
-              const text = reader.result as string;
-              // Try to parse if it's JSON (e.g. Problem Details)
-              if (text.startsWith('{')) {
-                const json = JSON.parse(text);
-                // If the backend sent a simple string message in the body, it might not be JSON or might be just "message"
-                errorMessage = json.detail || json.title || text;
-              } else {
-                errorMessage = text;
-              }
-            } catch {
-              // If parsing fails, use default or the text itself if it looks like a message
-              if (reader.result && typeof reader.result === 'string') {
-                errorMessage = reader.result;
-              }
-            }
-            this.toastService.showError('Error', errorMessage);
-          };
-          reader.readAsText(error.error);
-        } else {
-          this.toastService.showError('Error', errorMessage);
-        }
       }
     });
   }
@@ -311,7 +278,6 @@ export class IncidentDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error deleting file:', error);
-        this.toastService.showError('Error', 'No se pudo eliminar el archivo');
       }
     });
   }
@@ -539,7 +505,6 @@ export class IncidentDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading labels:', error);
-        this.toastService.showError('Error', 'No se pudieron cargar las etiquetas');
         this.loadingLabels = false;
       }
     });
@@ -593,7 +558,6 @@ export class IncidentDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error updating labels:', error);
-        this.toastService.showError('Error', 'No se pudieron actualizar las etiquetas');
         this.displayLabelDialog = false;
       }
     });
@@ -652,7 +616,6 @@ export class IncidentDetailComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error updating comment:', error);
-          this.toastService.showError('Error', 'No se pudo actualizar el comentario');
         }
       });
   }
@@ -672,7 +635,6 @@ export class IncidentDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error deleting comment:', error);
-        this.toastService.showError('Error', 'No se pudo eliminar el comentario');
       }
     });
   }

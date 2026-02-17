@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpInterceptorFn } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Router } from "@angular/router";
-import { catchError, throwError } from "rxjs";
+import { catchError, throwError, from, switchMap, of } from "rxjs";
 import { UserStateService } from "../../states/userState.service";
 import { ToastService } from "../toast.service";
 
@@ -10,11 +10,29 @@ let isLoggingOut = false;
 
 /**
  * Extract error message from API response
- * @param error The HTTP error response
+ * @param errorBody The error body (already parsed if it was a blob)
  * @returns Extracted error message or null
  */
-function extractApiErrorMessage(error: HttpErrorResponse): string | null {
-  return error.error?.title || error.error?.detail || error.error?.message || null;
+function extractErrorMessage(errorBody: any): string | null {
+  if (typeof errorBody === 'string') {
+    return errorBody;
+  }
+
+  if (typeof errorBody === 'object' && errorBody !== null) {
+    if (errorBody.message) return errorBody.message;
+    if (errorBody.detail) return errorBody.detail;
+    if (errorBody.title) return errorBody.title;
+
+    if (errorBody.errors) {
+      const errors = errorBody.errors;
+      const firstErrorKey = Object.keys(errors)[0];
+      if (firstErrorKey && errors[firstErrorKey]) {
+        return `${errors[firstErrorKey]} `;
+      }
+    }
+  }
+
+  return null;
 }
 
 export const ErrorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
@@ -22,76 +40,82 @@ export const ErrorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
   const userStateService = inject(UserStateService);
   const toastService = inject(ToastService);
 
-  return next(req).pipe(
-    catchError((error: HttpErrorResponse) => {
-      let errorMessage = '';
-      let errorTitle = 'Error';
+  const handleError = (error: HttpErrorResponse, parsedErrorBody: any = null) => {
+    let errorMessage = '';
+    let errorTitle = 'Error';
 
-      // Handle 401 Unauthorized - logout and redirect to login
-      if (error.status === 401) {
-        // Prevent multiple simultaneous logout operations
-        if (!isLoggingOut) {
-          isLoggingOut = true;
+    const errorBody = parsedErrorBody || error.error;
+    const apiMessage = extractErrorMessage(errorBody);
 
-          // Clear user session
-          userStateService.clearUser();
+    // Handle 401 Unauthorized
+    if (error.status === 401) {
+      if (!isLoggingOut) {
+        isLoggingOut = true;
+        userStateService.clearUser();
+        toastService.showError('Sesión Expirada', 'Por favor, inicie sesión nuevamente');
+        router.navigate(['/login']).then(() => {
+          isLoggingOut = false;
+        });
+      }
+      errorMessage = 'Sesión expirada. Por favor, inicie sesión nuevamente.';
+      return throwError(() => error);
+    }
 
-          // Show toast notification
-          toastService.showError('Sesión Expirada', 'Por favor, inicie sesión nuevamente');
-
-          // Redirect to login page
-          router.navigate(['/login']).then(() => {
-            console.log('Navigated to login');
-            // Reset flag after navigation completes
-            isLoggingOut = false;
-          });
-        }
-
-        errorMessage = 'Sesión expirada. Por favor, inicie sesión nuevamente.';
-      } else if (error.status === 403) {
-        // Forbidden
-        errorTitle = 'Acceso Denegado';
-        errorMessage = 'No tiene permisos para realizar esta acción';
-        toastService.showError(errorTitle, errorMessage);
-      } else if (error.status === 404) {
-        // Not Found
-        errorTitle = 'No Encontrado';
-        errorMessage = 'El recurso solicitado no existe';
-        toastService.showError(errorTitle, errorMessage);
-      } else if (error.status === 400) {
-        // Bad Request
+    switch (error.status) {
+      case 400:
         errorTitle = 'Solicitud Inválida';
-        errorMessage = extractApiErrorMessage(error) || 'Los datos enviados son inválidos';
-        toastService.showError(errorTitle, errorMessage);
-      } else if (error.status === 500) {
-        // Internal Server Error
+        errorMessage = apiMessage || 'Los datos enviados son inválidos';
+        break;
+      case 403:
+        errorTitle = 'Acceso Denegado';
+        errorMessage = apiMessage || 'No tiene permisos para realizar esta acción';
+        break;
+      case 404:
+        errorTitle = 'No Encontrado';
+        errorMessage = apiMessage || 'El recurso solicitado no existe';
+        break;
+      case 500:
         errorTitle = 'Error del Servidor';
-        errorMessage = 'Ocurrió un error en el servidor. Por favor, intente nuevamente';
-        toastService.showError(errorTitle, errorMessage);
-      } else if (error.status === 0) {
-        // Network error or CORS issue
+        errorMessage = apiMessage || 'Ocurrió un error en el servidor. Por favor, intente nuevamente';
+        break;
+      case 0:
         errorTitle = 'Error de Conexión';
         errorMessage = 'No se puede conectar con el servidor. Verifique su conexión a internet';
-        toastService.showError(errorTitle, errorMessage);
-      } else if (error.error instanceof ErrorEvent) {
-        // Client-side error
-        errorTitle = 'Error del Cliente';
-        errorMessage = error.error.message || 'Ocurrió un error inesperado';
-        toastService.showError(errorTitle, errorMessage);
-      } else {
-        // Other server-side errors
-        errorTitle = 'Error';
-        errorMessage = extractApiErrorMessage(error) || `Error del servidor (${error.status})`;
-        toastService.showError(errorTitle, errorMessage);
-      }
+        break;
+      default:
+        errorTitle = `Error(${error.status})`;
+        errorMessage = apiMessage || 'Ocurrió un error inesperado';
+        break;
+    }
 
-      // Return the error for components that want to handle it specifically
-      return throwError(() => ({
-        status: error.status,
-        message: errorMessage,
-        title: errorTitle,
-        originalError: error
-      }));
+    toastService.showError(errorTitle, errorMessage);
+
+    return throwError(() => ({
+      status: error.status,
+      message: errorMessage,
+      title: errorTitle,
+      originalError: error
+    }));
+  };
+
+  return next(req).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.error instanceof Blob && error.error.type === 'application/json') {
+        return from(error.error.text()).pipe(
+          switchMap(jsonText => {
+            let body;
+            try {
+              body = JSON.parse(jsonText);
+            } catch {
+              body = jsonText;
+            }
+            return handleError(error, body);
+          }),
+          catchError(() => handleError(error)) // Fallback if parsing fails
+        );
+      }
+      return handleError(error);
     })
   );
 }
+
