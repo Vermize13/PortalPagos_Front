@@ -78,7 +78,7 @@ export class IncidentDetailComponent implements OnInit {
   loadingLabels: boolean = false;
 
   // Delay cleanup to prevent browser from canceling download before it starts
-  private readonly DOWNLOAD_URL_REVOKE_DELAY_MS = 250;
+  private readonly DOWNLOAD_URL_REVOKE_DELAY_MS = 5000;
 
   constructor(
     private route: ActivatedRoute,

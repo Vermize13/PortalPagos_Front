@@ -3,31 +3,19 @@
   <div class="header-section mb-4">
     <div class="flex align-items-center justify-content-between">
       <div class="flex align-items-center gap-3">
-        <p-button 
-          icon="pi pi-arrow-left" 
-          [rounded]="true" 
-          [text]="true"
-          severity="secondary"
-          (onClick)="onBack()"
-          pTooltip="Volver a la lista"
-          tooltipPosition="right">
+        <p-button icon="pi pi-arrow-left" [rounded]="true" [text]="true" severity="secondary" (onClick)="onBack()"
+          pTooltip="Volver a la lista" tooltipPosition="right">
         </p-button>
         <div>
           <div class="flex align-items-center gap-2 mb-2">
             <h1 class="project-title m-0">{{ project.name }}</h1>
-            <p-tag 
-              [value]="project.isActive ? 'Activo' : 'Inactivo'" 
-              [severity]="getStatusSeverity(project.isActive)">
+            <p-tag [value]="project.isActive ? 'Activo' : 'Inactivo'" [severity]="getStatusSeverity(project.isActive)">
             </p-tag>
           </div>
           <p class="project-code text-muted m-0">Código: {{ project.code }}</p>
         </div>
       </div>
-      <p-button 
-        *ngIf="canEditProject()"
-        label="Editar Proyecto" 
-        icon="pi pi-pencil"
-        (onClick)="onEdit()">
+      <p-button *ngIf="canEditProject()" label="Editar Proyecto" icon="pi pi-pencil" (onClick)="onEdit()">
       </p-button>
     </div>
   </div>
@@ -74,23 +62,14 @@
           <p-card>
             <div class="flex justify-content-between align-items-center mb-3">
               <h3 class="m-0">Miembros del Proyecto</h3>
-              <p-button 
-                *ngIf="canAddMember()"
-                label="Agregar Miembro" 
-                icon="pi pi-user-plus" 
-                (onClick)="onAddMember()">
+              <p-button *ngIf="canAddMember()" label="Agregar Miembro" icon="pi pi-user-plus" (onClick)="onAddMember()">
               </p-button>
             </div>
-            
-            <p-table 
-              [value]="members"
-              [loading]="loading"
-              [paginator]="true"
-              [rows]="10"
-              [showCurrentPageReport]="true"
+
+            <p-table [value]="members" [loading]="loading" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
               currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} miembros"
               styleClass="p-datatable-sm">
-              
+
               <ng-template pTemplate="header">
                 <tr>
                   <th>Usuario</th>
@@ -101,15 +80,12 @@
                   <th style="width: 100px" *ngIf="canRemoveMember()">Acciones</th>
                 </tr>
               </ng-template>
-              
+
               <ng-template pTemplate="body" let-member>
                 <tr>
                   <td>
                     <div class="flex align-items-center gap-2">
-                      <p-avatar 
-                        [label]="getMemberInitials(member.userName || '')"
-                        shape="circle"
-                        size="normal"
+                      <p-avatar [label]="getMemberInitials(member.userName || '')" shape="circle" size="normal"
                         styleClass="avatar-custom">
                       </p-avatar>
                       <span>{{ member.userName }}</span>
@@ -121,24 +97,18 @@
                   </td>
                   <td>{{ member.joinedAt | date:'short' }}</td>
                   <td>
-                    <p-tag 
-                      [value]="member.isActive ? 'Activo' : 'Inactivo'" 
+                    <p-tag [value]="member.isActive ? 'Activo' : 'Inactivo'"
                       [severity]="getStatusSeverity(member.isActive)">
                     </p-tag>
                   </td>
                   <td *ngIf="canRemoveMember()">
-                    <p-button 
-                      icon="pi pi-trash" 
-                      [rounded]="true" 
-                      [text]="true" 
-                      severity="danger"
-                      (onClick)="onRemoveMember(member)"
-                      pTooltip="Eliminar miembro">
+                    <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                      (onClick)="onRemoveMember(member)" pTooltip="Eliminar miembro">
                     </p-button>
                   </td>
                 </tr>
               </ng-template>
-              
+
               <ng-template pTemplate="emptymessage">
                 <tr>
                   <td [attr.colspan]="canRemoveMember() ? 6 : 5" class="text-center">
@@ -158,29 +128,21 @@
         <p-tabPanel header="Sprints">
           <app-sprint-list [projectId]="projectId"></app-sprint-list>
         </p-tabPanel>
-        
+
         <!-- Labels Tab -->
         <p-tabPanel header="Etiquetas">
           <p-card>
             <div class="flex justify-content-between align-items-center mb-3">
               <h3 class="m-0">Etiquetas del Proyecto</h3>
-              <p-button 
-                *ngIf="canManageLabels()"
-                label="Nueva Etiqueta" 
-                icon="pi pi-plus" 
-                (onClick)="onCreateLabel()">
+              <p-button *ngIf="canManageLabels()" label="Nueva Etiqueta" icon="pi pi-plus" (onClick)="onCreateLabel()">
               </p-button>
             </div>
-            
-            <p-table 
-              [value]="labels"
-              [loading]="loadingLabels"
-              [paginator]="true"
-              [rows]="10"
+
+            <p-table [value]="labels" [loading]="loadingLabels" [paginator]="true" [rows]="10"
               [showCurrentPageReport]="true"
               currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} etiquetas"
               styleClass="p-datatable-sm">
-              
+
               <ng-template pTemplate="header">
                 <tr>
                   <th style="width: 60px">Color</th>
@@ -188,45 +150,32 @@
                   <th style="width: 150px" *ngIf="canManageLabels()">Acciones</th>
                 </tr>
               </ng-template>
-              
+
               <ng-template pTemplate="body" let-label>
                 <tr>
                   <td>
-                    <div 
-                      class="label-color-preview" 
-                      [style.background-color]="label.colorHex || '#6c757d'"
+                    <div class="label-color-preview" [style.background-color]="label.colorHex || '#6c757d'"
                       [pTooltip]="label.colorHex || '#6c757d'">
                     </div>
                   </td>
                   <td>
-                    <p-tag 
-                      [value]="label.name"
+                    <p-tag [value]="label.name"
                       [style]="{'background-color': label.colorHex || '#6c757d', 'color': '#fff'}">
                     </p-tag>
                   </td>
                   <td *ngIf="canManageLabels()">
                     <div class="flex gap-2">
-                      <p-button 
-                        icon="pi pi-pencil" 
-                        [rounded]="true" 
-                        [text]="true" 
-                        severity="info"
-                        (onClick)="onEditLabel(label)"
-                        pTooltip="Editar">
+                      <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="info"
+                        (onClick)="onEditLabel(label)" pTooltip="Editar">
                       </p-button>
-                      <p-button 
-                        icon="pi pi-trash" 
-                        [rounded]="true" 
-                        [text]="true" 
-                        severity="danger"
-                        (onClick)="onDeleteLabel(label)"
-                        pTooltip="Eliminar">
+                      <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                        (onClick)="onDeleteLabel(label)" pTooltip="Eliminar">
                       </p-button>
                     </div>
                   </td>
                 </tr>
               </ng-template>
-              
+
               <ng-template pTemplate="emptymessage">
                 <tr>
                   <td [attr.colspan]="canManageLabels() ? 3 : 2" class="text-center">
@@ -252,7 +201,7 @@
             <h3 class="m-0">Estadísticas</h3>
           </div>
         </ng-template>
-        
+
         <div class="stats-container">
           <div class="stat-item">
             <div class="stat-icon stat-icon-primary">
@@ -292,7 +241,7 @@
             <h3 class="m-0">Actividad Reciente</h3>
           </div>
         </ng-template>
-        
+
         <div class="activity-container">
           <div class="activity-item">
             <div class="activity-icon">
@@ -335,51 +284,30 @@
 </div>
 
 <!-- Edit Project Dialog -->
-<p-dialog 
-  [(visible)]="displayEditDialog" 
-  header="Editar Proyecto"
-  [modal]="true"
-  [style]="{width: '600px'}"
-  [baseZIndex]="10"
-  [closable]="true">
-  
+<p-dialog [(visible)]="displayEditDialog" header="Editar Proyecto" [modal]="true" [style]="{width: '600px'}"
+  [baseZIndex]="10" [closable]="true">
+
   <form #projectFormRef="ngForm" class="p-fluid">
     <div class="field mb-3">
       <label for="projectName">Nombre *</label>
-      <input 
-        id="projectName" 
-        name="projectName"
-        #projectNameField="ngModel"
-        type="text" 
-        pInputText 
-        [(ngModel)]="editProjectForm.name"
-        placeholder="Nombre del proyecto"
-        required />
-      <small class="p-error" *ngIf="projectNameField.invalid && (projectNameField.dirty || projectNameField.touched || submittedProject)">
+      <input id="projectName" name="projectName" #projectNameField="ngModel" type="text" pInputText
+        [(ngModel)]="editProjectForm.name" placeholder="Nombre del proyecto" required />
+      <small class="p-error"
+        *ngIf="projectNameField.invalid && (projectNameField.dirty || projectNameField.touched || submittedProject)">
         El nombre es requerido
       </small>
     </div>
 
     <div class="field mb-3">
       <label for="projectDescription">Descripción</label>
-      <textarea 
-        id="projectDescription"
-        name="projectDescription"
-        #projectDescriptionField="ngModel" 
-        pInputTextarea 
-        [(ngModel)]="editProjectForm.description"
-        placeholder="Descripción del proyecto"
-        rows="4">
+      <textarea id="projectDescription" name="projectDescription" #projectDescriptionField="ngModel" pInputTextarea
+        [(ngModel)]="editProjectForm.description" placeholder="Descripción del proyecto" rows="4">
       </textarea>
     </div>
-    
+
     <div class="field mb-3">
       <div class="flex align-items-center">
-        <p-checkbox 
-          [(ngModel)]="editProjectForm.isActive" 
-          [binary]="true" 
-          inputId="projectActive"
-          name="projectActive">
+        <p-checkbox [(ngModel)]="editProjectForm.isActive" [binary]="true" inputId="projectActive" name="projectActive">
         </p-checkbox>
         <label for="projectActive" class="ml-2">Proyecto Activo</label>
       </div>
@@ -387,43 +315,24 @@
   </form>
 
   <ng-template pTemplate="footer">
-    <p-button 
-      label="Cancelar" 
-      icon="pi pi-times" 
-      (onClick)="onCancelEdit()"
-      styleClass="p-button-text">
+    <p-button label="Cancelar" icon="pi pi-times" (onClick)="onCancelEdit()" styleClass="p-button-text">
     </p-button>
-    <p-button 
-      label="Guardar" 
-      icon="pi pi-check" 
-      (onClick)="onSaveProject()">
+    <p-button label="Guardar" icon="pi pi-check" (onClick)="onSaveProject()">
     </p-button>
   </ng-template>
 </p-dialog>
 
 <!-- Label Dialog -->
-<p-dialog 
-  [(visible)]="displayLabelDialog" 
-  [header]="isEditingLabel ? 'Editar Etiqueta' : 'Nueva Etiqueta'"
-  [modal]="true"
-  [style]="{width: '500px'}"
-  [baseZIndex]="10"
-  [closable]="true">
-  
+<p-dialog [(visible)]="displayLabelDialog" [header]="isEditingLabel ? 'Editar Etiqueta' : 'Nueva Etiqueta'"
+  [modal]="true" [style]="{width: '500px'}" [baseZIndex]="10" [closable]="true">
+
   <form #labelFormRef="ngForm" class="p-fluid">
     <div class="field mb-3">
       <label for="labelName">Nombre *</label>
-      <input 
-        id="labelName" 
-        name="labelName"
-        #labelNameField="ngModel"
-        type="text" 
-        pInputText 
-        [(ngModel)]="labelForm.name"
-        placeholder="Nombre de la etiqueta"
-        maxlength="50"
-        required />
-      <small class="p-error" *ngIf="labelNameField.invalid && (labelNameField.dirty || labelNameField.touched || submittedLabel)">
+      <input id="labelName" name="labelName" #labelNameField="ngModel" type="text" pInputText
+        [(ngModel)]="labelForm.name" placeholder="Nombre de la etiqueta" maxlength="50" required />
+      <small class="p-error"
+        *ngIf="labelNameField.invalid && (labelNameField.dirty || labelNameField.touched || submittedLabel)">
         El nombre es requerido
       </small>
     </div>
@@ -431,95 +340,58 @@
     <div class="field mb-3">
       <label for="labelColor">Color</label>
       <div class="flex align-items-center gap-3">
-        <p-colorPicker 
-          [(ngModel)]="labelForm.colorHex" 
-          name="labelColor"
-          inputId="labelColor"
-          appendTo="body"
+        <p-colorPicker [(ngModel)]="labelForm.colorHex" name="labelColor" inputId="labelColor" appendTo="body"
           format="hex">
         </p-colorPicker>
-        <input 
-          type="text" 
-          pInputText 
-          [(ngModel)]="labelForm.colorHex"
-          name="labelColorHex"
-          placeholder="#3b82f6"
+        <input type="text" pInputText [(ngModel)]="labelForm.colorHex" name="labelColorHex" placeholder="#3b82f6"
           class="flex-1" />
-        <div 
-          class="label-color-preview" 
-          [style.background-color]="labelForm.colorHex">
+        <div class="label-color-preview" [style.background-color]="labelForm.colorHex">
         </div>
       </div>
       <small class="text-gray-500">Selecciona un color para la etiqueta</small>
     </div>
-    
+
     <div class="field mb-3">
       <label>Vista Previa</label>
-      <p-tag 
-        [value]="labelForm.name || 'Nombre de ejemplo'"
+      <p-tag [value]="labelForm.name || 'Nombre de ejemplo'"
         [style]="{'background-color': labelForm.colorHex, 'color': '#fff'}">
       </p-tag>
     </div>
   </form>
 
   <ng-template pTemplate="footer">
-    <p-button 
-      label="Cancelar" 
-      icon="pi pi-times" 
-      (onClick)="onCancelLabel()"
-      styleClass="p-button-text">
+    <p-button label="Cancelar" icon="pi pi-times" (onClick)="onCancelLabel()" styleClass="p-button-text">
     </p-button>
-    <p-button 
-      [label]="isEditingLabel ? 'Actualizar' : 'Crear'" 
-      icon="pi pi-check" 
-      (onClick)="onSaveLabel()">
+    <p-button [label]="isEditingLabel ? 'Actualizar' : 'Crear'" icon="pi pi-check" (onClick)="onSaveLabel()">
     </p-button>
   </ng-template>
 </p-dialog>
 
 <!-- Add Member Dialog -->
-<p-dialog 
-  [(visible)]="displayAddMemberDialog" 
-  header="Agregar Miembro al Proyecto"
-  [modal]="true"
-  [style]="{width: '600px'}"
-  [baseZIndex]="10"
-  [closable]="true">
-  
+<p-dialog [(visible)]="displayAddMemberDialog" header="Agregar Miembro al Proyecto" [modal]="true"
+  [style]="{width: '600px'}" [baseZIndex]="10" [closable]="true">
+
   <form #memberFormRef="ngForm" class="p-fluid">
     <div class="field mb-3">
       <label for="memberUser">Usuario *</label>
-      <p-dropdown 
-        id="memberUser" 
-        name="memberUser"
-        #memberUserField="ngModel"
-        [(ngModel)]="addMemberForm.userId"
-        [options]="allUsers"
-        optionLabel="name"
-        optionValue="id"
-        [filter]="true"
-        filterBy="name,email"
-        placeholder="Seleccione un usuario"
-        [showClear]="true"
-        appendTo="body"
-        [loading]="loadingUsers"
-        (onChange)="onUserSelected($event.value)"
-        required>
+      <p-dropdown id="memberUser" name="memberUser" #memberUserField="ngModel" [(ngModel)]="addMemberForm.userId"
+        [options]="allUsers" optionLabel="name" optionValue="id" [filter]="true" filterBy="name,email"
+        placeholder="Seleccione un usuario" [showClear]="true" appendTo="body" [loading]="loadingUsers"
+        (onChange)="onUserSelected($event.value)" required>
         <ng-template let-user pTemplate="item">
           <div class="flex align-items-center gap-2">
-            <p-avatar 
-              [label]="getMemberInitials(user.name)"
-              size="normal"
-              shape="circle">
+            <p-avatar [label]="getMemberInitials(user.name)" size="normal" shape="circle">
             </p-avatar>
             <div>
-              <div>{{ user.name }}</div>
+              <div>{{ user.name }} <span *ngIf="user.role" class="text-gray-500 text-sm">({{ user.role.name }})</span>
+              </div>
               <small class="text-gray-500">{{ user.email }}</small>
             </div>
           </div>
         </ng-template>
       </p-dropdown>
-      <small class="p-error" *ngIf="memberUserField.invalid && (memberUserField.dirty || memberUserField.touched || submittedMember)">
+      <small class="p-error"
+        *ngIf="memberUserField.invalid && (memberUserField.dirty || memberUserField.touched || submittedMember)">
         Debe seleccionar un usuario
       </small>
     </div>
@@ -530,11 +402,7 @@
         <span class="p-inputgroup-addon">
           <i class="pi pi-id-card"></i>
         </span>
-        <input 
-          type="text" 
-          pInputText 
-          [value]="selectedUser.role?.name || 'Sin rol asignado'" 
-          [readonly]="true"
+        <input type="text" pInputText [value]="selectedUser.role?.name || 'Sin rol asignado'" [readonly]="true"
           class="read-only-input" />
       </div>
       <small class="text-gray-500">El miembro será agregado con su rol asignado</small>
@@ -542,16 +410,9 @@
   </form>
 
   <ng-template pTemplate="footer">
-    <p-button 
-      label="Cancelar" 
-      icon="pi pi-times" 
-      (onClick)="onCancelMember()"
-      styleClass="p-button-text">
+    <p-button label="Cancelar" icon="pi pi-times" (onClick)="onCancelMember()" styleClass="p-button-text">
     </p-button>
-    <p-button 
-      label="Agregar" 
-      icon="pi pi-check" 
-      (onClick)="onSaveMember()">
+    <p-button label="Agregar" icon="pi pi-check" (onClick)="onSaveMember()">
     </p-button>
   </ng-template>
 </p-dialog>
