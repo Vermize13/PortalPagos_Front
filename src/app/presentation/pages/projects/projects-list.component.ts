@@ -101,7 +101,6 @@ export class ProjectsListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading projects:', error);
-        this.toastService.showError('Error', 'No se pudieron cargar los proyectos');
         this.loading = false;
         // Fallback to mock data on error
         this.loadMockProjects();
@@ -183,7 +182,6 @@ export class ProjectsListComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error deleting project:', error);
-            this.toastService.showError('Error', 'No se pudo eliminar el proyecto');
           }
         });
       }
@@ -229,10 +227,6 @@ export class ProjectsListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error updating project:', error);
-          // Extract error message from backend response
-          // Extract error message from backend response
-          const errorMessage = error?.error?.message || error?.error?.title || (typeof error?.error === 'string' ? error.error : 'No se pudo actualizar el proyecto');
-          this.toastService.showError('Error al actualizar proyecto', errorMessage);
         }
       });
     } else {
@@ -250,10 +244,6 @@ export class ProjectsListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error creating project:', error);
-          // Extract error message from backend response
-          // Extract error message from backend response
-          const errorMessage = error?.error?.message || error?.error?.title || (typeof error?.error === 'string' ? error.error : 'No se pudo crear el proyecto');
-          this.toastService.showError('Error al crear proyecto', errorMessage);
         }
       });
     }

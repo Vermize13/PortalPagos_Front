@@ -149,7 +149,6 @@ export class ProjectViewComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading project:', error);
-        this.toastService.showError('Error', 'No se pudo cargar el proyecto');
         this.loading = false;
         // Fallback to mock data for demonstration
         this.loadMockProject();
@@ -169,7 +168,6 @@ export class ProjectViewComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading members:', error);
-        this.toastService.showError('Error', 'No se pudieron cargar los miembros del proyecto');
       }
     });
   }
@@ -289,7 +287,6 @@ export class ProjectViewComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error updating project:', error);
-        this.toastService.showError('Error', 'No se pudo actualizar el proyecto');
       }
     });
   }
@@ -309,7 +306,6 @@ export class ProjectViewComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading labels:', error);
-        this.toastService.showError('Error', 'No se pudieron cargar las etiquetas');
         this.loadingLabels = false;
       }
     });
@@ -362,7 +358,6 @@ export class ProjectViewComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error creating label:', error);
-          this.toastService.showError('Error', 'No se pudo crear la etiqueta');
         }
       });
     }
@@ -428,7 +423,6 @@ export class ProjectViewComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading users:', error);
-        this.toastService.showError('Error', 'No se pudieron cargar los usuarios');
         this.loadingUsers = false;
       }
     });
@@ -465,7 +459,6 @@ export class ProjectViewComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error adding member:', error);
-        this.toastService.showError('Error', 'No se pudo agregar el miembro');
       }
     });
   }
@@ -490,7 +483,6 @@ export class ProjectViewComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error removing member:', error);
-            this.toastService.showError('Error', 'No se pudo eliminar el miembro');
           }
         });
       }

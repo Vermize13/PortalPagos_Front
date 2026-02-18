@@ -9,7 +9,7 @@ import { MessageService } from 'primeng/api';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, ToastModule, RippleModule],
-  providers: [MessageService],
+  providers: [],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

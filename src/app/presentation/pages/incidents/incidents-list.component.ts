@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -147,12 +147,35 @@ export class IncidentsListComponent implements OnInit {
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
     private router: Router,
+    private route: ActivatedRoute,
     public permissionService: PermissionService
   ) { }
 
   ngOnInit() {
     this.loadIncidents();
     this.loadDropdownData();
+
+    // Check for edit query param
+    this.route.queryParams.subscribe((params: any) => {
+      const incidentId = params['edit'];
+      if (incidentId) {
+        this.openEditIncidentById(incidentId);
+      }
+    });
+  }
+
+  openEditIncidentById(incidentId: string) {
+    this.incidentService.getById(incidentId).subscribe({
+      next: (incident) => {
+        if (incident) {
+          // Cast to IncidentDisplay as onEdit only needs properties present in IncidentWithDetails
+          this.onEdit(incident as IncidentDisplay);
+        }
+      },
+      error: (error) => {
+        console.error('Error loading incident for edit:', error);
+      }
+    });
   }
 
   // Permission helper methods for template use
@@ -239,7 +262,6 @@ export class IncidentsListComponent implements OnInit {
       },
       error: (error: any) => {
         console.error('Error loading incidents:', error);
-        this.toastService.showError('Error', 'No se pudieron cargar las incidencias');
         this.loading = false;
       }
     });
@@ -550,7 +572,6 @@ export class IncidentsListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error updating incident:', error);
-          this.toastService.showError('Error', 'No se pudo actualizar la incidencia');
         }
       });
     } else {
@@ -583,7 +604,6 @@ export class IncidentsListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error creating incident:', error);
-          this.toastService.showError('Error', 'No se pudo crear la incidencia');
         }
       });
     }
@@ -642,6 +662,7 @@ export class IncidentsListComponent implements OnInit {
     } else {
       // Close dialog and redirect to created incident
       this.displayDialog = false;
+      this.clearEditQueryParam();
       this.loadIncidents();
       if (this.lastCreatedIncidentId) {
         this.router.navigate(['/inicio/incidents', this.lastCreatedIncidentId]);
@@ -651,8 +672,17 @@ export class IncidentsListComponent implements OnInit {
 
   onCancelDialog() {
     this.displayDialog = false;
+    this.clearEditQueryParam();
     this.submitted = false;
     this.pendingFiles = [];
+  }
+
+  clearEditQueryParam() {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { edit: null },
+      queryParamsHandling: 'merge'
+    });
   }
 
   validateForm(): boolean {
@@ -713,7 +743,6 @@ export class IncidentsListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading project members:', error);
-        this.toastService.showError('Error', 'No se pudieron cargar los miembros del proyecto');
       }
     });
   }
@@ -792,7 +821,6 @@ export class IncidentsListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error updating incident status:', error);
-          this.toastService.showError('Error', 'No se pudo actualizar el estado de la incidencia');
         }
       });
     }

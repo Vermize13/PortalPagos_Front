@@ -286,7 +286,7 @@
             <div class="col-12">
               <div class="mb-3 field">
                 <label for="status">Estado *</label>
-                <p-dropdown id="status" [options]="statusOptions" [(ngModel)]="incidentForm.status"
+                <p-dropdown id="status" name="status" [options]="statusOptions" [(ngModel)]="incidentForm.status"
                   placeholder="Seleccione estado" appendTo="body" [disabled]="!canUpdateData()" optionLabel="label"
                   optionValue="value">
                 </p-dropdown>

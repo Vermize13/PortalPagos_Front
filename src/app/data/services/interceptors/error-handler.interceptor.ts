@@ -25,10 +25,13 @@ function extractErrorMessage(errorBody: any): string | null {
 
     if (errorBody.errors) {
       const errors = errorBody.errors;
-      const firstErrorKey = Object.keys(errors)[0];
-      if (firstErrorKey && errors[firstErrorKey]) {
-        return `${errors[firstErrorKey]} `;
-      }
+      // Join all error messages with a newline or comma
+      return Object.keys(errors)
+        .map(key => {
+          const errorVal = errors[key];
+          return Array.isArray(errorVal) ? errorVal.join(', ') : errorVal;
+        })
+        .join('. ');
     }
   }
 
